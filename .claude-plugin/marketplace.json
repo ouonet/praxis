@@ -7,7 +7,10 @@
     {
       "name": "praxis",
       "description": "Token-lean discipline skills: triage, design, plan, tdd, debug, review, worktree, subagents, ship.",
-      "source": "./.claude-plugin"
+      "source": {
+        "source": "github",
+        "repo": "ouonet/praxis"
+      }
     }
   ]
 }
