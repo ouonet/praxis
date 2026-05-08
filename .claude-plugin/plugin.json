@@ -2,6 +2,6 @@
   "name": "praxis",
   "version": "0.1.0",
   "description": "Token-lean discipline skills for coding agents.",
-  "author": "praxis",
+  "author": { "name": "praxis" },
   "hooks": "./hooks/hooks.json"
 }
