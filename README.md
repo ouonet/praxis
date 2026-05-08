@@ -75,6 +75,58 @@ Send: `fix the typo "teh" in README`.
 
 Expected: agent outputs `praxis: scope=trivial, loading=` and just fixes it. **No design doc, no plan, no TDD ceremony.**
 
+## Examples
+
+### Trivial — one-liner fix
+```
+You: rename the variable `usr` to `user` in auth.ts
+Agent: praxis: scope=trivial, loading=
+      [edits file, done]
+```
+No ceremony. Triage sees a rename and executes directly.
+
+---
+
+### Small — isolated change
+```
+You: add an `updatedAt` field to the User model
+Agent: praxis: scope=small, loading=tdd
+      [writes failing test, updates model, test passes]
+```
+Skips design and plan. Goes straight to TDD for a bounded change.
+
+---
+
+### Standard — new feature
+```
+You: add OAuth login with GitHub
+Agent: praxis: scope=standard, loading=design,plan,tdd,review
+      [asks: which framework? existing auth? session or JWT?]
+      [produces design doc, task list, implements with tests, self-reviews]
+```
+Full waterfall kicks in. Agent clarifies before touching code.
+
+---
+
+### Debug — something broken
+```
+You: payments are failing in production with a 422 error
+Agent: praxis: scope=debug, loading=debug
+      [reads logs, traces call stack, proposes hypothesis, patches, verifies]
+```
+Skips design/plan entirely. Debug skill runs a structured reproduce→isolate→fix loop.
+
+---
+
+### Complex — cross-cutting refactor
+```
+You: migrate the entire API from REST to tRPC
+Agent: praxis: scope=complex, loading=design,plan,worktree,subagents,tdd,review
+      [creates worktrees per module, fans out subagents in parallel,
+       each subagent runs its own tdd loop, review agent consolidates]
+```
+Worktree + subagents skills activate to parallelize large work safely.
+
 ## Philosophy
 
 - **Pay for discipline only when it pays back.** Triage decides.
