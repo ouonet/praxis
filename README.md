@@ -39,9 +39,16 @@ Each skill is 300–700 tokens. Compare to Superpowers' 2,500–3,500 per skill.
 
 ### Claude Code
 ```
-/plugin marketplace add <this repo>
-/plugin install praxis
+claude plugins marketplace add ouonet/praxis
+claude plugins install praxis
 ```
+
+To update after new releases:
+```
+claude plugins update praxis
+```
+
+> Claude Code does not auto-update plugins. Run the update command manually after repo changes.
 
 ### Codex (CLI / app)
 Point Codex at `.codex-plugin/plugin.json` per its plugin docs.
