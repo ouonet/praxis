@@ -1,0 +1,12 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "praxis",
+  "description": "Token-lean discipline skills for coding agents. Inspired by Superpowers, ~10x cheaper.",
+  "plugins": [
+    {
+      "name": "praxis",
+      "description": "Token-lean discipline skills: triage, design, plan, tdd, debug, review, worktree, subagents, ship.",
+      "source": "."
+    }
+  ]
+}
