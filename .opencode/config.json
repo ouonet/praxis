@@ -1,0 +1,8 @@
+{
+  "name": "praxis",
+  "version": "0.1.0",
+  "description": "Token-lean discipline skills for coding agents.",
+  "hooks": {
+    "session-start": "./hooks/session-start.sh"
+  }
+}
