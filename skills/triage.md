@@ -16,6 +16,7 @@ praxis: scope=<x>, loading=<skills>
 | standard | feature, multi-file, new behavior | `design` → `plan` → `tdd` → `review` |
 | complex | new system, ≥5 tasks, parallel | `design` → `plan` → `worktree` → `subagents` → `review` → `ship` |
 | debug | broken, regression, failing test | `debug` first, then route fix |
+| release | version, tag, publish, release notes | `release` |
 
 Torn? Pick smaller. "just X" / "quickly" / "no tests" → downgrade. "design it" / "properly" → upgrade.
 

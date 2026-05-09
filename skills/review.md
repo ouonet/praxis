@@ -11,6 +11,8 @@ Check in order:
 4. **Security** — input validation, secrets, authz, injection, path traversal.
 5. **Scope** — unrelated changes? Revert.
 
+For spec/plan reviews, also block unresolved implementation notes, plan assumptions absent from spec, vague acceptance, or premature `[parallel]`.
+
 Report:
 ```
 BLOCK: <must fix>

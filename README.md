@@ -23,6 +23,7 @@ At session start, a hook injects the `praxis:using-praxis` startup skill telling
 | worktree | non-trivial or parallel work |
 | subagents | independent tasks, fan-out |
 | ship | merge / PR / cleanup |
+| release | version / tag / publish |
 
 Each skill is 300–700 tokens. Compare to Superpowers' 2,500–3,500 per skill.
 
@@ -75,57 +76,45 @@ Send: `fix the typo "teh" in README`.
 
 Expected: agent outputs `praxis: scope=trivial, loading=` and just fixes it. **No design doc, no plan, no TDD ceremony.**
 
-## Examples
+## Scripts
 
-### Trivial — one-liner fix
+### Tiny fix
 ```
-You: rename the variable `usr` to `user` in auth.ts
-Agent: praxis: scope=trivial, loading=
-      [edits file, done]
+You: fix the typo "teh" in README
+Agent: triage -> trivial -> edit -> done
 ```
-No ceremony. Triage sees a rename and executes directly.
 
----
-
-### Small — isolated change
-```
-You: add an `updatedAt` field to the User model
-Agent: praxis: scope=small, loading=tdd
-      [writes failing test, updates model, test passes]
-```
-Skips design and plan. Goes straight to TDD for a bounded change.
-
----
-
-### Standard — new feature
+### Standard feature
 ```
 You: add OAuth login with GitHub
-Agent: praxis: scope=standard, loading=design,plan,tdd,review
-      [asks: which framework? existing auth? session or JWT?]
-      [produces design doc, task list, implements with tests, self-reviews]
+Agent: triage -> design -> plan -> tdd -> review -> ship
 ```
-Full waterfall kicks in. Agent clarifies before touching code.
+Design asks only needed questions, plan writes milestone tasks, ship updates living specs and CHANGELOG `Unreleased`.
 
----
-
-### Debug — something broken
-```
-You: payments are failing in production with a 422 error
-Agent: praxis: scope=debug, loading=debug
-      [reads logs, traces call stack, proposes hypothesis, patches, verifies]
-```
-Skips design/plan entirely. Debug skill runs a structured reproduce→isolate→fix loop.
-
----
-
-### Complex — cross-cutting refactor
+### Parallel work
 ```
 You: migrate the entire API from REST to tRPC
-Agent: praxis: scope=complex, loading=design,plan,worktree,subagents,tdd,review
-      [creates worktrees per module, fans out subagents in parallel,
-       each subagent runs its own tdd loop, review agent consolidates]
+Agent: triage -> design -> plan -> worktree -> subagents -> review -> ship
 ```
-Worktree + subagents skills activate to parallelize large work safely.
+Subagents expand milestones at dispatch time; the coordinator reviews and marks tasks complete.
+
+### Release
+```
+You: release 1.2.0
+Agent: triage -> release
+```
+Release confirms the version, moves CHANGELOG `Unreleased`, then asks before commit, tag, push, or publish.
+
+## Common Signals
+
+| You ask | Praxis does |
+|---|---|
+| fix typo | trivial |
+| add small field | small -> tdd |
+| add feature | standard -> design/plan/tdd/review |
+| migrate module | complex -> worktree/subagents |
+| failing behavior | debug |
+| release 1.2.0 | release |
 
 ## Philosophy
 

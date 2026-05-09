@@ -23,6 +23,7 @@ Expand milestone -> atomic steps **at dispatch time**, not in the plan.
 
 ## Loop per task
 implementer -> on DONE: spec-reviewer (matches spec?) -> quality-reviewer (`review`) -> mark complete, continue.
+The coordinator marks `- [x]`, never the subagent.
 
 ## Status
 - `DONE_WITH_CONCERNS` - address if correctness; note if observation.

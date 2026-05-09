@@ -1,6 +1,6 @@
 ---
 name: design
-description: Use for scope standard or complex, or when building anything new, before writing code.
+description: Use for standard or complex new work before code or planning.
 ---
 # Design
 
@@ -28,6 +28,10 @@ deferred:  <not deciding now>
 ```
 
 Reference code by path; never paste it.
+
+If details get bulky or reused, split them beside the spec and link; keep the spec as the decision index.
+
+Before handoff, close only decisions that affect implementation: contract, data, failure, test. Unresolved `Working notes` in those areas become decisions, `deferred`, or questions.
 
 ## Two layers, one file: `docs/specs/YYYY-MM-DD-<topic>.md`
 - Top: decisions, contracts, invariants (permanent).

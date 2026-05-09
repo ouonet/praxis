@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use before merge or after a subagent task to check correctness, tests, risks, and scope.
+description: Use before merge, after subagents, or for spec/plan review.
 ---
 # Review
 
@@ -10,6 +10,8 @@ Check in order:
 3. **Edges** - null, empty, large, concurrent, malformed, unicode, timezone.
 4. **Security** - input validation, secrets, authz, injection, path traversal.
 5. **Scope** - unrelated changes? Revert.
+
+For spec/plan reviews, also block unresolved implementation notes, plan assumptions absent from spec, vague acceptance, or premature `[parallel]`.
 
 Report:
 ```
