@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.0.1 - 2026-05-09
+
+- Make `ship` create the living specification index when `docs/specification.md` is missing.
+
 ## 1.0.0 - 2026-05-09
 
 - Add a release skill for versioning, changelog promotion, tags, and publish approval.

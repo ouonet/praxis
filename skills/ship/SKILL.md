@@ -6,7 +6,7 @@ description: Use when all plan tasks are done and green to review, archive plann
 
 1. All tests green.
 2. `review` the whole diff.
-3. Update `docs/specification.md` or `docs/specification/*.md` if behavior/contracts changed; keep `docs/specification.md` as the index.
+3. Ensure `docs/specification.md` exists as the living-spec index; create it if missing. If behavior/contracts changed, update `docs/specification.md` or `docs/specification/*.md` and keep the index linked.
 4. **Archive the change spec.** In `docs/specs/<topic>.md`: delete `## Working notes`, TBDs, process narrative. Only decisions/contracts/invariants remain.
 5. Delete or archive `docs/plans/<topic>.md`. Plans don't belong on `main`.
 6. Update CHANGELOG `Unreleased` if user-visible. Release moves it to a version.
