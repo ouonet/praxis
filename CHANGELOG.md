@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.0.2 - 2026-05-10
+
+- Require plan tasks to use completion checkboxes and make TDD/subagent flows flip them before ship.
+- Add repo baseline files to new-repo T1 plans.
+- Tighten ship checks and release-ready wording.
+
 ## 1.0.1 - 2026-05-09
 
 - Make `ship` create the living specification index when `docs/specification.md` is missing.

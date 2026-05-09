@@ -6,7 +6,9 @@ description: Use when implementing or fixing production code with tests.
 
 **No production code without a failing test first.** Wrote code before the test? Delete it. Rewrite from the test.
 
-RED -> run, see it fail for the *right reason* -> GREEN (minimum) -> all tests green -> refactor -> commit.
+RED (fail for the *right reason*) -> GREEN (minimum to pass) -> refactor -> commit -> flip the plan task `- [ ]` -> `- [x]`.
+
+All tasks `- [x]` and green -> `ship`.
 
 ## Don't
 - Test passes without the impl (tests nothing).

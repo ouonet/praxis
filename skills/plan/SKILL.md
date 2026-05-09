@@ -9,7 +9,7 @@ description: Use after design approval for milestone plans with executable accep
 If unresolved spec notes affect implementation or task order, return to `design`.
 
 ## Milestone tasks (30-60 min each)
-Use `- [ ] T1: <name>` for milestone tasks only.
+Every task is `- [ ] T<n>: <name>` - always a checkbox, never a heading. `tdd`/`subagents` flip it to `- [x]` on completion; `ship` refuses to run while any `- [ ]` remains.
 
 ```
 goal:       <one sentence>
@@ -24,6 +24,8 @@ Mark independent tasks: `[parallel] T3, T4, T5`.
 Only mark `[parallel]` when shared contracts, state, errors, and acceptance are closed.
 
 **Atomic expansion is lazy** - `subagents` expands a milestone into 2-5 min steps at dispatch time, not here.
+
+New repo: T1 includes repo baseline (`README.md`, `.gitignore`).
 
 ## Don't put in the plan
 background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
