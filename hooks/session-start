@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Praxis SessionStart hook — injects bootstrap.md into agent context.
+# Praxis SessionStart hook - injects the startup skill into agent context.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PRAXIS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Substitute {{PRAXIS_ROOT}} with the actual absolute path so agent can read skill files.
-content=$(sed "s|{{PRAXIS_ROOT}}|${PRAXIS_ROOT}|g" "${PRAXIS_ROOT}/bootstrap.md")
+# Substitute {{PRAXIS_ROOT}} with the actual absolute path so fallback readers can find skill files.
+startup_skill=$(sed "s|{{PRAXIS_ROOT}}|${PRAXIS_ROOT}|g" "${PRAXIS_ROOT}/skills/using-praxis/SKILL.md")
+content=$(printf '<EXTREMELY_IMPORTANT>\nYou have Praxis.\n\nBelow is the full content of your '\''praxis:using-praxis'\'' skill - your introduction to using Praxis skills. For all other Praxis skills, use the Skill tool in Claude Code.\n\n%s\n</EXTREMELY_IMPORTANT>' "$startup_skill")
 
 # JSON-escape
 escape() {

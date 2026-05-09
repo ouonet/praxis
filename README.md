@@ -4,9 +4,9 @@ Token-lean discipline skills for coding agents. Inspired by [Superpowers](https:
 
 ## What it does
 
-At session start, a hook injects a tiny bootstrap (~120 tokens) telling your agent to:
+At session start, a hook injects the `praxis:using-praxis` startup skill telling your agent to:
 
-1. Run `triage` first — classify the task as trivial / small / standard / complex / debug.
+1. Run `triage` first - in Claude Code via the native Skill tool as `praxis:triage`.
 2. Load only the skills that scope needs. **Trivial tasks skip the waterfall entirely.**
 3. Follow the loaded skill literally; don't freelance past `<gate>` markers.
 
@@ -30,9 +30,9 @@ Each skill is 300–700 tokens. Compare to Superpowers' 2,500–3,500 per skill.
 
 | | Superpowers | Praxis |
 |---|---|---|
-| Bootstrap (every session) | ~2,200 | ~120 |
+| Bootstrap (every session) | ~2,200 | ~350 |
 | Per skill load | ~3,000 | ~500 |
-| Trivial task | ~11,000 | ~120 (just triage) |
+| Trivial task | ~11,000 | ~600 (startup + triage) |
 | Standard task | ~30–50k | ~5–10k |
 
 ## Install
@@ -69,7 +69,7 @@ Any harness that reads `CLAUDE.md` or `AGENTS.md` will pick up Praxis automatica
 
 Start a fresh session. Send: `let's build a react todo list`.
 
-Expected: agent outputs `praxis: scope=standard, loading=design,plan,tdd,review` and starts asking clarifying questions before touching code.
+Expected: Claude Code invokes `Skill(praxis:triage)`, then outputs `praxis: scope=standard, loading=design,plan,tdd,review` and starts asking clarifying questions before touching code.
 
 Send: `fix the typo "teh" in README`.
 
@@ -137,8 +137,9 @@ Worktree + subagents skills activate to parallelize large work safely.
 ## Layout
 
 ```
-bootstrap.md          # what the hook injects
-skills/*.md           # the 9 skills
+bootstrap.md          # manual / fallback entrypoint
+skills/*.md           # flat fallback skills for file-read harnesses
+skills/<name>/SKILL.md # Claude Code native skills
 hooks/                # session-start.sh + .cmd + hooks.json
 .claude-plugin/       # Claude Code manifest
 .codex-plugin/        # Codex manifest
