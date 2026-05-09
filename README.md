@@ -64,7 +64,7 @@ copilot plugin install <this repo>
 (Or symlink `.copilot-plugin/plugin.json` per Copilot's plugin convention.)
 
 ### Manual / fallback
-Any harness that reads `CLAUDE.md` or `AGENTS.md` will pick up Praxis automatically — both files instruct the agent to load `bootstrap.md`.
+For harnesses without plugin support, add an instruction that reads `bootstrap.md` first.
 
 ## Verify it's working
 
@@ -134,7 +134,6 @@ hooks/                # session-start.sh + .cmd + hooks.json
 .codex-plugin/        # Codex manifest
 .copilot-plugin/      # Copilot CLI manifest
 .opencode/            # OpenCode config + install doc
-CLAUDE.md, AGENTS.md  # manual entrypoints (fallback)
 ```
 
 ## License
