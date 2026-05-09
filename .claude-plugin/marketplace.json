@@ -1,5 +1,6 @@
 {
   "name": "praxis",
+  "description": "Development marketplace for Praxis discipline skills.",
   "owner": {
     "name": "ouonet"
   },
@@ -7,6 +8,7 @@
     {
       "name": "praxis",
       "description": "Token-lean discipline skills: triage, design, plan, tdd, debug, review, worktree, subagents, ship.",
+      "version": "0.1.1",
       "source": {
         "source": "github",
         "repo": "ouonet/praxis"
