@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 1.0.7 - 2026-05-09
+
+- Add `archive` skill: merges cleaned spec into idiomatic domain specification, deletes spec and plan, updates specification index.
+- `ship`: replace archive steps with `archive` skill call.
+- `design`: add gate — spec file must exist on disk before handing off to `plan`.
+- `plan`: add gate — plan file must exist on disk before handing off to `tdd`/`subagents`.
+- `tdd`: make plan checkbox flip a mandatory explicit file edit before starting the next task.
+- Fix file naming consistency — use `YYYY-MM-DD-<topic>.md` throughout all skills.
+
 ## 1.0.6 - 2026-05-09
 
 - `plan`: T1 for new repos now scaffolds a complete, idiomatic baseline for the spec's stack instead of a fixed file list.
