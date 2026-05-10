@@ -50,6 +50,8 @@ let _bootstrapCache = undefined;
 export const PraxisPlugin = async ({ client, directory }) => {
   const homeDir = os.homedir();
   const praxisSkillsDir = path.resolve(__dirname, '../../skills');
+  const envConfigDir = normalizePath(process.env.OPENCODE_CONFIG_DIR, homeDir);
+  const configDir = envConfigDir || path.join(homeDir, '.config/opencode');
 
   const getBootstrapContent = () => {
     if (_bootstrapCache !== undefined) return _bootstrapCache;
@@ -67,8 +69,10 @@ export const PraxisPlugin = async ({ client, directory }) => {
 When skills reference tools you don't have, substitute OpenCode equivalents:
 - \`TodoWrite\` → \`todowrite\`
 - \`Task\` tool with subagents → Use OpenCode's subagent system (@mention)
-- \`Skill\` tool → OpenCode's native \`skill\` tool (praxis skills: \`praxis:<name>\`)
-- \`Read\`, \`Write\`, \`Edit\`, \`Bash\` → Your native tools`;
+- \`Skill\` tool → OpenCode's native \`skill\` tool
+- \`Read\`, \`Write\`, \`Edit\`, \`Bash\` → Your native tools
+
+Use OpenCode's native \`skill\` tool to list and load skills.`;
 
     _bootstrapCache = `<EXTREMELY_IMPORTANT>
 You have Praxis.

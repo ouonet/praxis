@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.0.11 - 2026-05-11
+
+- Remove `.opencode/config.json` to avoid stale hook-path config conflicts during OpenCode plugin loading.
+- Update `.opencode/plugins/praxis.js` to align OpenCode behavior more closely with Superpowers plugin flow.
+
 ## 1.0.10 - 2026-05-09
 
 - Add `package.json` with correct `main` entry for OpenCode plugin resolution.
