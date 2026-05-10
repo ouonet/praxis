@@ -31,5 +31,8 @@ New repo: T1 includes repo baseline (`README.md`, `.gitignore`).
 background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
 
 ## Hand off
+
+**Gate: `docs/plans/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `tdd`/`subagents`.**
+
 mostly `[parallel]` → `subagents`. Otherwise → `tdd`.
 

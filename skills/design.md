@@ -37,5 +37,7 @@ Before handoff, close only decisions that affect implementation: contract, data,
 - Top: decisions, contracts, invariants (permanent).
 - `## Working notes`: scratch, open questions (stripped at `ship`).
 
-Confirm each section with the user. Hand off to `plan`.
+Confirm each section with the user.
+
+**Gate: `docs/specs/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `plan`.**
 

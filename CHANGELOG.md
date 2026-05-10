@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.0.5 - 2026-05-09
+
+- `design`: Add gate — spec file must exist on disk before handing off to `plan`.
+- `plan`: Add gate — plan file must exist on disk before handing off to `tdd`/`subagents`.
+
 ## 1.0.4 - 2026-05-09
 
 - `ship`: Replace loose steps with explicit gate block — tests, plan checkboxes, and TodoWrite tasks must all pass before proceeding.
