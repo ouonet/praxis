@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.0.8 - 2026-05-09
+
+- `archive`: decompose specification into independently referenceable units instead of inferring a single domain.
+- `archive`: add "idiomatic domain specification" signal for better spec quality.
+- `plan`: T1 baseline now explicitly requires README.md, .gitignore, and all standard tooling configs at minimum.
+
 ## 1.0.7 - 2026-05-09
 
 - Add `archive` skill: merges cleaned spec into idiomatic domain specification, deletes spec and plan, updates specification index.
