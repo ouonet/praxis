@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.0.6 - 2026-05-09
+
+- `plan`: T1 for new repos now scaffolds a complete, idiomatic baseline for the spec's stack instead of a fixed file list.
+
 ## 1.0.5 - 2026-05-09
 
 - `design`: Add gate — spec file must exist on disk before handing off to `plan`.

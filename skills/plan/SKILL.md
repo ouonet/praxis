@@ -25,7 +25,7 @@ Only mark `[parallel]` when shared contracts, state, errors, and acceptance are 
 
 **Atomic expansion is lazy** - `subagents` expands a milestone into 2-5 min steps at dispatch time, not here.
 
-New repo: T1 includes repo baseline (`README.md`, `.gitignore`).
+New repo: T1 scaffolds a complete, idiomatic baseline for the spec's stack.
 
 ## Don't put in the plan
 background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
