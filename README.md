@@ -12,39 +12,41 @@ At session start, a hook injects the `praxis:using-praxis` startup skill telling
 
 ## Skills
 
-| Skill | When |
-|---|---|
-| triage | every message — routes to the right skills |
-| design | scope ≥ standard, anything new |
-| plan | after design |
-| tdd | implementing or fixing |
-| debug | something broken |
-| review | before merge / after subagent task |
-| worktree | non-trivial or parallel work |
-| subagents | independent tasks, fan-out |
-| ship | merge / PR / cleanup |
-| release | version / tag / publish |
+| Skill     | When                                        |
+| --------- | ------------------------------------------- |
+| triage    | every message — routes to the right skills |
+| design    | scope ≥ standard, anything new             |
+| plan      | after design                                |
+| tdd       | implementing or fixing                      |
+| debug     | something broken                            |
+| review    | before merge / after subagent task          |
+| worktree  | non-trivial or parallel work                |
+| subagents | independent tasks, fan-out                  |
+| ship      | merge / PR / cleanup                        |
+| release   | version / tag / publish                     |
 
 Each skill is 300–700 tokens. Compare to Superpowers' 2,500–3,500 per skill.
 
 ## Token budget
 
-| | Superpowers | Praxis |
-|---|---|---|
-| Bootstrap (every session) | ~2,200 | ~350 |
-| Per skill load | ~3,000 | ~500 |
-| Trivial task | ~11,000 | ~600 (startup + triage) |
-| Standard task | ~30–50k | ~5–10k |
+|                           | Superpowers | Praxis                  |
+| ------------------------- | ----------- | ----------------------- |
+| Bootstrap (every session) | ~2,200      | ~350                    |
+| Per skill load            | ~3,000      | ~500                    |
+| Trivial task              | ~11,000     | ~600 (startup + triage) |
+| Standard task             | ~30–50k    | ~5–10k                 |
 
 ## Install
 
 ### Claude Code
+
 ```
 claude plugins marketplace add ouonet/praxis
 claude plugins install praxis
 ```
 
 To update after new releases:
+
 ```
 claude plugins update praxis
 ```
@@ -52,18 +54,29 @@ claude plugins update praxis
 > Claude Code does not auto-update plugins. Run the update command manually after repo changes.
 
 ### Codex (CLI / app)
+
 Point Codex at `.codex-plugin/plugin.json` per its plugin docs.
 
 ### OpenCode
+
 See [`.opencode/INSTALL.md`](.opencode/INSTALL.md).
 
 ### GitHub Copilot CLI
+
 ```
-copilot plugin install <this repo>
+copilot plugin install ouonet/praxis
 ```
+
 (Or symlink `.copilot-plugin/plugin.json` per Copilot's plugin convention.)
 
+### VsCode Copilot
+
+```
+open customization of copilot -> Plugins -> Install Plugin From Source -> input  "ouonet/praxis"
+```
+
 ### Manual / fallback
+
 For harnesses without plugin support, add an instruction that reads `bootstrap.md` first.
 
 ## Verify it's working
@@ -79,42 +92,49 @@ Expected: agent outputs `praxis: scope=trivial, loading=` and just fixes it. **N
 ## Scripts
 
 ### Tiny fix
+
 ```
 You: fix the typo "teh" in README
 Agent: triage -> trivial -> edit -> done
 ```
 
 ### Standard feature
+
 ```
 You: add OAuth login with GitHub
 Agent: triage -> design -> plan -> tdd -> review -> ship
 ```
+
 Design asks only needed questions, plan writes milestone tasks, ship updates living specs and CHANGELOG `Unreleased`.
 
 ### Parallel work
+
 ```
 You: migrate the entire API from REST to tRPC
 Agent: triage -> design -> plan -> worktree -> subagents -> review -> ship
 ```
+
 Subagents expand milestones at dispatch time; the coordinator reviews and marks tasks complete.
 
 ### Release
+
 ```
 You: release 1.2.0
 Agent: triage -> release
 ```
+
 Release confirms the version, moves CHANGELOG `Unreleased`, then asks before commit, tag, push, or publish.
 
 ## Common Signals
 
-| You ask | Praxis does |
-|---|---|
-| fix typo | trivial |
-| add small field | small -> tdd |
-| add feature | standard -> design/plan/tdd/review |
-| migrate module | complex -> worktree/subagents |
-| failing behavior | debug |
-| release 1.2.0 | release |
+| You ask          | Praxis does                        |
+| ---------------- | ---------------------------------- |
+| fix typo         | trivial                            |
+| add small field  | small -> tdd                       |
+| add feature      | standard -> design/plan/tdd/review |
+| migrate module   | complex -> worktree/subagents      |
+| failing behavior | debug                              |
+| release 1.2.0    | release                            |
 
 ## Philosophy
 

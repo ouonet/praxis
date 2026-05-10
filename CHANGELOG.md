@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.0.3 - 2026-05-10
+
+- Fix hooks on Windows: add `windows` field to `hooks.json` for proper session-start hook execution.
+- Improve README formatting: align markdown tables and add VS Code Copilot installation instructions.
+
 ## 1.0.2 - 2026-05-10
 
 - Require plan tasks to use completion checkboxes and make TDD/subagent flows flip them before ship.
