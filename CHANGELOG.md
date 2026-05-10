@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.0.10 - 2026-05-09
+
+- Add `package.json` with correct `main` entry for OpenCode plugin resolution.
+
 ## 1.0.9 - 2026-05-09
 
 - Add OpenCode plugin (`opencode/plugins/praxis.js`): auto-registers skills directory and injects using-praxis bootstrap via message transform.
