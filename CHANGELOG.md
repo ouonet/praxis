@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.0.9 - 2026-05-09
+
+- Add OpenCode plugin (`opencode/plugins/praxis.js`): auto-registers skills directory and injects using-praxis bootstrap via message transform.
+- Update `.opencode/INSTALL.md` to use OpenCode plugin array install method.
+
 ## 1.0.8 - 2026-05-09
 
 - `archive`: decompose specification into independently referenceable units instead of inferring a single domain.
