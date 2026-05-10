@@ -8,7 +8,7 @@
     {
       "name": "praxis",
       "description": "Token-lean discipline skills: triage, design, plan, tdd, debug, review, worktree, subagents, ship.",
-      "version": "1.0.2",
+      "version": "1.0.4",
       "source": {
         "source": "github",
         "repo": "ouonet/praxis"

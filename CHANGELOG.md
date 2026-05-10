@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.0.4 - 2026-05-09
+
+- `ship`: Replace loose steps with explicit gate block — tests, plan checkboxes, and TodoWrite tasks must all pass before proceeding.
+- `ship`: Clarify `docs/specification.md` as curated living spec with organized content; archived specs are reference only.
+- `tdd`: Make plan checkbox flip a mandatory explicit file edit step before starting the next task.
+
 ## 1.0.3 - 2026-05-10
 
 - Fix hooks on Windows: add `windows` field to `hooks.json` for proper session-start hook execution.

@@ -6,7 +6,7 @@ when: implementing or fixing production code
 
 **No production code without a failing test first.** Wrote code before the test? Delete it. Rewrite from the test.
 
-RED (fail for the *right reason*) → GREEN (minimum to pass) → refactor → commit → flip the plan task `- [ ]` → `- [x]`.
+RED (fail for the *right reason*) → GREEN (minimum to pass) → refactor → commit → **edit `docs/plans/<topic>.md` and change this task's `- [ ]` to `- [x]`. Do not start the next task without this edit.**
 
 All tasks `- [x]` and green → `ship`.
 
