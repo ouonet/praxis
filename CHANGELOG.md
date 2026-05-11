@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.0.12 - 2026-05-11
+
+* Remove requirement of decomposition in `archive` skill because of complexity.
+
 ## 1.0.11 - 2026-05-11
 
 - Remove `.opencode/config.json` to avoid stale hook-path config conflicts during OpenCode plugin loading.
