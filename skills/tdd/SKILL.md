@@ -6,7 +6,7 @@ description: Use when implementing or fixing production code with tests.
 
 **No production code without a failing test first.** Wrote code before the test? Delete it. Rewrite from the test.
 
-RED (fail for the *right reason*) -> GREEN (minimum to pass) -> refactor -> commit -> **edit `docs/plans/YYYY-MM-DD-<topic>.md` and change this task's `- [ ]` to `- [x]`. Do not start the next task without this edit.**
+RED (fail for the *right reason*) -> GREEN (minimum to pass) -> refactor -> commit -> **edit `docs/onway/plans/YYYY-MM-DD-<topic>.md` and change this task's `- [ ]` to `- [x]`. Do not start the next task without this edit.**
 
 All tasks `- [x]` and green -> `ship`.
 

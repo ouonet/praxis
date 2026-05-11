@@ -4,19 +4,21 @@ description: Use after design approval for milestone plans with executable accep
 ---
 # Plan
 
-`docs/plans/YYYY-MM-DD-<topic>.md`. Reference the spec; don't restate it.
+`docs/onway/plans/YYYY-MM-DD-<topic>.md`. Reference the spec; don't restate it.
 
 If unresolved spec notes affect implementation or task order, return to `design`.
 
 ## Milestone tasks (30-60 min each)
+
 Every task is `- [ ] T<n>: <name>` - always a checkbox, never a heading. `tdd`/`subagents` flip it to `- [x]` on completion; `ship` refuses to run while any `- [ ]` remains.
 
 ```
 goal:       <one sentence>
 files:      <paths>
 acceptance: <test or cmd>
-spec:       <docs/specs/...#anchor>
+spec:       <docs/onway/specs/...#anchor>
 ```
+
 No exact code. No step-by-step. Acceptance is executable: test name, command, or scripted check. Each task leaves the repo green.
 
 Mark independent tasks: `[parallel] T3, T4, T5`.
@@ -25,13 +27,16 @@ Only mark `[parallel]` when shared contracts, state, errors, and acceptance are 
 
 **Atomic expansion is lazy** - `subagents` expands a milestone into 2-5 min steps at dispatch time, not here.
 
-New repo: T1 scaffolds a complete, idiomatic baseline for the spec's stack — at minimum README.md, .gitignore, and all standard tooling configs.
+for **New project**: plans MUST include task: `initialize files for the spec's stack following standard conventions - must including documentation, code, tests, CI. if not sure, ask questions and propose options.`
 
 ## Don't put in the plan
+
 background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
 
 ## Hand off
 
-**Gate: `docs/plans/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `tdd`/`subagents`.**
+Confirm each section with the user.
+
+**Gate: `docs/onway/plans/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `tdd`/`subagents`.**
 
 mostly `[parallel]` -> `subagents`. Otherwise -> `tdd`.

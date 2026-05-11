@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.0.13 - 2026-05-12
+
+- Delete top-level `skills/*.md` files (no AI tool consumption).
+- Modify `archive` skill living specification convention.
+
 ## 1.0.12 - 2026-05-11
 
 * Remove requirement of decomposition in `archive` skill because of complexity.

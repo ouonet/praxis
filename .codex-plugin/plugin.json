@@ -4,7 +4,7 @@
   "description": "Token-lean discipline skills for coding agents.",
   "hooks": {
     "SessionStart": {
-      "command": "./hooks/session-start.sh"
+      "command": "./hooks/session-start"
     }
   }
 }

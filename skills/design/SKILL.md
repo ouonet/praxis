@@ -33,10 +33,10 @@ If details get bulky or reused, split them beside the spec and link; keep the sp
 
 Before handoff, close only decisions that affect implementation: contract, data, failure, test. Unresolved `Working notes` in those areas become decisions, `deferred`, or questions.
 
-## Two layers, one file: `docs/specs/YYYY-MM-DD-<topic>.md`
+## Two layers, one file: `docs/onway/specs/YYYY-MM-DD-<topic>.md`
 - Top: decisions, contracts, invariants (permanent).
 - `## Working notes`: scratch, open questions (stripped at `ship`).
 
 Confirm each section with the user.
 
-**Gate: `docs/specs/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `plan`.**
+**Gate: `docs/onway/specs/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `plan`.**

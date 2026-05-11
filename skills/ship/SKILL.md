@@ -6,7 +6,7 @@ description: Use when all plan tasks are done and green to review, archive plann
 
 **Gates — if any fail, stop here:**
 - Tests pass.
-- No `- [ ]` in `docs/plans/YYYY-MM-DD-<topic>.md`.
+- No `- [ ]` in `docs/onway/plans/YYYY-MM-DD-<topic>.md`.
 - No incomplete TodoWrite tasks.
 
 1. `review` the whole diff.
