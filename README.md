@@ -1,5 +1,9 @@
 # Praxis
 
+<p align="center">
+  <img src="assets/logo.svg" alt="Praxis" width="260"/>
+</p>
+
 Token-lean discipline skills for coding agents. Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be significantly cheaper while keeping the core capabilities.
 
 ## What it does

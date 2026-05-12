@@ -2,5 +2,9 @@
   "name": "praxis",
   "version": "1.1.1",
   "description": "Token-lean discipline skills for coding agents.",
-  "author": { "name": "praxis" }
+  "author": { "name": "ouonet" },
+  "homepage": "https://github.com/ouonet/praxis",
+  "repository": "https://github.com/ouonet/praxis",
+  "license": "MIT",
+  "keywords": ["triage", "discipline", "skills", "agent", "coding"]
 }

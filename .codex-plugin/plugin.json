@@ -22,6 +22,8 @@
     "websiteURL": "https://github.com/ouonet/praxis",
     "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
     "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
-    "brandColor": "#0066CC"
+    "brandColor": "#7C3AED",
+    "iconURL": "https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-mark.svg",
+    "logoURL": "https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg"
   }
 }
