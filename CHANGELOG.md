@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.0.14 - 2026-05-12
+
+- Rename staging directory from `docs/onway/` to `docs/staging/` across all skills (`archive`, `design`, `plan`, `ship`, `subagents`, `tdd`).
+- `archive`: add gate requiring `docs/tech-spec.md` to exist on disk before merging; clarify README links to multiple living specifications.
+- `plan`: move gate block above the user-confirm step.
+
 ## 1.0.13 - 2026-05-12
 
 - Delete top-level `skills/*.md` files (no AI tool consumption).

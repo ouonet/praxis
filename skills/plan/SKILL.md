@@ -4,7 +4,7 @@ description: Use after design approval for milestone plans with executable accep
 ---
 # Plan
 
-`docs/onway/plans/YYYY-MM-DD-<topic>.md`. Reference the spec; don't restate it.
+`docs/staging/plans/YYYY-MM-DD-<topic>.md`. Reference the spec; don't restate it.
 
 If unresolved spec notes affect implementation or task order, return to `design`.
 
@@ -16,7 +16,7 @@ Every task is `- [ ] T<n>: <name>` - always a checkbox, never a heading. `tdd`/`
 goal:       <one sentence>
 files:      <paths>
 acceptance: <test or cmd>
-spec:       <docs/onway/specs/...#anchor>
+spec:       <docs/staging/specs/...#anchor>
 ```
 
 No exact code. No step-by-step. Acceptance is executable: test name, command, or scripted check. Each task leaves the repo green.
@@ -35,8 +35,8 @@ background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
 
 ## Hand off
 
-Confirm each section with the user.
+**Gate: `docs/staging/plans/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `tdd`/`subagents`.**
 
-**Gate: `docs/onway/plans/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `tdd`/`subagents`.**
+Confirm plan with the user.
 
 mostly `[parallel]` -> `subagents`. Otherwise -> `tdd`.

@@ -12,7 +12,7 @@ Subagents have file-read tools. Don't inline what they can read.
 ```
 TASK: <one sentence>
 FILES: <paths>
-SPEC: <docs/onway/specs/...#anchor>
+SPEC: <docs/staging/specs/...#anchor>
 ACCEPTANCE: <test or cmd>
 EXTRA: <only what's NOT in referenced files>
 ```
