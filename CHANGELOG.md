@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.1.1 - 2026-05-12
+
+- Add Codex marketplace support: `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json` rewritten with `skills`, `hooks`, and `interface` fields.
+- Add `hooks/codex-hooks.json` for Codex SessionStart hook using relative paths.
+- Fix `hooks/session-start`: restore three-way harness dispatch (Claude Code / Copilot CLI / Codex+generic).
+- README: update Codex install section to reflect marketplace flow.
+
 ## 1.1.0 - 2026-05-12
 
 - Add `onboard` skill: explores an existing codebase and produces `docs/tech-spec.md` as a factual record of stack, contracts, conventions, and invariants.

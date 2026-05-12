@@ -57,7 +57,26 @@ claude plugins update praxis
 
 ### Codex (CLI / app)
 
-Point Codex at `.codex-plugin/plugin.json` per its plugin docs.
+Praxis is distributed as a Codex marketplace. Register and install it from the CLI:
+
+```bash
+codex plugin marketplace add ouonet/praxis
+```
+
+Then open the plugin directory and install:
+
+```
+/plugins
+```
+
+Search for `praxis` and select **Install Plugin**.
+
+To add the marketplace and install non-interactively:
+
+```bash
+codex plugin marketplace add ouonet/praxis
+codex plugin install praxis@praxis-marketplace
+```
 
 ### OpenCode
 

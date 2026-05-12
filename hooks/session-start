@@ -22,9 +22,13 @@ escape() {
 payload=$(escape "$content")
 
 # Emit per-harness JSON shape.
-if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  # Claude Code
   printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
-else
-  # Copilot CLI, OpenCode, Codex, generic SDK
+elif [ -n "${COPILOT_CLI:-}" ]; then
+  # Copilot CLI — SDK standard top-level additionalContext
   printf '{"additionalContext":"%s"}\n' "$payload"
+else
+  # Codex, OpenCode, generic SDK — hookSpecificOutput wrapper
+  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
 fi
