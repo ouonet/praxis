@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.1.0 - 2026-05-12
+
+- Add `onboard` skill: explores an existing codebase and produces `docs/tech-spec.md` as a factual record of stack, contracts, conventions, and invariants.
+- `triage`: add `onboard` scope — routes "take over"/"add Praxis" signals to `onboard`.
+- `README`: add `onboard` to skills table, scripts, and common signals; add "Compared to Superpowers" section with skill mapping; fix token budget with measured values; fix Layout section to match actual repo structure.
+
 ## 1.0.14 - 2026-05-12
 
 - Rename staging directory from `docs/onway/` to `docs/staging/` across all skills (`archive`, `design`, `plan`, `ship`, `subagents`, `tdd`).

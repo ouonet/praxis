@@ -1,6 +1,6 @@
 # Praxis
 
-Token-lean discipline skills for coding agents. Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be ~10× cheaper while keeping the core capabilities.
+Token-lean discipline skills for coding agents. Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be significantly cheaper while keeping the core capabilities.
 
 ## What it does
 
@@ -14,8 +14,9 @@ At session start, a hook injects the `praxis:using-praxis` startup skill telling
 
 | Skill     | When                                        |
 | --------- | ------------------------------------------- |
-| triage    | every message — routes to the right skills |
-| design    | scope ≥ standard, anything new             |
+| triage    | every message — routes to the right skills  |
+| onboard   | existing project with no docs/tech-spec.md  |
+| design    | scope ≥ standard, anything new              |
 | plan      | after design                                |
 | tdd       | implementing or fixing                      |
 | debug     | something broken                            |
@@ -25,16 +26,17 @@ At session start, a hook injects the `praxis:using-praxis` startup skill telling
 | ship      | merge / PR / cleanup                        |
 | release   | version / tag / publish                     |
 
-Each skill is 300–700 tokens. Compare to Superpowers' 2,500–3,500 per skill.
+Skills range from ~100 to ~400 tokens each. Compare to Superpowers' 2,500–3,500 per skill.
 
 ## Token budget
 
-|                           | Superpowers | Praxis                  |
-| ------------------------- | ----------- | ----------------------- |
-| Bootstrap (every session) | ~2,200      | ~350                    |
-| Per skill load            | ~3,000      | ~500                    |
-| Trivial task              | ~11,000     | ~600 (startup + triage) |
-| Standard task             | ~30–50k    | ~5–10k                 |
+|                           | Superpowers | Praxis                         |
+| ------------------------- | ----------- | ------------------------------ |
+| Bootstrap (every session) | ~2,200      | ~250 (using-praxis)            |
+| Per skill load            | ~2,500–3,500 | ~100–400                      |
+| Trivial task              | ~11,000     | ~550 (bootstrap + triage)      |
+| Standard task (design→ship) | ~30–50k   | ~1,600 (5 skills × ~320 avg)  |
+| Complex task (all skills)  | ~40–60k    | ~2,900 (all skills combined)   |
 
 ## Install
 
@@ -116,6 +118,15 @@ Agent: triage -> design -> plan -> worktree -> subagents -> review -> ship
 
 Subagents expand milestones at dispatch time; the coordinator reviews and marks tasks complete.
 
+### Onboard existing project
+
+```
+You: take over this project / add Praxis to this codebase
+Agent: triage -> onboard
+```
+
+Onboard explores the codebase and produces `docs/tech-spec.md` — a factual record of stack, contracts, conventions, and invariants. No code changes, no plans. After confirmation, the normal `design → plan → tdd` flow resumes.
+
 ### Release
 
 ```
@@ -133,8 +144,37 @@ Release confirms the version, moves CHANGELOG `Unreleased`, then asks before com
 | add small field  | small -> tdd                       |
 | add feature      | standard -> design/plan/tdd/review |
 | migrate module   | complex -> worktree/subagents      |
-| failing behavior | debug                              |
-| release 1.2.0    | release                            |
+| failing behavior         | debug                              |
+| take over this project   | onboard                            |
+| release 1.2.0            | release                            |
+
+## Compared to Superpowers
+
+Praxis is directly inspired by [Superpowers](https://github.com/obra/superpowers). The core idea is the same: inject structured discipline into an agent session via skill files.
+
+| Superpowers skill | Praxis equivalent |
+|---|---|
+| `using-superpowers` | `using-praxis` + `triage` |
+| `brainstorming` | `design` |
+| `writing-plans` | `plan` |
+| `executing-plans` | `tdd` |
+| `test-driven-development` | `tdd` |
+| `systematic-debugging` | `debug` |
+| `requesting-code-review` / `receiving-code-review` | `review` |
+| `using-git-worktrees` | `worktree` |
+| `dispatching-parallel-agents` / `subagent-driven-development` | `subagents` |
+| `finishing-a-development-branch` | `ship` |
+| `verification-before-completion` | gate markers in `tdd` / `ship` |
+| `writing-skills` | — (not needed; skills are plain Markdown) |
+| — | `onboard` (no Superpowers equivalent) |
+| — | `archive` (no Superpowers equivalent) |
+| — | `release` (no Superpowers equivalent) |
+
+**Where Praxis actually saves tokens:** the skill files themselves are smaller (avg ~230 vs ~1,760 tokens each), but the bigger saving is in the artifacts they produce. Praxis `design` outputs a declaration-only spec (decisions, contracts, invariants — no narrative); `plan` outputs milestone stubs with one-line goals. Superpowers' equivalents produce full prose specs and detailed step-by-step plans that accumulate in context for the rest of the session.
+
+**Archive vs. no archive:** Superpowers has no equivalent to `archive`. Specs and plans remain in context or are discarded. Praxis strips working notes, merges decisions into a living `docs/tech-spec.md`, and deletes the staging files — keeping long-term context lean.
+
+If you need a battle-tested, narrative-rich workflow and token cost is not a constraint, Superpowers is excellent. If you want leaner artifacts and a living specification that survives across sessions, use Praxis.
 
 ## Philosophy
 
@@ -146,14 +186,17 @@ Release confirms the version, moves CHANGELOG `Unreleased`, then asks before com
 ## Layout
 
 ```
-bootstrap.md          # manual / fallback entrypoint
-skills/*.md           # flat fallback skills for file-read harnesses
-skills/<name>/SKILL.md # Claude Code native skills
-hooks/                # session-start.sh + .cmd + hooks.json
-.claude-plugin/       # Claude Code manifest
-.codex-plugin/        # Codex manifest
-.copilot-plugin/      # Copilot CLI manifest
-.opencode/            # OpenCode config + install doc
+bootstrap.md           # manual / fallback entrypoint
+skills/<name>/SKILL.md # skills (Claude Code native + file-read harnesses)
+hooks/
+  hooks.json           # hook registry
+  run-hook.cmd         # Windows hook runner
+  session-start        # session-start hook script
+.claude/               # Claude Code settings
+.claude-plugin/        # Claude Code plugin manifest
+.codex-plugin/         # Codex plugin manifest
+.copilot-plugin/       # Copilot CLI plugin manifest
+.opencode/             # OpenCode config + install doc
 ```
 
 ## License
