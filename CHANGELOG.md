@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.1.2 - 2026-05-12
+
+- Fix Codex marketplace plugin source: change `local` path `./` to `url` source pointing to GitHub repo (Codex rejects empty path after stripping `./`).
+- README: update Codex install section to reflect UI-only install and `codex plugin marketplace upgrade` for updates.
+
 ## 1.1.1 - 2026-05-12
 
 - Add Codex marketplace support: `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json` rewritten with `skills`, `hooks`, and `interface` fields.
