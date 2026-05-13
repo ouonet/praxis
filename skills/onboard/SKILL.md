@@ -1,16 +1,24 @@
 ---
 name: onboard
-description: Use when taking over an existing codebase that has no docs/tech-spec.md. Produces a factual record of what already exists.
+description: Use when taking over an existing codebase that has no living document. Produces a factual record of what already exists.
 ---
 # Onboard
 
-Goal: read the codebase, produce `docs/tech-spec.md`. No code changes. No plans. No gap analysis.
+Goal: read the codebase, produce living documentation. No code changes. No plans. No gap analysis.
+
+## living documentation
+
+- `README.md` : project overview, what it is, who it's for, how to use it. Links to the technical specification.
+- `docs/tech-spec.md` : main technical specification.
+- `docs/specs/*.md` : created by splitting out details from the main spec if they are too bulky or complex. Reference by path from the main spec.
+
+technical specification is declarations only (no narrative), with facts only, no interpretation or plans. 
 
 ## Steps
 
 1. **Explore** entry points, public interfaces, key dependencies, test patterns, file structure. Read, don't guess.
-2. **Ask** about anything ambiguous — never invent architecture.
-3. **Write** `docs/tech-spec.md` using declarations only (no narrative):
+2. **Ask the user** about anything ambiguous — never invent architecture.
+3. **Write** living documentation .
 
 ```
 stack:       <language, runtime, frameworks, key deps>

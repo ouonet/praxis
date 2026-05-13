@@ -19,11 +19,3 @@ Before any response or action on every user message, invoke `praxis:triage` with
    ```
 3. Load only the skills listed by triage.
 4. Follow loaded skills literally; respect `<gate>` markers.
-
-## Fallback
-
-If the harness does not provide a Skill tool, read `skills/triage.md` first, then read the flat `skills/<name>.md` files triage selects.
-
-When this skill is injected by a SessionStart hook, file-read fallback paths are rooted at `{{PRAXIS_ROOT}}`.
-
-User instructions > Praxis skills > defaults.

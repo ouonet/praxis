@@ -42,6 +42,41 @@ Skills range from ~100 to ~400 tokens each. Compare to Superpowers' 2,500–3,50
 | Standard task (design→ship) | ~30–50k   | ~1,600 (5 skills × ~320 avg)  |
 | Complex task (all skills)  | ~40–60k    | ~2,900 (all skills combined)   |
 
+## Documentation Structure
+
+Praxis enforces a strict documentation structure and keeps code and docs in sync at every step.
+
+### Living Documentation
+
+Your project must maintain:
+
+- **`README.md`** — Project overview, what it is, who it's for, how to use it. Links to technical spec.
+- **`docs/tech-spec.md`** — Main technical specification (declarations only, no narrative).
+- **`docs/specs/*.md`** — Split-out details when the main spec grows too large.
+
+Technical specs are **facts only**: contracts, data shapes, invariants, failure modes. No interpretation, no plans.
+
+### Staging Area
+
+During active work, Praxis uses:
+
+- **`docs/staging/specs/YYYY-MM-DD-<topic>.md`** — Working spec for the current change.
+- **`docs/staging/plans/YYYY-MM-DD-<topic>.md`** — Executable milestone tasks.
+
+At `ship`, the staging spec merges into living docs; staging files are deleted (Git keeps history).
+
+### Code-Docs Sync
+
+Praxis enforces synchronization at multiple checkpoints:
+
+- **During `tdd`**: After each RED-GREEN-refactor cycle, sync docs before commit.
+  - If staging spec exists → update it to match reality.
+  - If no staging spec (small tasks) → update living docs directly.
+- **At `ship` gate**: Staging spec must reflect actual code behavior.
+- **At `review`**: Check that README/comments reflect actual behavior.
+
+**The rule**: Code changes without doc updates fail review. Docs that don't match code block merge.
+
 ## Install
 
 ### Claude Code

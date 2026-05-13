@@ -25,9 +25,9 @@ Mark independent tasks: `[parallel] T3, T4, T5`.
 
 Only mark `[parallel]` when shared contracts, state, errors, and acceptance are closed.
 
-**Atomic expansion is lazy** - `subagents` expands a milestone into 2-5 min steps at dispatch time, not here.
+**Atomic expansion is deferred until dispatch time** - `subagents` expands a milestone into 2-5 min steps at dispatch time, not here.
 
-for **New project**: plans MUST include task: `initialize files for the spec's stack following standard conventions - must including documentation, code, tests, CI. if not sure, ask questions and propose options.`
+for **New project**: derivative an initialization task — scaffold code, tests, CI, and always include: `README.md`, `CHANGELOG.md`, `.gitignore`, and a `Makefile` (or equivalent task runner config).
 
 ## Don't put in the plan
 
@@ -35,7 +35,7 @@ background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
 
 ## Hand off
 
-**Gate: `docs/staging/plans/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `tdd`/`subagents`.**
+<gate>`docs/staging/plans/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `tdd`/`subagents`.</gate>
 
 Confirm plan with the user.
 

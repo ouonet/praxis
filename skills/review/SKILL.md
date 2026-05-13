@@ -5,11 +5,12 @@ description: Use before merge, after subagents, or for spec/plan review.
 # Review
 
 Check in order:
-1. **Spec match** - diff does what the spec/plan said? List drift.
-2. **Tests** - new behavior covered, all green?
-3. **Edges** - null, empty, large, concurrent, malformed, unicode, timezone.
-4. **Security** - input validation, secrets, authz, injection, path traversal.
-5. **Scope** - unrelated changes? Revert.
+1. **Spec match** (if spec exists) - diff does what the spec/plan said? List drift.
+2. **Documentation** (always) - README/comments reflect actual behavior?
+3. **Tests** - new behavior covered, all green?
+4. **Edges** - null, empty, large, concurrent, malformed, unicode, timezone.
+5. **Security** - input validation, secrets, authz, injection, path traversal.
+6. **Scope** - unrelated changes? Revert.
 
 For spec/plan reviews, also block unresolved implementation notes, plan assumptions absent from spec, vague acceptance, or premature `[parallel]`.
 
