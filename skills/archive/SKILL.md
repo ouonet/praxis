@@ -16,7 +16,7 @@ technical specification is declarations only (no narrative), with facts only, no
 
 1. **Create** or **Merge**  the living documentation file with `docs/staging/specs/YYYY-MM-DD-<topic>.md`'s content. Not simple copy-paste — merge the new spec content into the existing living spec, preserving the living spec's structure and any existing content that is still relevant. The new spec's content should be integrated into the living spec in a way that maintains coherence and readability.
 
-`<gate>` confirm the merged content with the user before delete staging spec and plan. `</gate>`
+`<gate>`  confirm the merged content with the user before delete staging spec and plan. ` </gate>`
 
 2. **Delete** `docs/staging/specs/YYYY-MM-DD-<topic>.md` — content absorbed; Git has the history.
 3. **Delete** `docs/staging/plans/YYYY-MM-DD-<topic>.md` — plans don't belong on `main`.

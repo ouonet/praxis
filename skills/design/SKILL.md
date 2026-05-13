@@ -4,7 +4,7 @@ description: Use for standard or complex new work before coding or planning.
 ---
 # Design
 
-<gate>No code until user approves the spec.</gate>
+`<gate>` No code until user approves the spec. `</gate>`
 
 Ask one question per turn until you know what to build. Propose 2-3 approaches with trade-offs; recommend one. Then write the spec.
 
@@ -40,9 +40,9 @@ Before handoff, close only decisions that affect implementation: contract, data,
 
 
 ## Gates
-<gate>
+`<gate>`
 
 1. `docs/staging/specs/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `plan`.
 2. Confirm with the user.
 
-</gate>
+`</gate>`
