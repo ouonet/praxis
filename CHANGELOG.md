@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.2.0 - 2026-05-13
+
+- **Code-docs sync enforcement**: Add mandatory documentation synchronization across TDD, review, and ship workflows.
+  - `tdd` skill: add "sync docs" step in RED-GREEN-refactor cycle (update staging spec if exists, or living docs directly for small tasks).
+  - `ship` skill: add gate requiring staging spec reflects actual code behavior.
+  - `review` skill: add documentation check (always required); make spec match conditional on spec existence.
+- **Documentation structure formalization**: Add "Documentation Structure" section to README explaining living docs (`README.md`, `docs/tech-spec.md`, `docs/specs/*.md`), staging area (`docs/staging/specs/`, `docs/staging/plans/`), and sync checkpoints.
+
 ## 1.1.2 - 2026-05-12
 
 - Fix Codex marketplace plugin source: change `local` path `./` to `url` source pointing to GitHub repo (Codex rejects empty path after stripping `./`).
