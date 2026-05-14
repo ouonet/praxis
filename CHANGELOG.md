@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.2.1 - 2026-05-14
+
+- **Core philosophy clarification**: Update README and Philosophy section to emphasize "Intent, not instruction" as the guiding principle.
+  - Add SLOGAN: "What, not how." — the core directive.
+  - Replace "Praxis is token-lean skills" with definition centered on intent-driven approach.
+  - Emphasize that users declare *what* to achieve and *what done looks like*, not *how to do it*.
+  - Clarify Philosophy: "Intent, not instruction" guides all skill design.
+
 ## 1.2.0 - 2026-05-13
 
 - **Code-docs sync enforcement**: Add mandatory documentation synchronization across TDD, review, and ship workflows.

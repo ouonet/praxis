@@ -21,5 +21,4 @@ praxis: scope=<x>, loading=<skills>
 Torn? Pick smaller. "just X" / "quickly" / "no tests" -> downgrade. "design it" / "properly" -> upgrade.
 
 - Never load a skill not listed for the chosen scope.
-- In Claude Code, load selected skills with the Skill tool as `praxis:<name>`.
-- In file-read harnesses, read selected skills from `skills/<name>.md`.
+- Load selected skills via the Skill tool as `praxis:<name>`, or in file-read harnesses from `skills/<name>/SKILL.md`.

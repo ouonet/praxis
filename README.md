@@ -1,10 +1,16 @@
-# Praxis
-
 <p align="center">
   <img src="assets/logo.svg" alt="Praxis" width="260"/>
 </p>
 
-Token-lean discipline skills for coding agents. Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be significantly cheaper while keeping the core capabilities.
+<p align="center">
+  <strong>What, not how.</strong>
+</p>
+
+---
+
+**Praxis** is a discipline framework for AI coding agents. Tell your agent *what you need* and *what done looks like*—not *how to do it*. As AI gets smarter, this gap widens: the agent can apply domain expertise, handle edge cases, and adapt faster than step-by-step instructions allow.
+
+Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be significantly cheaper while keeping the core capabilities.
 
 ## Quick Start
 
@@ -14,9 +20,9 @@ claude plugins install praxis@praxis
 claude 'do a todo list app'
 ```
 
-## What it does
+## How it works
 
-At session start, a hook injects the `praxis:using-praxis` startup skill telling your agent to:
+At session start, a hook injects the `praxis:using-praxis` startup skill. It tells your agent:
 
 1. Run `triage` first - in Claude Code via the native Skill tool as `praxis:triage`.
 2. Load only the skills that scope needs. **Trivial tasks skip the waterfall entirely.**
@@ -235,14 +241,21 @@ Praxis is directly inspired by [Superpowers](https://github.com/obra/superpowers
 | —                                                                | `archive` (no Superpowers equivalent)    |
 | —                                                                | `release` (no Superpowers equivalent)    |
 
-**Where Praxis actually saves tokens:** the skill files themselves are smaller (avg ~230 vs ~1,760 tokens each), but the bigger saving is in the artifacts they produce. Praxis `design` outputs a declaration-only spec (decisions, contracts, invariants — no narrative); `plan` outputs milestone stubs with one-line goals. Superpowers' equivalents produce full prose specs and detailed step-by-step plans that accumulate in context for the rest of the session.
+**Philosophy difference:** Superpowers gives agents detailed recipes—prose specs, step-by-step plans, narrative reasoning. Praxis gives agents *declarations of intent*—decisions, contracts, validation gates. This works because:
 
-**Archive vs. no archive:** Superpowers has no equivalent to `archive`. Specs and plans remain in context or are discarded. Praxis strips working notes, merges decisions into a living `docs/tech-spec.md`, and deletes the staging files — keeping long-term context lean.
+- Agents get smarter; recipes become obsolete. Declarations stay relevant.
+- Leaner artifacts = faster iteration and long-term maintainability.
+- The agent brings domain knowledge; Praxis provides *what matters*, not *how to do it*.
 
-If you need a battle-tested, narrative-rich workflow and token cost is not a constraint, Superpowers is excellent. If you want leaner artifacts and a living specification that survives across sessions, use Praxis.
+**Token savings:** The skill files are smaller (avg ~230 vs ~1,760 tokens), and artifacts are too. Praxis `design` outputs a spec (decisions, contracts, invariants) with no narrative; `plan` outputs milestone stubs with one-line goals. At `ship`, working notes are archived and the spec merges into living docs—context stays lean across sessions.
+
+**When to use Superpowers:** You want battle-tested, narrative-rich workflows and token cost isn't a constraint.
+
+**When to use Praxis:** You want agents to think, not follow recipes. You want specs and plans that survive across sessions and scale with AI capability.
 
 ## Philosophy
 
+- **Intent, not instruction.** Tell the agent what to achieve and what done looks like. Let it decide how to do it.
 - **Pay for discipline only when it pays back.** Triage decides.
 - **Skills are short.** If a rule needs 3,000 tokens to express, it's probably not a rule, it's a manual.
 - **Cross-harness via env detection,** not per-harness skill copies.
