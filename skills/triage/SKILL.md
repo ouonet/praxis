@@ -12,7 +12,7 @@ praxis: scope=<x>, loading=<skills>
 | scope | signal | load |
 |---|---|---|
 | trivial | typo, rename, doc, <=1-line, pure Q | none |
-| small | one function, single file, <=50 LOC | `tdd` |
+| small | one function, single file, <=50 LOC | `tdd` (intent unclear? clarify first) |
 | standard | feature, multi-file, new behavior | `design` -> `plan` -> `tdd` -> `review` |
 | complex | new system, >=5 tasks, parallel | `design` -> `plan` -> `worktree` -> `subagents` -> `review` -> `ship` |
 | debug | broken, regression, failing test | `debug` first, then route fix |

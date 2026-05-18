@@ -20,5 +20,7 @@ All tasks `- [x]` and green -> `ship`.
 - Assert many behaviors in one test (split).
 - Skip "watch it fail" (you don't know what it tests).
 - Edit the test to match buggy code (tests the bug).
+- Add abstractions not required by the current test.
+- Edit files outside the failing test's scope.
 
 Exception - ask user: prototypes, generated code, throwaway scripts.

@@ -10,7 +10,7 @@ Check in order:
 3. **Tests** - new behavior covered, all green?
 4. **Edges** - null, empty, large, concurrent, malformed, unicode, timezone.
 5. **Security** - input validation, secrets, authz, injection, path traversal.
-6. **Scope** - unrelated changes? Revert.
+6. **Scope** - unrelated changes? Revert. Implementation >2x necessary? Flag as FIX.
 
 For spec/plan reviews, also block unresolved implementation notes, plan assumptions absent from spec, vague acceptance, or premature `[parallel]`.
 

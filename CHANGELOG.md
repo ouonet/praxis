@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.2.2 - 2026-05-18
+
+- **Karpathy behavioral guidelines integrated**: Add simplicity and surgical-change constraints directly into existing skills.
+  - `tdd`: Add two Don't items — "Add abstractions not required by the current test" and "Edit files outside the failing test's scope".
+  - `triage`: `small` scope now prompts to clarify intent before loading `tdd`, preventing silent assumption in tasks that skip `design`.
+  - `review`: Scope check expanded — also flags over-engineered implementations (>2x necessary) as FIX.
+
 ## 1.2.1 - 2026-05-14
 
 - **Core philosophy clarification**: Update README and Philosophy section to emphasize "Intent, not instruction" as the guiding principle.

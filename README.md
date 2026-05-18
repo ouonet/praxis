@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="Praxis" width="260"/>
+  <img src="https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg" alt="Praxis" width="260"/>
 </p>
 
 <p align="center">
