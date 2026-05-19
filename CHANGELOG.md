@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.2.3 - 2026-05-19
+
+- Refine `triage` scope boundaries so complex workflows trigger only for feature changes or source-code changes.
+- Exclude docs, tests, examples, CI, and tooling from the `source code` definition used for triage.
+- Simplify the tie-break guidance in `triage` to a single-line rule with compact term definitions.
+
 ## 1.2.2 - 2026-05-18
 
 - **Karpathy behavioral guidelines integrated**: Add simplicity and surgical-change constraints directly into existing skills.
