@@ -24,7 +24,7 @@ claude 'do a todo list app'
 
 At session start, a hook injects the `praxis:using-praxis` startup skill. It tells your agent:
 
-1. Run `triage` first - in Claude Code via the native Skill tool as `praxis:triage`.
+1. Classify scope inline using the triage table embedded in `using-praxis` — no Skill call needed.
 2. Load only the skills that scope needs. **Trivial tasks skip the waterfall entirely.**
 3. Follow the loaded skill literally; don't freelance past `<gate>` markers.
 
@@ -32,7 +32,6 @@ At session start, a hook injects the `praxis:using-praxis` startup skill. It tel
 
 | Skill     | When                                        |
 | --------- | ------------------------------------------- |
-| triage    | every message — routes to the right skills |
 | onboard   | existing project with no docs/tech-spec.md  |
 | design    | scope ≥ standard, anything new             |
 | plan      | after design                                |
@@ -50,10 +49,10 @@ Skills range from ~100 to ~400 tokens each. Compare to Superpowers' 2,500–3,50
 
 |                              | Superpowers   | Praxis                        |
 | ---------------------------- | ------------- | ----------------------------- |
-| Bootstrap (every session)    | ~2,200        | ~250 (using-praxis)           |
-| Per skill load               | ~2,500–3,500 | ~100–400                     |
-| Trivial task                 | ~11,000       | ~550 (bootstrap + triage)     |
-| Standard task (design→ship) | ~30–50k      | ~1,600 (5 skills × ~320 avg) |
+| Bootstrap (every session)    | ~2,200        | ~450 (using-praxis + inline triage) |
+| Per skill load               | ~2,500–3,500 | ~100–400                            |
+| Trivial task                 | ~11,000       | ~450 (bootstrap only)               |
+| Standard task (design→ship) | ~30–50k      | ~1,300 (bootstrap + 4 skills)       |
 | Complex task (all skills)    | ~40–60k      | ~2,900 (all skills combined)  |
 
 ## Documentation Structure
@@ -156,7 +155,7 @@ For harnesses without plugin support, add an instruction that reads `bootstrap.m
 
 Start a fresh session. Send: `let's build a react todo list`.
 
-Expected: Claude Code invokes `Skill(praxis:triage)`, then outputs `praxis: scope=standard, loading=design,plan,tdd,review` and starts asking clarifying questions before touching code.
+Expected: outputs `praxis: scope=standard, loading=design,plan,tdd,review` (no `Skill(praxis:triage)` call — triage is inline) and starts asking clarifying questions before touching code.
 
 Send: `fix the typo "teh" in README`.
 
@@ -225,7 +224,7 @@ Praxis is directly inspired by [Superpowers](https://github.com/obra/superpowers
 
 | Superpowers skill                                                 | Praxis equivalent                          |
 | ----------------------------------------------------------------- | ------------------------------------------ |
-| `using-superpowers`                                             | `using-praxis` + `triage`              |
+| `using-superpowers`                                             | `using-praxis` (triage inline)         |
 | `brainstorming`                                                 | `design`                                 |
 | `writing-plans`                                                 | `plan`                                   |
 | `executing-plans`                                               | `tdd`                                    |

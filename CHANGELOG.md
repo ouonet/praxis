@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.2.4 - 2026-05-21
+
+- **Eliminate triage round-trip**: Inline triage routing table into `using-praxis` — agent classifies scope without a Skill tool call, saving one API round-trip per message.
+- **Parallel skill loading**: `using-praxis` now instructs agent to load all required skills in a single parallel response, reducing standard task skill-loading from N round-trips to 1.
+- **Remove `triage` as a standalone skill**: routing logic now lives solely in `using-praxis`; no duplicate source of truth.
+- **TDD refactor gate**: Add mandatory gate requiring agent to evaluate implementation against SOLID principles, design patterns, and clean code before committing — and state what was assessed.
+
 ## 1.2.3 - 2026-05-19
 
 - Refine `triage` scope boundaries so complex workflows trigger only for feature changes or source-code changes.
