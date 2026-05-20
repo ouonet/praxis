@@ -28,3 +28,4 @@ Passing tests are not a quality bar.
 - Edit the test to match buggy code (tests the bug).
 - Add abstractions not required by the current test (GREEN phase — not refactor).
 - Edit files outside the failing test's scope.
+- Create ad-hoc summary, notes, or analysis files not defined in the plan or required by a loaded skill.
