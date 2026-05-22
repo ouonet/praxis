@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* add gemini-extensions.json
+
 ## 1.2.5 - 2026-05-21
 
 - **TDD**: Narrow ad-hoc document prohibition — blocks unsolicited summary/notes files while allowing documents required by the workflow (staging spec, plan, CHANGELOG, tech-spec).
