@@ -6,6 +6,6 @@ import './style.css'
 export default {
   extends: DefaultTheme,
   Layout: () => h(DefaultTheme.Layout, null, {
-    'nav-bar-content-after': () => h(ThemeSwitcher),
+    'nav-bar-content-before': () => h(ThemeSwitcher),
   }),
 }
