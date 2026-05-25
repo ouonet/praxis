@@ -101,6 +101,7 @@ export default defineConfig({
   },
 
   themeConfig: {
+    appearance: 'auto',
     logo: 'https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-mark.svg',
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ouonet/praxis' },
