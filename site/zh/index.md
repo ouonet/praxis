@@ -17,12 +17,12 @@ hero:
       link: https://github.com/ouonet/praxis
 
 features:
-  - title: 分类优先
-    details: 每个任务在加载任何技能前都按范围分类。微小的任务跳过整个流程 —— 没有必要的复杂度。
+  - title: 诊断驱动
+    details: 每个任务在加载任何技能前都先诊断范围。微小的任务跳过整个流程 —— 没有必要的复杂度。
   - title: 轻量
     details: 每个技能平均 230 token。完整的设计→交付流程约 1,300 token。与其他方案的 30-50k 相比。
   - title: 目标驱动，不是指令驱动
-    details: 规范是决策列表。计划是里程碑框架。智能体会带来领域知识 —— Praxis 提供重要的部分。
+    details: 规范是决策列表。计划是里程碑框架。智能体会带来领域知识 —— Praxis 提供验收标准。
   - title: 跨工具
     details: 支持 Claude Code、Codex、OpenCode、GitHub Copilot CLI，以及任何能读 markdown 的工具。
 ---
