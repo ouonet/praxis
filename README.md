@@ -12,6 +12,8 @@
 
 Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be significantly cheaper while keeping the core capabilities.
 
+**📖 [Full documentation](https://ouonet.github.io/praxis/)** — English + Chinese
+
 ## Quick Start
 
 ```bash
