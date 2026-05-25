@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Praxis',
   description: 'A discipline framework for AI coding agents.',
+  base: '/praxis/',
   srcDir: '.',
   rewrites: {
     'en/:rest*': ':rest*',
