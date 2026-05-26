@@ -8,6 +8,8 @@ export default defineConfig({
   rewrites: {
     'en/:rest*': ':rest*',
     'zh/:rest*': 'zh/:rest*',
+    'ja/:rest*': 'ja/:rest*',
+    'ko/:rest*': 'ko/:rest*',
   },
 
   locales: {
@@ -48,6 +50,94 @@ export default defineConfig({
                 { text: 'ship', link: '/skills/ship' },
                 { text: 'release', link: '/skills/release' },
                 { text: 'onboard', link: '/skills/onboard' },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    ja: {
+      label: '日本語',
+      lang: 'ja',
+      link: '/ja/',
+      themeConfig: {
+        nav: [
+          { text: 'ガイド', link: '/ja/guide/getting-started' },
+          { text: 'スキル', link: '/ja/skills/' },
+          { text: 'GitHub', link: 'https://github.com/ouonet/praxis' },
+        ],
+        sidebar: {
+          '/ja/guide/': [
+            {
+              text: 'ガイド',
+              items: [
+                { text: 'はじめる', link: '/ja/guide/getting-started' },
+                { text: '仕組み', link: '/ja/guide/how-it-works' },
+                { text: '哲学', link: '/ja/guide/philosophy' },
+                { text: 'ベストプラクティス', link: '/ja/guide/best-practices' },
+              ],
+            },
+          ],
+          '/ja/skills/': [
+            {
+              text: 'スキル',
+              items: [
+                { text: '概要', link: '/ja/skills/' },
+                { text: 'discover', link: '/ja/skills/discover' },
+                { text: 'design', link: '/ja/skills/design' },
+                { text: 'plan', link: '/ja/skills/plan' },
+                { text: 'tdd', link: '/ja/skills/tdd' },
+                { text: 'debug', link: '/ja/skills/debug' },
+                { text: 'review', link: '/ja/skills/review' },
+                { text: 'worktree', link: '/ja/skills/worktree' },
+                { text: 'subagents', link: '/ja/skills/subagents' },
+                { text: 'ship', link: '/ja/skills/ship' },
+                { text: 'release', link: '/ja/skills/release' },
+                { text: 'onboard', link: '/ja/skills/onboard' },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    ko: {
+      label: '한국어',
+      lang: 'ko',
+      link: '/ko/',
+      themeConfig: {
+        nav: [
+          { text: '가이드', link: '/ko/guide/getting-started' },
+          { text: '스킬', link: '/ko/skills/' },
+          { text: 'GitHub', link: 'https://github.com/ouonet/praxis' },
+        ],
+        sidebar: {
+          '/ko/guide/': [
+            {
+              text: '가이드',
+              items: [
+                { text: '시작하기', link: '/ko/guide/getting-started' },
+                { text: '작동 방식', link: '/ko/guide/how-it-works' },
+                { text: '철학', link: '/ko/guide/philosophy' },
+                { text: '모범 사례', link: '/ko/guide/best-practices' },
+              ],
+            },
+          ],
+          '/ko/skills/': [
+            {
+              text: '스킬',
+              items: [
+                { text: '개요', link: '/ko/skills/' },
+                { text: 'discover', link: '/ko/skills/discover' },
+                { text: 'design', link: '/ko/skills/design' },
+                { text: 'plan', link: '/ko/skills/plan' },
+                { text: 'tdd', link: '/ko/skills/tdd' },
+                { text: 'debug', link: '/ko/skills/debug' },
+                { text: 'review', link: '/ko/skills/review' },
+                { text: 'worktree', link: '/ko/skills/worktree' },
+                { text: 'subagents', link: '/ko/skills/subagents' },
+                { text: 'ship', link: '/ko/skills/ship' },
+                { text: 'release', link: '/ko/skills/release' },
+                { text: 'onboard', link: '/ko/skills/onboard' },
               ],
             },
           ],

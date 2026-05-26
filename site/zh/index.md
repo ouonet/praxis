@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Praxis
-  text: 说目标，不说步骤。
+  text: 定目标，不干预。
   tagline: AI 编程智能体的工程规范框架。用目标和完成标准指导智能体，而不是步骤。
   image:
     src: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg

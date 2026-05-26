@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## 2.0.0 - 2026-05-26
+
+* Add Japanese (ja) and Korean (ko) site translations
 * add gemini-extensions.json
 
 ## 1.2.5 - 2026-05-21
