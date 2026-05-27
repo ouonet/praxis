@@ -38,16 +38,27 @@ Before handoff, close only decisions that affect implementation: contract, data,
 - Top: decisions, contracts, invariants (permanent).
 - `## Working notes`: scratch, open questions (stripped at `ship`).
 
-## Roadmap (scope spans ≥ 3 milestones)
-
-Add to spec when too large to plan all at once:
-```
 ## Roadmap
-- [ ] M1: <one-line goal>  ← plan in detail now
-- [ ] M2: <one-line goal>  ← stub
-- [ ] M3: <one-line goal>  ← stub
+
+**`docs/ROADMAP.md` already exists?**
+- Does this work add new milestones? Append them to `docs/ROADMAP.md`.
+- Otherwise, no roadmap action needed.
+
+**`docs/ROADMAP.md` does not exist?**
+- This work spans ≥ 3 milestones → create `docs/ROADMAP.md`:
+  ```markdown
+  - [ ] M1: <one-line goal>
+  - [ ] M2: <one-line goal>
+  - [ ] M3: <one-line goal>
+  ```
+- Otherwise → no roadmap needed. Describe full scope in spec.
+
+Stubs are intent, not commitment; update before expanding.
+
+If roadmap exists or was created, reference the current milestone in staging spec:
 ```
-Markers are required. `← plan in detail now` on the current milestone; `← stub` on all others. Stubs are intent, not commitment; update before expanding.
+milestone: M1 (see docs/ROADMAP.md)
+```
 
 
 ## Gates

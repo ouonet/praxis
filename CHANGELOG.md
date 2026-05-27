@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 2.1.0 - 2026-05-26
+
+- **Roadmap lifecycle fix**: Roadmap is now managed as long-term living documentation (`docs/ROADMAP.md`), decoupled from staging spec/archive cycles.
+  - **Design**: checks if `docs/ROADMAP.md` already exists before deciding whether to create or append; staging spec only references current milestone.
+  - **Plan**: reads milestone from `docs/ROADMAP.md` instead of staging spec markers.
+  - **Ship**: updates `docs/ROADMAP.md` progress (`[x]`) as part of the ship step.
+  - **Archive**: does not overwrite roadmap; merges only non-roadmap spec content into living documentation.
+
 ## 2.0.0 - 2026-05-26
 
 * Add Japanese (ja) and Korean (ko) site translations

@@ -10,9 +10,9 @@ If unresolved spec notes affect implementation or task order, return to `design`
 
 ## Rolling wave
 
-Spec has `## Roadmap`? Expand only the milestone marked `← plan in detail now`. Leave the rest as stubs.
+Spec references a milestone (`milestone: MN`)? Check `docs/ROADMAP.md` — expand only that milestone. Leave the rest as stubs.
 
-After `ship`: move the `← plan in detail now` marker to the next milestone (change its `← stub` to `← plan in detail now`), update it from what you learned, then expand it. Return to `design` only if the milestone's goal materially changed.
+After `ship`: open `docs/ROADMAP.md`, confirm which milestone is next, then expand it. Return to `design` only if the milestone's goal materially changed.
 
 ## Milestone tasks (30-60 min each)
 
