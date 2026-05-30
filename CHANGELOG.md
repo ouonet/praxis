@@ -2,9 +2,17 @@
 
 ## Unreleased
 
+## 2.2.0 - 2026-05-30
+
 - Remove stale `bootstrap.md`; manual/fallback harnesses now read `skills/using-praxis/SKILL.md` directly.
 - Wire Gemini CLI extension: `gemini-extension.json` points `contextFileName` at the using-praxis skill so Praxis actually activates; document the install path in README.
 - README: fix mislabeled "Codex" branch-install block (it is OpenCode), rename the "Scripts" walkthrough section to "Examples".
+- **discover**: rename the knowledge-artifact exit (was mislabeled `→ archive`, which only handles staging specs) and save the spec directly.
+- **onboard**: fix split-spec path `docs/tech-specs/` → `docs/specs/` to match the canonical layout.
+- **plan**: fix grammar in the new-project task ("derivative an" → "derive an").
+- **release**: wrap commit/tag/push/publish (steps 5-7) in an explicit `<gate>` requiring per-step approval.
+- **plan / ship**: acceptance now has an escape hatch for non-testable deliverables (content, prompts, config, infra) — an explicit manual check instead of a required automated test.
+- **worktree**: branch name now uses the `<type>/<topic>` convention (e.g. `feat/...`) to match the rest of the docs, while the worktree directory stays `<topic>`.
 
 ## 2.1.0 - 2026-05-26
 

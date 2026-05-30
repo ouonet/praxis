@@ -59,7 +59,7 @@ Spike code validates a hypothesis, not a feature.
 Then choose the exit with the user:
 
 - **→ design**: direction is a problem to solve — hand off to `design`, referencing the discovery note.
-- **→ archive**: direction is a knowledge artifact (RE findings, protocol spec, data structure map) — save to `docs/discovery/<topic>-spec.md`, no design needed.
+- **→ knowledge artifact**: direction is reference knowledge (RE findings, protocol spec, data structure map) — save to `docs/discovery/<topic>-spec.md` directly. No design, no plan, no `archive` (that skill is for staging specs only).
 `</gate>`
 
 ## Abandon

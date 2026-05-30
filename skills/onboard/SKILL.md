@@ -29,7 +29,7 @@ invariant:   <what must always hold>
 constraint:  <limits, warnings from code or README>
 ```
 
-   If details are bulky, split into `docs/tech-specs/` and link.
+   If details are bulky, split into `docs/specs/` and link.
 
 4. **Confirm** with user.
 

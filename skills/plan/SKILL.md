@@ -25,7 +25,7 @@ acceptance: <test or cmd>
 spec:       <docs/staging/specs/...#anchor>
 ```
 
-No exact code. No step-by-step. Acceptance is executable: test name, command, or scripted check. Each task leaves the repo green.
+No exact code. No step-by-step. Acceptance is verifiable: a test, command, or scripted check — or, when none is possible, an explicit manual check (steps + expected result). Each task leaves the repo green.
 
 Mark independent tasks: `[parallel] T3, T4, T5`.
 
@@ -33,7 +33,7 @@ Only mark `[parallel]` when shared contracts, state, errors, and acceptance are 
 
 **Atomic expansion is deferred until dispatch time** - `subagents` expands a milestone into 2-5 min steps at dispatch time, not here.
 
-for **New project**: derivative an initialization task — scaffold code, tests, CI, and always include: `README.md`, `CHANGELOG.md`, `.gitignore`, and a `Makefile` (or equivalent task runner config).
+for **New project**: derive an initialization task — scaffold code, tests, CI, and always include: `README.md`, `CHANGELOG.md`, `.gitignore`, and a `Makefile` (or equivalent task runner config).
 
 ## Don't put in the plan
 

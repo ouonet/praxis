@@ -6,7 +6,7 @@ description: Use when all plan tasks are done and green to review, archive plann
 
 **Gates — if any fail, stop here:**
 
-- Tests pass.
+- Tests pass — or, for tasks with no automated test, their manual acceptance was performed.
 - No `- [ ]` in `docs/staging/plans/YYYY-MM-DD-<topic>.md`.
 - Staging spec reflects actual code behavior.
 - No incomplete TodoWrite tasks.

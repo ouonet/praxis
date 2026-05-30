@@ -5,7 +5,7 @@ description: Use for non-trivial or parallel work that should happen in a separa
 # Worktree
 
 ```bash
-git worktree add ../<repo>-<topic> -b <topic>
+git worktree add ../<repo>-<topic> -b <type>/<topic>   # <type>: feat | fix | chore | ...
 cd ../<repo>-<topic> && <setup> && <run tests>
 ```
 
