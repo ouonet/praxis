@@ -118,7 +118,7 @@ claude plugins marketplace add ouonet/praxis#<branch>
 claude plugins install praxis
 ```
 
-**Codex** — set in `opencode.json`:
+**OpenCode** — set in `opencode.json`:
 ```json
 {
   "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#<branch>"]
@@ -184,9 +184,17 @@ copilot plugin install ouonet/praxis
 open customization of copilot -> Plugins -> Install Plugin From Source -> input  "ouonet/praxis"
 ```
 
+### Gemini CLI
+
+```
+gemini extensions install https://github.com/ouonet/praxis
+```
+
+The extension loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
+
 ### Manual / fallback
 
-For harnesses without plugin support, add an instruction that reads `bootstrap.md` first.
+For harnesses without plugin support, add an instruction that reads `skills/using-praxis/SKILL.md` first.
 
 ## Verify it's working
 
@@ -198,7 +206,7 @@ Send: `fix the typo "teh" in README`.
 
 Expected: agent outputs `praxis: scope=trivial, loading=` and just fixes it. **No design doc, no plan, no TDD ceremony.**
 
-## Scripts
+## Examples
 
 ### Vague goal
 
@@ -311,8 +319,7 @@ Praxis is directly inspired by [Superpowers](https://github.com/obra/superpowers
 ## Layout
 
 ```
-bootstrap.md           # manual / fallback entrypoint
-skills/<name>/SKILL.md # skills (Claude Code native + file-read harnesses)
+skills/<name>/SKILL.md # skills (using-praxis is the entrypoint; manual/fallback reads it directly)
 hooks/
   hooks.json           # hook registry
   run-hook.cmd         # Windows hook runner

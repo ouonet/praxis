@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Remove stale `bootstrap.md`; manual/fallback harnesses now read `skills/using-praxis/SKILL.md` directly.
+- Wire Gemini CLI extension: `gemini-extension.json` points `contextFileName` at the using-praxis skill so Praxis actually activates; document the install path in README.
+- README: fix mislabeled "Codex" branch-install block (it is OpenCode), rename the "Scripts" walkthrough section to "Examples".
+
 ## 2.1.0 - 2026-05-26
 
 - **Roadmap lifecycle fix**: Roadmap is now managed as long-term living documentation (`docs/ROADMAP.md`), decoupled from staging spec/archive cycles.
