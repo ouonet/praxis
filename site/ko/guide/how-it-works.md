@@ -10,7 +10,7 @@
 
 | 범위 | 신호 | 로드되는 스킬 |
 |---|---|---|
-| vague | 문제 공간 미정의 | `discover` |
+| vague | 문제 공간 미정의 | `design` |
 | trivial | 오타, 이름 변경, 문서만, ≤1줄 | 없음 |
 | small | 단일 함수, 단일 파일, ≤50 LOC | `tdd` |
 | standard | 기능 또는 소스 코드 변경 | `design`, `plan`, `tdd`, `review` |
@@ -35,8 +35,8 @@
 ### 모호한 목표
 ```
 당신:    I want to build something that helps developers manage their workflow
-에이전트: scope=vague → discover (가설, 실험, 스파이크 코드)
-                     → 방향 확정 → design → ...
+에이전트: scope=vague → design（먼저 한 번에 하나씩 명확화）
+                     → 방향 확정 → 명세 → plan → ...
 ```
 
 ### 대규모 프로젝트 (롤링 웨이브)

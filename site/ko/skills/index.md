@@ -4,8 +4,7 @@
 
 | 스킬 | 시기 | 토큰 |
 |---|---|---|
-| [discover](./discover) | 문제 공간 미정의 | ~200 |
-| [design](./design) | 범위 ≥ standard, 새로운 것 | ~200 |
+| [design](./design) | 범위 ≥ standard, 새로운 것; 목표 모호 시 명확화 후 설계 | ~250 |
 | [plan](./plan) | 설계 승인 후 | ~200 |
 | [tdd](./tdd) | 구현 또는 수정 중 | ~400 |
 | [debug](./debug) | 문제 발생 시 | ~150 |

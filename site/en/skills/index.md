@@ -4,8 +4,7 @@ Skills are short markdown files that inject structured discipline into an agent 
 
 | Skill | When | Tokens |
 |---|---|---|
-| [discover](./discover) | problem space undefined | ~200 |
-| [design](./design) | scope ≥ standard, anything new | ~200 |
+| [design](./design) | scope ≥ standard, anything new; vague goals — clarifies before designing | ~250 |
 | [plan](./plan) | after design approval | ~200 |
 | [tdd](./tdd) | implementing or fixing | ~400 |
 | [debug](./debug) | something broken | ~150 |

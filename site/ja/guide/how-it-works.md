@@ -10,7 +10,7 @@
 
 | スコープ | シグナル | 読み込むスキル |
 |---|---|---|
-| vague | 問題空間が未定義 | `discover` |
+| vague | 問題空間が未定義 | `design` |
 | trivial | タイポ、リネーム、ドキュメントのみ、≤1行 | なし |
 | small | 一つの関数、単一ファイル、≤50 LOC | `tdd` |
 | standard | 機能またはソースコードの変更 | `design`, `plan`, `tdd`, `review` |
@@ -35,8 +35,8 @@
 ### 曖昧なゴール
 ```
 あなた：   I want to build something that helps developers manage their workflow
-エージェント：scope=vague → discover (仮説、実験、スパイクコード)
-                        → 方向が確定 → design → ...
+エージェント：scope=vague → design（まず一問ずつ明確化）
+                        → 方向が確定 → 仕様 → plan → ...
 ```
 
 ### 大規模プロジェクト（ローリングウェーブ）

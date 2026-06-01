@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 2.3.0 - 2026-06-01
+
+- **Merge `discover` into `design`**: `discover` skill retired. `design` now handles vague goals — clarifying questions before proposing solutions, working notes for hypotheses/experiments, explicit Abandon path. `using-praxis` routes `vague` scope to `design`. `docs/discovery/` convention removed.
+- **Living documentation restructured**: Two-tier model — living docs (`README.md`, `docs/tech-spec.md`, `docs/specs/*.md`, `docs/ROADMAP.md`) vs project artifacts (`CHANGELOG.md`, `docs/decisions/`). `ROADMAP.md` formally part of living doc definition.
+- **tech-spec format extended**: New fields `purpose`, `user`, `use-case`, `architecture`, `flow` give agents full system context from a single structured file. `onboard` gate now requires `purpose` + `architecture` + `stack` + one `contract`.
+- **`docs/decisions/` introduced**: Append-only architectural decision log (`context / choice / ruled-out`). `archive` saves knowledge artifacts here.
+- **Project context prompt**: `using-praxis` Rule 0 — agent reads `docs/tech-spec.md` if unfamiliar with the project.
+- **Hooks updated**: `session-start` detects Gemini via stdin JSON. Copilot plugin manifest fixed. `gemini-extension.json` corrects `contextFileName` to using-praxis skill path.
+- **Site + README synced**: All four language sites (en/zh/ja/ko) updated. README skills table linked to skill files.
+
 ## 2.2.0 - 2026-05-30
 
 - Remove stale `bootstrap.md`; manual/fallback harnesses now read `skills/using-praxis/SKILL.md` directly.

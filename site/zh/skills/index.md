@@ -4,8 +4,7 @@
 
 | 技能 | 何时用 | Token |
 |---|---|---|
-| [discover](./discover) | 问题空间未定义 | ~200 |
-| [design](./design) | 范围 ≥ standard，任何新工作 | ~200 |
+| [design](./design) | 范围 ≥ standard，任何新工作；目标模糊时先澄清再设计 | ~250 |
 | [plan](./plan) | 设计获批后 | ~200 |
 | [tdd](./tdd) | 实现或修复 | ~400 |
 | [debug](./debug) | 出问题了 | ~150 |

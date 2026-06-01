@@ -5,8 +5,17 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PRAXIS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
+# Gemini passes hook context as JSON on stdin; read it non-blocking to detect the harness.
+stdin_json=""
+if [ -t 0 ]; then
+  : # stdin is a terminal — not Gemini
+else
+  stdin_json=$(cat 2>/dev/null || true)
+fi
+
 # Substitute {{PRAXIS_ROOT}} with the actual absolute path so fallback readers can find skill files.
 startup_skill=$(sed "s|{{PRAXIS_ROOT}}|${PRAXIS_ROOT}|g" "${PRAXIS_ROOT}/skills/using-praxis/SKILL.md")
+
 content=$(printf '<EXTREMELY_IMPORTANT>\nYou have Praxis.\n\nBelow is the full content of your '\''praxis:using-praxis'\'' skill - your introduction to using Praxis skills. For all other Praxis skills, use the Skill tool in Claude Code.\n\n%s\n</EXTREMELY_IMPORTANT>' "$startup_skill")
 
 # JSON-escape
@@ -22,13 +31,16 @@ escape() {
 payload=$(escape "$content")
 
 # Emit per-harness JSON shape.
-if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+if echo "$stdin_json" | grep -q '"hook_event_name"' 2>/dev/null; then
+  # Gemini CLI — plain additionalContext, no wrapper
+  printf '{"additionalContext":"%s"}\n' "$payload"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
   # Claude Code
   printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
 elif [ -n "${COPILOT_CLI:-}" ]; then
-  # Copilot CLI — SDK standard top-level additionalContext
+  # Copilot CLI
   printf '{"additionalContext":"%s"}\n' "$payload"
 else
-  # Codex, OpenCode, generic SDK — hookSpecificOutput wrapper
+  # Codex, OpenCode, generic SDK
   printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
 fi

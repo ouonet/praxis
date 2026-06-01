@@ -10,7 +10,7 @@ At session start, a hook injects the `praxis:using-praxis` skill. On every messa
 
 | Scope | Signal | Skills loaded |
 |---|---|---|
-| vague | problem space undefined | `discover` |
+| vague | problem space undefined | `design` |
 | trivial | typo, rename, docs-only, ≤1 line | none |
 | small | one function, single file, ≤50 LOC | `tdd` |
 | standard | feature or source-code change | `design`, `plan`, `tdd`, `review` |
@@ -35,8 +35,8 @@ Agent: scope=standard → design → plan → tdd → review → ship
 ### Vague goal
 ```
 You:   I want to build something that helps developers manage their workflow
-Agent: scope=vague → discover (hypotheses, experiments, spike code)
-                   → confirmed direction → design → ...
+Agent: scope=vague → design (clarifies first, one question at a time)
+                   → confirmed direction → spec → plan → ...
 ```
 
 ### Large project (rolling wave)

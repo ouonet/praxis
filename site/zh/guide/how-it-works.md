@@ -10,7 +10,7 @@ Session 开始时，一个 hook 注入 `praxis:using-praxis` 技能。在每次�
 
 | 范围 | 信号 | 加载技能 |
 |---|---|---|
-| vague | 问题空间未定义 | `discover` |
+| vague | 问题空间未定义 | `design` |
 | trivial | 拼写错误、改名、仅文档、≤1 行 | 无 |
 | small | 单个函数、单文件、≤50 LOC | `tdd` |
 | standard | 功能或源代码更改 | `design`, `plan`, `tdd`, `review` |
@@ -35,8 +35,8 @@ Session 开始时，一个 hook 注入 `praxis:using-praxis` 技能。在每次�
 ### 模糊目标
 ```
 你：   I want to build something that helps developers manage their workflow
-智能体：scope=vague → discover (假设、实验、spike 代码)
-                  → 确认方向 → design → ...
+智能体：scope=vague → design（先逐轮澄清问题）
+                  → 确认方向 → 规范 → plan → ...
 ```
 
 ### 大型项目（滚动波浪）

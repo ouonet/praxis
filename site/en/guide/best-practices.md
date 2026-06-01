@@ -46,7 +46,7 @@
 
 ## When to abandon
 
-**If assumptions change materially, stop and re-discover.** Don't power through if the problem you're solving isn't the problem anymore. Mark the attempt in discovery notes with reason and learnings.
+**If assumptions change materially, stop.** Don't power through if the problem you're solving isn't the problem anymore. Record reason and learnings in working notes, then stop — no spec, no plan, no ship.
 
 **If a milestone's goal shifts ≥50%, return to design.** Don't extend the plan. Acknowledge the new direction and restart.
 

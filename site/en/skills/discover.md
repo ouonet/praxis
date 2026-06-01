@@ -1,5 +1,9 @@
-# discover
+# discover → design
 
-::: info
-Documentation coming soon. See the [source skill file](https://github.com/ouonet/praxis/blob/main/skills/discover/SKILL.md) in the meantime.
+::: info Merged into design
+The `discover` skill has been merged into [`design`](./design).
+
+When the goal is vague, load `design`. It asks one clarifying question per turn until the problem is concrete enough to spec, supports working notes for hypotheses and experiments, and has an explicit Abandon path if exploration concludes without a build decision.
+
+Knowledge-only outcomes (protocol specs, RE findings, data structure maps) go to `docs/decisions/` via `archive`.
 :::
