@@ -26,3 +26,76 @@ features:
   - title: マルチツール対応
     details: Claude Code、Codex、OpenCode、GitHub Copilot CLI、そしてmarkdownファイルを読めるあらゆるツールで動作する。
 ---
+
+## 動作例
+
+### 些細な修正
+
+```bash
+あなた: README の "teh" を "the" に直して
+
+praxis: scope=trivial
+# ファイルを直接修正して終了。仕様書も計画も不要。
+```
+
+### 標準機能
+
+```bash
+あなた: GitHub OAuthログインを追加して
+
+praxis: scope=standard, loading=design,plan,tdd,review
+```
+
+`docs/staging/specs/2025-06-02-github-oauth.md` を生成:
+
+```
+contract:  GET /auth/github → リダイレクト; /callback → セッション確立
+invariant: 既存セッションは影響なし; ログアウトでcookieを消去
+test:      有効なGitHub Appの認証でログインフロー完了
+deferred:  マルチプロバイダーOAuth対応
+```
+
+`docs/staging/plans/2025-06-02-github-oauth.md` を生成:
+
+```
+- [ ] T1: OAuthミドルウェアの実装
+  goal:       passport-github2をExpressセッションに接続
+  files:      src/auth/github.ts, src/middleware/session.ts
+  acceptance: npm test -- --grep "OAuth"
+
+- [ ] T2: コールバック処理とセッション永続化
+  goal:       GitHubコールバックを解析してユーザーセッションを保存
+  files:      src/auth/callback.ts, src/models/user.ts
+  acceptance: ログイン後にGET /meがユーザー情報を返す
+```
+
+### 並列マイグレーション
+
+```bash
+あなた: API全体をRESTからtRPCに移行して
+
+praxis: scope=complex, loading=design,plan,worktree,subagents,review,ship
+```
+
+`docs/staging/plans/2025-06-02-rest-to-trpc.md` を生成:
+
+```
+[parallel] T1, T2, T3
+
+- [ ] T1: /usersルートを移行
+  goal:       users CRUDをtRPC proceduresに置き換える
+  files:      src/routers/users.ts
+  acceptance: npm test -- users
+
+- [ ] T2: /productsルートを移行
+  goal:       製品クエリをtRPCに移行
+  files:      src/routers/products.ts
+  acceptance: npm test -- products
+
+- [ ] T3: /ordersルートを移行
+  goal:       注文フローをtRPCに移行、トランザクション境界を維持
+  files:      src/routers/orders.ts
+  acceptance: npm test -- orders
+```
+
+3つのエージェントが並列で進行。完了後にコーディネーターがレビューしてマージする。
