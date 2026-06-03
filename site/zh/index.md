@@ -25,7 +25,7 @@ features:
   - title: 目标驱动，不是指令驱动
     details: 规范是决策列表。计划是里程碑框架。智能体会带来领域知识 —— Praxis 提供验收标准。
   - title: 跨工具
-    details: 支持 Claude Code、Codex、OpenCode、GitHub Copilot CLI，以及任何能读 markdown 的工具。
+    details: 支持 Claude Code、Codex、OpenCode、Antigravity CLI、Gemini CLI、GitHub Copilot CLI，以及任何能读 markdown 的工具。
 ---
 
 ## 效果展示

@@ -25,6 +25,18 @@ claude plugins install praxis
 }
 ```
 
+### Antigravity CLI
+
+```bash
+agy plugin install https://github.com/ouonet/praxis
+```
+
+### Gemini CLI
+
+```bash
+gemini extensions install https://github.com/ouonet/praxis
+```
+
 ## 브랜치에서 설치
 
 미출시 버전을 사용하려면:

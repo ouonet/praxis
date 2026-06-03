@@ -25,6 +25,18 @@ claude plugins install praxis
 }
 ```
 
+### Antigravity CLI
+
+```bash
+agy plugin install https://github.com/ouonet/praxis
+```
+
+### Gemini CLI
+
+```bash
+gemini extensions install https://github.com/ouonet/praxis
+```
+
 ## 从分支安装
 
 尝试未发布的版本：

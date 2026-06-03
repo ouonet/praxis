@@ -189,6 +189,14 @@ copilot plugin install ouonet/praxis
 open customization of copilot -> Plugins -> Install Plugin From Source -> input  "ouonet/praxis"
 ```
 
+### Antigravity CLI
+
+```
+agy plugin install https://github.com/ouonet/praxis
+```
+
+The plugin loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
+
 ### Gemini CLI
 
 ```
@@ -333,6 +341,8 @@ hooks/
 .codex-plugin/         # Codex plugin manifest
 .copilot-plugin/       # Copilot CLI plugin manifest
 .opencode/             # OpenCode config + install doc
+plugin.json            # Antigravity CLI plugin manifest
+gemini-extension.json  # Gemini CLI extension manifest
 ```
 
 ## License

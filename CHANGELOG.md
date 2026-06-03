@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.3.2 - 2026-06-03
+
+- **Antigravity CLI support**: add `plugin.json` manifest at repo root (`agy plugin install https://github.com/ouonet/praxis`). Antigravity CLI is the evolution of Gemini CLI, renaming extensions to plugins; `contextFileName` field preserved so triage activates from the first turn.
+- **Gemini CLI docs**: add install section to site getting-started pages (all four language sites) and update Cross-harness feature copy to list Antigravity CLI and Gemini CLI.
+- **gemini-extension.json**: bump version to match current release.
+
 ## 2.3.1 - 2026-06-03
 
 - **ship**: added `commit` as a disposition option in step 5, alongside merge / PR / keep / discard.

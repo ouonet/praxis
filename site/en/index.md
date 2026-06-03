@@ -25,7 +25,7 @@ features:
   - title: Intent, not instruction
     details: Specs are lists of decisions. Plans are milestone stubs. The agent brings domain knowledge — Praxis provides what matters.
   - title: Cross-harness
-    details: Works with Claude Code, Codex, OpenCode, GitHub Copilot CLI, and any harness that can read a markdown file.
+    details: Works with Claude Code, Codex, OpenCode, Antigravity CLI, Gemini CLI, GitHub Copilot CLI, and any harness that can read a markdown file.
 ---
 
 ## See It In Action

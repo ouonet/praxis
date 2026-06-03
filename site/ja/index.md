@@ -25,7 +25,7 @@ features:
   - title: 意図で動かす、指示ではなく
     details: 仕様は決定事項のリスト。計画はマイルストーンのフレームワーク。エージェントはドメイン知識をもたらす — Praxisは重要なことを提供する。
   - title: マルチツール対応
-    details: Claude Code、Codex、OpenCode、GitHub Copilot CLI、そしてmarkdownファイルを読めるあらゆるツールで動作する。
+    details: Claude Code、Codex、OpenCode、Antigravity CLI、Gemini CLI、GitHub Copilot CLI、そしてmarkdownファイルを読めるあらゆるツールで動作する。
 ---
 
 ## 動作例
