@@ -1,9 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80" role="img" aria-label="Praxis logo (dark)">
   <title>Praxis</title>
 
-  <!-- Dark background -->
-  <rect width="300" height="80" rx="8" fill="#0D1117"/>
-
   <!-- ── Icon mark (64×64, vertically centred) ── -->
   <g transform="translate(8,8)">
     <polygon points="32,2 57,17 57,47 32,62 7,47 7,17" fill="#7C3AED"/>

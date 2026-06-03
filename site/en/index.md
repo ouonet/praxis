@@ -6,7 +6,8 @@ hero:
   text: What, not how.
   tagline: A discipline framework for AI coding agents. Tell your agent what you need and what done looks like — not how to do it.
   image:
-    src: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
+    light: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
+    dark: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg
     alt: Praxis
   actions:
     - theme: brand

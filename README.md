@@ -1,6 +1,9 @@
 <p align="center">
   <a href="https://ouonet.github.io/praxis/" target="_blank">
-    <img src="https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg" alt="Praxis" width="260"/>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg"/>
+      <img src="https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg" alt="Praxis" width="260"/>
+    </picture>
   </a>
 </p>
 

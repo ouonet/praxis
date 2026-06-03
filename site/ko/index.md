@@ -6,7 +6,8 @@ hero:
   text: 목표를 정하고, 간섭하지 않는다.
   tagline: AI 코딩 에이전트를 위한 규율 프레임워크. 에이전트에게 목표와 완료의 모습을 알려라 — 방법이 아닌.
   image:
-    src: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
+    light: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
+    dark: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg
     alt: Praxis
   actions:
     - theme: brand

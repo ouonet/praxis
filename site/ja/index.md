@@ -6,7 +6,8 @@ hero:
   text: 目標を定め、介入しない。
   tagline: AIコーディングエージェントのための規律フレームワーク。エージェントに目標と完了の形を伝える — やり方ではなく。
   image:
-    src: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
+    light: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
+    dark: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg
     alt: Praxis
   actions:
     - theme: brand
