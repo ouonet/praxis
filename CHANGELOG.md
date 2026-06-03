@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.3.1 - 2026-06-03
+
+- **ship**: added `commit` as a disposition option in step 5, alongside merge / PR / keep / discard.
+
 ## 2.3.0 - 2026-06-01
 
 - **Merge `discover` into `design`**: `discover` skill retired. `design` now handles vague goals — clarifying questions before proposing solutions, working notes for hypotheses/experiments, explicit Abandon path. `using-praxis` routes `vague` scope to `design`. `docs/discovery/` convention removed.
