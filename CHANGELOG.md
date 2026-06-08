@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.3.5 - 2026-06-09
+
+- **SessionStart hook**: fix JSON output format detection order to resolve "invalid session start JSON output" errors. Prioritize Claude Code environment check first.
+
 ## 2.3.4 - 2026-06-08
 
 - **CODEX CLI support**: fix hook command property from `windows` to `commandWindows`.

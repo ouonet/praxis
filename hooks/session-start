@@ -31,16 +31,12 @@ escape() {
 payload=$(escape "$content")
 
 # Emit per-harness JSON shape.
-if echo "$stdin_json" | grep -q '"hook_event_name"' 2>/dev/null; then
-  # Gemini CLI — plain additionalContext, no wrapper
-  printf '{"additionalContext":"%s"}\n' "$payload"
-elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
-  # Claude Code
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
   printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
 elif [ -n "${COPILOT_CLI:-}" ]; then
-  # Copilot CLI
+  printf '{"additionalContext":"%s"}\n' "$payload"
+elif echo "$stdin_json" | grep -q '"hook_event_name"' 2>/dev/null; then
   printf '{"additionalContext":"%s"}\n' "$payload"
 else
-  # Codex, OpenCode, generic SDK
   printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
 fi
