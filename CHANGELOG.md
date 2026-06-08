@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.3.4 - 2026-06-08
+
+- **CODEX CLI support**: fix hook command property from `windows` to `commandWindows`.
+
 ## 2.3.3 - 2026-06-08
 
 - **CODEX CLI support**: use `${CLAUDE_PLUGIN_ROOT}` environment variable for hook path instead of relative path. Adds Windows-specific command syntax.

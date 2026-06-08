@@ -1,6 +1,6 @@
 {
   "name": "praxis",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "type": "module",
   "main": ".opencode/plugins/praxis.js"
 }
