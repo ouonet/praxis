@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.3.3 - 2026-06-08
+
+- **CODEX CLI support**: use `${CLAUDE_PLUGIN_ROOT}` environment variable for hook path instead of relative path. Adds Windows-specific command syntax.
+
 ## 2.3.2 - 2026-06-03
 
 - **Antigravity CLI support**: add `plugin.json` manifest at repo root (`agy plugin install https://github.com/ouonet/praxis`). Antigravity CLI is the evolution of Gemini CLI, renaming extensions to plugins; `contextFileName` field preserved so triage activates from the first turn.
