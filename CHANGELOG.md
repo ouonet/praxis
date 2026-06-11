@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 2.3.6 - 2026-06-11
+
+- **onboard**: tech-spec template aligned with the canonical 11-field format defined in `archive` (was a 6-field subset); `milestone` explicitly omitted since onboard makes no plans.
+- **README**: `docs/specs/*.md` listed as a first-class living-doc artifact; living-doc definition reworded ("current system state and direction. Always in sync with code") to remove the conflict with "facts only — no plans".
+
 ## 2.3.5 - 2026-06-09
 
 - **SessionStart hook**: fix JSON output format detection order to resolve "invalid session start JSON output" errors. Prioritize Claude Code environment check first.
