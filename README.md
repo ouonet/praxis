@@ -84,7 +84,7 @@ purpose / user / use-case / architecture / stack / entry /
 contract / flow / invariant / constraint / convention / milestone
 ```
 
-Facts only — no interpretation, no plans. If details are bulky, split into `docs/specs/` and link.
+Facts only — no interpretation, no plans. If details are bulky — e.g. a complex flow (branching, async, multi-actor) that needs a diagram — split into `docs/specs/` and link; the spec keeps a one-line summary.
 
 **Project artifacts** — records and conventions. Append-only or static.
 

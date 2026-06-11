@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.3.7 - 2026-06-11
+
+- **flow diagrams convention**: complex flows (branching / async / multi-actor) keep a one-line `flow:` summary in the tech-spec; the diagram lives in `docs/specs/<flow>.md`. Codified in `archive` tech-spec format and README.
+
 ## 2.3.6 - 2026-06-11
 
 - **onboard**: tech-spec template aligned with the canonical 11-field format defined in `archive` (was a 6-field subset); `milestone` explicitly omitted since onboard makes no plans.
