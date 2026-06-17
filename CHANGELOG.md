@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.3.8 - 2026-06-18
+
+- **Qoder CLI CN support**: add `.qoder-plugin/plugin.json` manifest; Qoder CLI CN auto-discovers skills from the project's `skills/` directory — no hooks needed. Install docs added to README.
+
 ## 2.3.7 - 2026-06-11
 
 - **flow diagrams convention**: complex flows (branching / async / multi-actor) keep a one-line `flow:` summary in the tech-spec; the diagram lives in `docs/specs/<flow>.md`. Codified in `archive` tech-spec format and README.
