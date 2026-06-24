@@ -202,7 +202,7 @@ open customization of copilot -> Plugins -> Install Plugin From Source -> input 
 agy plugin install https://github.com/ouonet/praxis
 ```
 
-The plugin loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
+Antigravity imports Praxis through the Gemini-compatible plugin path, including the session-start hook.
 
 ### Gemini CLI
 
@@ -364,7 +364,6 @@ hooks/
 .copilot-plugin/       # Copilot CLI plugin manifest
 .qoder-plugin/         # Qoder CLI CN plugin manifest
 .opencode/             # OpenCode config + install doc
-plugin.json            # Antigravity CLI plugin manifest
 gemini-extension.json  # Gemini CLI extension manifest
 ```
 

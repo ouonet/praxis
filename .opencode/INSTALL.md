@@ -20,12 +20,12 @@ Verify by asking: `fix the typo "teh" in README` — the agent should output `pr
 
 ## Usage
 
-Praxis runs automatically. On every message, the agent invokes `praxis:triage` first to route to the right skills.
+Praxis runs automatically. On every message, the agent invokes `praxis:using-praxis` first to route to the right skills.
 
 To load a skill manually:
 
 ```
-use skill tool to load praxis:design
+/skill design
 ```
 
 ## Updating
@@ -34,7 +34,7 @@ To pin a specific version:
 
 ```json
 {
-  "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#v1.0.8"]
+  "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#v2.3.9"]
 }
 ```
 

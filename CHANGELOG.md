@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.3.9 - 2026-06-24
+
+- **Antigravity CLI install**: remove the root `plugin.json` manifest so `agy plugin install` uses the Gemini-compatible importer, which preserves the session-start hook.
+
 ## 2.3.8 - 2026-06-18
 
 - **Qoder CLI CN support**: add `.qoder-plugin/plugin.json` manifest; Qoder CLI CN auto-discovers skills from the project's `skills/` directory — no hooks needed. Install docs added to README.
