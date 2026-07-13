@@ -37,6 +37,8 @@ milestone:    <current milestone> (see docs/ROADMAP.md)
 
 # Archive
 
+For multi-module work, read `../references/multi-module.md`. Merge each module's artifacts in its own repository first. Then merge shared contracts and integration facts in the coordinator, record the revision set, and archive it last. Keep module-local facts in module repos.
+
 `<gate>`Before proceeding: (1) verify `tdd`/`subagents` have completed all tasks listed in the plan; (2) confirm the user has provided explicit written approval.`</gate>`
 
 1. **Merge** staging spec (minus roadmap) into living doc. Not copy-paste — integrate, preserve existing structure.

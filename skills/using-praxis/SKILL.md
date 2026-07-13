@@ -27,6 +27,8 @@ praxis: scope=<x>, loading=<skills>
 | debug | broken, regression, failing test | `debug` |
 | onboard | existing project, no docs/tech-spec.md | `onboard` |
 
+Multi-module is topology, not a separate scope. After triage, if one change spans multiple modules, every loaded workflow skill follows `skills/references/multi-module.md`; multiple repositories require a user-designated existing coordinator repository.
+
 If multiple scopes fit, choose the smaller one. `vague` is a last resort — if you can name a rough deliverable, use a lower scope instead. `feature change` = user-visible/public-contract change. `source code` = code/schema/config that changes shipped behavior; docs, tests, examples, CI, and tooling excluded.
 
 ## Rule

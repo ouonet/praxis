@@ -4,6 +4,8 @@ description: Use when a plan has parallel tasks and the harness supports dispatc
 ---
 # Subagents
 
+For multi-module work, read `../references/multi-module.md`.
+
 Fresh context per task. No session history.
 
 ## Dispatch: reference, don't copy
@@ -11,6 +13,8 @@ Subagents have file-read tools. Don't inline what they can read.
 
 ```
 TASK: <one sentence>
+REPOSITORY: <registered repo id and path>
+MODULE: <module id and root>
 FILES: <paths>
 SPEC: <docs/staging/specs/...#anchor>
 ACCEPTANCE: <test or cmd>
@@ -20,6 +24,8 @@ EXTRA: <only what's NOT in referenced files>
 Pasting >10 lines from the spec? Stop - let the subagent read it.
 
 Expand milestone -> atomic steps **at dispatch time**, not in the plan.
+
+One task has one repository and module write scope. Agents may read shared coordinator contracts, but must not edit another module or repository. Never dispatch two writers to overlapping module roots. Integration tasks are dispatched only after every required module reports local acceptance.
 
 ## Loop per task
 implementer -> on DONE: spec-reviewer (matches spec?) -> quality-reviewer (`review`) -> mark complete, continue.

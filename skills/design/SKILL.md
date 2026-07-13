@@ -12,6 +12,17 @@ Goal too vague to name what to build, for whom, or what success looks like? Ask 
 
 Goal clear? Propose 2-3 approaches with trade-offs; recommend one. Then write the spec.
 
+## Multi-module changes
+
+If the change spans multiple modules, read `../references/multi-module.md` before designing.
+
+- Identify workspace modules and Git boundaries separately.
+- For multiple repositories, ask the user to designate one existing repository as coordinator. This is an implementation-affecting decision; do not infer it.
+- Put only shared contracts and integration acceptance needed by this change in the coordinator spec.
+- Put module-local decisions and acceptance in a spec inside each module's owning repository. Reference shared contracts; never duplicate them.
+- Assign one stable change-set ID and declare every participating repository path relative to the coordinator.
+- A missing repository or unresolved shared contract blocks handoff.
+
 ## Spec = list of decisions
 
 A spec answers the open questions for THIS change. Typical:
@@ -71,7 +82,7 @@ If the user decides not to proceed after clarification, stop here. No spec, no p
 ## Gates
 `<gate>`
 
-1. `docs/staging/specs/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `plan`.
+1. `docs/staging/specs/YYYY-MM-DD-<topic>.md` must exist on disk before handing off to `plan`. For multi-module work, the coordinator spec and every affected module spec must exist in their owning repositories.
 2. Confirm with the user.
 
 `</gate>`
