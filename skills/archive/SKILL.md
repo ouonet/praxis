@@ -37,7 +37,7 @@ milestone:    <current milestone> (see docs/ROADMAP.md)
 
 # Archive
 
-For multi-module work, read `../references/multi-module.md`. Merge each module's artifacts in its own repository first. Then merge shared contracts and integration facts in the coordinator, record the revision set, and archive it last. Keep module-local facts in module repos.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`. Merge each module's artifacts in its own repository first. Then merge shared contracts and integration facts in the coordinator, record the revision set, and archive it last. Keep module-local facts in module repos.
 
 `<gate>`Before proceeding: (1) verify `tdd`/`subagents` have completed all tasks listed in the plan; (2) confirm the user has provided explicit written approval.`</gate>`
 

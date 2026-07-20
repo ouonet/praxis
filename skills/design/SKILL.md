@@ -14,13 +14,13 @@ Goal clear? Propose 2-3 approaches with trade-offs; recommend one. Then write th
 
 ## Multi-module changes
 
-If the change spans multiple modules, read `../references/multi-module.md` before designing.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md` before designing. Create the coordinator spec with the declaration block (`topology: multi-module`, `change-set`, `coordinator`, `repos`) - this declaration is the on-disk mode marker downstream skills rely on.
 
 - Identify workspace modules and Git boundaries separately.
 - For multiple repositories, ask the user to designate one existing repository as coordinator. This is an implementation-affecting decision; do not infer it.
 - Put only shared contracts and integration acceptance needed by this change in the coordinator spec.
 - Put module-local decisions and acceptance in a spec inside each module's owning repository. Reference shared contracts; never duplicate them.
-- Assign one stable change-set ID and declare every participating repository path relative to the coordinator.
+- Assign one stable change-set ID (in the declaration block) and declare every participating repository path relative to the coordinator.
 - A missing repository or unresolved shared contract blocks handoff.
 
 ## Spec = list of decisions

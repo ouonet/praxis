@@ -2,6 +2,22 @@
 
 Use this protocol only when one change spans multiple modules. Keep it small: Praxis coordinates the current change; it does not become a project-management system.
 
+## Mode marker
+
+Multi-module mode is **declared, not remembered**. Two carriers hold it:
+
+1. The per-turn triage announcement: `topology=multi-module`.
+2. The declaration block at the top of the coordinator spec (created at `design`) and the workspace plan (created at `plan`):
+   ```
+   topology: multi-module
+   change-set: <topic-id>
+   coordinator: <repo path>
+   repos: <repo paths>
+   ```
+   The workspace plan adds module plan paths and the integration task.
+
+This declaration is the on-disk source of truth. A freshly loaded skill reads it to re-establish mode - never rely on session memory. If neither the announcement nor a declared coordinator spec/plan says `multi-module`, you are in single-module mode.
+
 ## Minimal model
 
 - **Coordinator** — an existing repository chosen by the user. It owns the cross-module spec/plan and the change manifest.
@@ -9,7 +25,7 @@ Use this protocol only when one change spans multiple modules. Keep it small: Pr
 - **Change set** — a stable topic ID shared by the current change's artifacts and commits.
 - **Revision set** — the exact repository commits tested together.
 
-The coordinator manifest lists only this change's repositories, modules, relative paths, shared contract (if any), and integration check. Resolve paths at runtime. Define shared contracts once in the coordinator; module specs reference them.
+The coordinator spec and workspace plan each open with the declaration block above, which serves as the change manifest - listing this change's repositories, modules, relative paths, shared contract (if any), and integration check. Resolve paths at runtime. Define shared contracts once in the coordinator; module specs reference them.
 
 In a monorepo, the coordinator is the root and module docs stay with modules. In a multi-repo change, docs stay in their owning repos and each repo gets its own commit. No project registry or global status database.
 

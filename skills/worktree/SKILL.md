@@ -4,7 +4,7 @@ description: Use for non-trivial or parallel work that should happen in a separa
 ---
 # Worktree
 
-For multi-module work, read `../references/multi-module.md`. Treat each repository as an independent Git and worktree boundary; never run a workspace-wide Git mutation from their common parent.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`. Treat each repository as an independent Git and worktree boundary; never run a workspace-wide Git mutation from their common parent.
 
 Before creating worktrees, resolve each registered repository and verify status and baseline. Map paths in the coordinator plan and use the change-set ID in names. A missing repo, unrelated dirty change, or red baseline blocks the change. Detached HEAD is allowed for read-only integration, not implementation. Do not clone or clean automatically.
 

@@ -10,7 +10,7 @@ If unresolved spec notes affect implementation or task order, return to `design`
 
 ## Multi-module plan
 
-If the spec spans multiple modules, read `../references/multi-module.md`.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`. Open the workspace plan with the declaration block (`topology: multi-module`, `change-set`, `coordinator`, `repos`, module plan paths, integration task) - it is the on-disk mode marker downstream skills rely on.
 
 - Write the workspace plan in the coordinator repository and a module plan in every affected module's owning repository.
 - The workspace plan lists the change-set ID, coordinator, repositories, module plan paths, and the integration task.

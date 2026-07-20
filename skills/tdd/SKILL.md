@@ -4,7 +4,7 @@ description: Use when implementing or fixing production code with tests.
 ---
 # TDD
 
-For multi-module work, read `../references/multi-module.md`. Run RED-GREEN-refactor and local acceptance inside the task's registered repository/module. Update that module's spec and plan; update the coordinator only for shared-contract reality or workspace state.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`. Run RED-GREEN-refactor and local acceptance inside the task's registered repository/module. Update that module's spec and plan; update the coordinator only for shared-contract reality or workspace state.
 
 **No production code without a failing test first.** Wrote code before the test? Delete it. Rewrite from the test. Exception — ask user first: prototypes, generated code, throwaway scripts.
 

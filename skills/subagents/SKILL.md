@@ -4,7 +4,7 @@ description: Use when a plan has parallel tasks and the harness supports dispatc
 ---
 # Subagents
 
-For multi-module work, read `../references/multi-module.md`.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`.
 
 Fresh context per task. No session history.
 

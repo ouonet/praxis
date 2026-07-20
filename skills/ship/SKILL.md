@@ -4,7 +4,7 @@ description: Use when all plan tasks are done and green to review, archive plann
 ---
 # Ship
 
-For multi-module work, read `../references/multi-module.md`.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`.
 
 **Gates — if any fail, stop here:**
 

@@ -4,7 +4,7 @@ description: Use before merge, after subagents, or for spec/plan review.
 ---
 # Review
 
-For multi-module work, read `../references/multi-module.md`. Review each module diff in its owning repository first, then review the workspace as one change set. Block missing repositories, copied or divergent shared contracts, undeclared cross-module edits, overlapping writers, incomplete local acceptance, or integration results that do not identify the tested workspace combination.
+If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`. Review each module diff in its owning repository first, then review the workspace as one change set. Block missing repositories, copied or divergent shared contracts, undeclared cross-module edits, overlapping writers, incomplete local acceptance, or integration results that do not identify the tested workspace combination.
 
 Check in order:
 1. **Spec match** (if spec exists) - diff does what the spec/plan said? List drift.
