@@ -37,6 +37,8 @@ At session start, a hook injects the `praxis:using-praxis` startup skill. It tel
 2. Load only the skills that scope needs. **Trivial tasks skip the waterfall entirely.**
 3. Follow the loaded skill literally; don't freelance past `<gate>` markers.
 
+Multi-module is a **topology**, declared alongside scope: when one change spans multiple modules or repositories, the agent adds `topology=multi-module` to the announcement and every loaded skill follows the multi-module protocol. See [Multi-module work](#multi-module-work) below.
+
 ## Skills
 
 | Skill     | When                                        |
@@ -63,6 +65,37 @@ Skills range from ~100 to ~400 tokens each. Compare to Superpowers' 2,500–3,50
 | Trivial task                 | ~11,000       | ~450 (bootstrap only)               |
 | Standard task (design→ship) | ~30–50k      | ~1,300 (bootstrap + 4 skills)       |
 | Complex task (all skills)    | ~40–60k      | ~2,900 (all skills combined)  |
+
+## Multi-module work
+
+> **Availability:** Multi-module mode is experimental and currently ships only on the [`feat/multi-module-workspaces`](https://github.com/ouonet/praxis/tree/feat/multi-module-workspaces) branch - not on `main`. To use it, [install from that branch](#install-from-a-branch).
+
+When one change spans multiple modules or repositories, Praxis runs in **multi-module topology**. The agent declares it at triage and carries it on every turn:
+
+```
+praxis: scope=complex, topology=multi-module, loading=design,plan,worktree,subagents,review,ship
+```
+
+(`topology=multi-module` is omitted on ordinary single-module turns.)
+
+**Coordinator.** You designate one *existing* repository as the coordinator - the agent won't infer this. It owns the cross-module spec/plan and the change manifest.
+
+**Mode marker.** The coordinator spec (created at `design`) and workspace plan (created at `plan`) each open with a declaration block. This on-disk declaration is what keeps the agent in multi-module mode across a long change - it reads the declaration to re-establish mode instead of relying on session memory:
+
+```
+topology: multi-module
+change-set: <topic-id>
+coordinator: <repo path>
+repos: <repo paths>
+```
+
+The workspace plan adds module plan paths and the integration task. Each module also gets its own spec and plan in its owning repository, referencing shared contracts defined once in the coordinator - never duplicated.
+
+**Lifecycle.** `design` (coordinator + per-module specs) -> `plan` (workspace + per-module plans) -> `tdd`/`subagents` per module -> integrate against the coordinator's acceptance -> commit in dependency order, coordinator last, recording each SHA as the revision set.
+
+**Safety.** Each repo is inspected before editing - a missing repo, red baseline, or unrelated dirty change blocks the change. Praxis never auto-clones, resets, rebases, or discards. Put the change-set ID in branch names and commit subjects, e.g. `[praxis:checkout-v2]`. Cross-repo commits aren't atomic; the recorded revision set is the reproducibility boundary.
+
+Full protocol: [`skills/references/multi-module.md`](skills/references/multi-module.md) (experimental).
 
 ## Documentation Structure
 
@@ -116,28 +149,7 @@ Praxis enforces synchronization at multiple checkpoints:
 
 ### Install from a branch
 
-To try an unreleased branch before it merges:
-
-**Claude Code**
-```bash
-claude plugins marketplace add ouonet/praxis#<branch>
-claude plugins install praxis
-```
-
-**OpenCode** — set in `opencode.json`:
-```json
-{
-  "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#<branch>"]
-}
-```
-
-**Qoder CLI CN** — clone and checkout:
-```bash
-git clone --branch <branch> https://github.com/ouonet/praxis.git ~/.qoder-cn/praxis
-ln -s ~/.qoder-cn/praxis/skills ./skills
-```
-
-Replace `<branch>` with the branch name.
+Multi-module mode currently lives on the `feat/multi-module-workspaces` branch (not `main`). Each agent's branch install is shown in its section below. The common pattern is to pin `#<branch>` on the source; if an installer ignores the ref, `git clone --branch <branch>` and install from the local checkout.
 
 ---
 
@@ -147,6 +159,8 @@ Replace `<branch>` with the branch name.
 claude plugins marketplace add ouonet/praxis
 claude plugins install praxis
 ```
+
+> **Branch (multi-module):** `claude plugins marketplace add ouonet/praxis#feat/multi-module-workspaces` then `claude plugins install praxis`.
 
 To update after new releases:
 
@@ -163,6 +177,8 @@ Praxis is distributed as a Codex marketplace. Register the marketplace from the 
 ```bash
 codex plugin marketplace add ouonet/praxis
 ```
+
+> **Branch (multi-module):** `"plugin": ["praxis@git+https://github.com/ouonet/praxis.git#feat/multi-module-workspaces"]` in your Codex plugin config.
 
 Then open the plugin directory and install it from the Codex UI:
 
@@ -182,11 +198,15 @@ codex plugin marketplace upgrade praxis-marketplace
 
 See [`.opencode/INSTALL.md`](.opencode/INSTALL.md).
 
+> **Branch (multi-module):** in `opencode.json` - `"plugin": ["praxis@git+https://github.com/ouonet/praxis.git#feat/multi-module-workspaces"]` (see [`.opencode/INSTALL.md`](.opencode/INSTALL.md)).
+
 ### GitHub Copilot CLI
 
 ```
 copilot plugin install ouonet/praxis
 ```
+
+> **Branch (multi-module):** `copilot plugin install ouonet/praxis#feat/multi-module-workspaces`.
 
 (Or symlink `.copilot-plugin/plugin.json` per Copilot's plugin convention.)
 
@@ -196,11 +216,15 @@ copilot plugin install ouonet/praxis
 open customization of copilot -> Plugins -> Install Plugin From Source -> input  "ouonet/praxis"
 ```
 
+> **Branch (multi-module):** input `ouonet/praxis#feat/multi-module-workspaces` as the source.
+
 ### Antigravity CLI
 
 ```
 agy plugin install https://github.com/ouonet/praxis
 ```
+
+> **Branch (multi-module):** `agy plugin install https://github.com/ouonet/praxis#feat/multi-module-workspaces`.
 
 Antigravity imports Praxis through the Gemini-compatible plugin path, including the session-start hook.
 
@@ -209,6 +233,8 @@ Antigravity imports Praxis through the Gemini-compatible plugin path, including 
 ```
 gemini extensions install https://github.com/ouonet/praxis
 ```
+
+> **Branch (multi-module):** `gemini extensions install https://github.com/ouonet/praxis#feat/multi-module-workspaces`.
 
 The extension loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
 
@@ -223,6 +249,8 @@ git clone https://github.com/ouonet/praxis.git ~/.qoder-cn/praxis
 ln -s ~/.qoder-cn/praxis/skills ./skills
 ```
 
+> **Branch (multi-module):** `git clone --branch feat/multi-module-workspaces https://github.com/ouonet/praxis.git ~/.qoder-cn/praxis`, then symlink as above.
+
 Or install as an SDK plugin by pointing to the `.qoder-plugin/` manifest in your project config.
 
 The `using-praxis` skill is auto-discovered and triggered at session start by its description.
@@ -230,6 +258,8 @@ The `using-praxis` skill is auto-discovered and triggered at session start by it
 ### Manual / fallback
 
 For harnesses without plugin support, add an instruction that reads `skills/using-praxis/SKILL.md` first.
+
+> **Branch (multi-module):** `git clone --branch feat/multi-module-workspaces https://github.com/ouonet/praxis.git` and point the instruction at that checkout.
 
 ## Verify it's working
 
@@ -277,6 +307,15 @@ Agent: triage -> design -> plan -> worktree -> subagents -> review -> ship
 
 Subagents expand milestones at dispatch time; the coordinator reviews and marks tasks complete.
 
+### Multi-module change
+
+```
+You: add a shared checkout flow across the api and web repos
+Agent: triage -> topology=multi-module -> design (asks you to designate coordinator) -> plan -> tdd/subagents per module -> integrate -> ship
+```
+
+You designate one existing repo as coordinator; it holds the shared contract and integration check. Each module keeps its own spec/plan in its owning repo. At ship, non-coordinator repos commit in dependency order and the coordinator commits last, all sharing the change-set ID; their SHAs form the revision set.
+
 ### Onboard existing project
 
 ```
@@ -304,6 +343,7 @@ Release confirms the version, moves CHANGELOG `Unreleased`, then asks before com
 | add small field        | small -> tdd                       |
 | add feature            | standard -> design/plan/tdd/review |
 | migrate module         | complex -> worktree/subagents      |
+| change spans repos/modules | topology=multi-module (coordinator) |
 | failing behavior       | debug                              |
 | take over this project | onboard                            |
 | release 1.2.0          | release                            |
