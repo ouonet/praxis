@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 3.0.0 - 2026-07-20
+
+- **Multi-module workspace (experimental)**: coordinate a single change across multiple modules/repositories via a user-designated coordinator repo that owns the cross-module spec/plan and change manifest. Mode is declared, not remembered - `topology=multi-module` in the triage announcement and a declaration block (`topology` / `change-set` / `coordinator` / `repos`) at the top of the coordinator spec and workspace plan; every workflow skill re-anchors to it instead of relying on session memory.
+- **README**: multi-module usage section (coordinator, mode marker, lifecycle, safety) and per-agent branch-install instructions for `feat/multi-module-workspaces`.
+
 ## 2.3.9 - 2026-06-24
 
 - **Antigravity CLI install**: remove the root `plugin.json` manifest so `agy plugin install` uses the Gemini-compatible importer, which preserves the session-start hook.
