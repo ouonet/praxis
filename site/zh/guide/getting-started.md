@@ -37,6 +37,32 @@ agy plugin install https://github.com/ouonet/praxis
 gemini extensions install https://github.com/ouonet/praxis
 ```
 
+### pi CLI
+
+```bash
+pi install git:github.com/ouonet/praxis
+```
+
+**安装到项目范围**（写入 `.pi/settings.json`，与团队共享）：
+
+```bash
+pi install -l git:github.com/ouonet/praxis
+```
+
+**更新**：
+
+```bash
+pi update git:github.com/ouonet/praxis      # 更新单个包
+pi update --extensions                       # 更新所有包
+pi update --all                              # 更新 pi + 所有包
+```
+
+**卸载**：
+
+```bash
+pi remove git:github.com/ouonet/praxis
+```
+
 ## 从分支安装
 
 尝试未发布的版本：
@@ -52,6 +78,11 @@ claude plugins install praxis
 {
   "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#<branch>"]
 }
+```
+
+**pi CLI**
+```bash
+pi install git:github.com/ouonet/praxis@<branch>
 ```
 
 ## 验证

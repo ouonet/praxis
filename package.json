@@ -1,6 +1,11 @@
 {
   "name": "praxis",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "type": "module",
-  "main": ".opencode/plugins/praxis.js"
+  "main": ".opencode/plugins/praxis.js",
+  "keywords": ["triage", "discipline", "skills", "agent", "coding", "pi-package"],
+  "pi": {
+    "extensions": ["./extensions"],
+    "skills": ["./skills"]
+  }
 }

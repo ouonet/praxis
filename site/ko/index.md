@@ -25,7 +25,7 @@ features:
   - title: 지시가 아닌 의도
     details: 명세는 결정 목록이다. 계획은 마일스톤 프레임워크다. 에이전트는 도메인 지식을 가져온다 — Praxis는 중요한 것을 제공한다.
   - title: 멀티 도구 지원
-    details: Claude Code, Codex, OpenCode, Antigravity CLI, Gemini CLI, GitHub Copilot CLI, 그리고 마크다운 파일을 읽을 수 있는 모든 도구에서 작동한다.
+    details: pi CLI, Claude Code, Codex, OpenCode, Antigravity CLI, Gemini CLI, GitHub Copilot CLI, 그리고 마크다운 파일을 읽을 수 있는 모든 도구에서 작동한다.
 ---
 
 ## 실제 동작

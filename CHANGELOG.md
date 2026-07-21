@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 3.1.0 - 2026-07-21
+
+- **pi CLI support**: Praxis now distributes as a native pi package — pi auto-discovers skills from the `package.json` manifest. Install with `pi install git:github.com/ouonet/praxis` and pin branches with `@<branch>` syntax. Full install/update/uninstall docs added to README and all four language sites.
+- **README**: Quick Start section now includes pi CLI alongside Claude Code; pi listed first in the cross-harness feature list (all language site homepages updated).
+- **All plugin manifests**: version bumped for consistency.
+
 ## 3.0.0 - 2026-07-20
 
 - **Multi-module workspace (experimental)**: coordinate a single change across multiple modules/repositories via a user-designated coordinator repo that owns the cross-module spec/plan and change manifest. Mode is declared, not remembered - `topology=multi-module` in the triage announcement and a declaration block (`topology` / `change-set` / `coordinator` / `repos`) at the top of the coordinator spec and workspace plan; every workflow skill re-anchors to it instead of relying on session memory.

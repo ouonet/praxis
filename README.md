@@ -23,10 +23,17 @@ Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be 
 
 ## Quick Start
 
+**Claude Code**
 ```bash
 claude plugins marketplace add ouonet/praxis 
 claude plugins install praxis@praxis
 claude 'do a todo list app'
+```
+
+**pi CLI**
+```bash
+pi install git:github.com/ouonet/praxis
+pi 'do a todo list app'
 ```
 
 ## How it works
@@ -238,6 +245,39 @@ gemini extensions install https://github.com/ouonet/praxis
 
 The extension loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
 
+### pi CLI
+
+```bash
+pi install git:github.com/ouonet/praxis
+```
+
+Praxis is distributed as a native pi package — pi auto-discovers skills from the `package.json` manifest. The `using-praxis` bootstrap is injected at session start automatically.
+
+> **Branch (multi-module):** append `@<branch>` to install from a specific branch:
+> ```bash
+> pi install git:github.com/ouonet/praxis@feat/multi-module-workspaces
+> ```
+
+**Install to project scope** (`.pi/settings.json`, shared with team):
+
+```bash
+pi install -l git:github.com/ouonet/praxis
+```
+
+**Update**:
+
+```bash
+pi update git:github.com/ouonet/praxis      # update one package
+pi update --extensions                       # update all packages
+pi update --all                              # update pi + packages
+```
+
+**Uninstall**:
+
+```bash
+pi remove git:github.com/ouonet/praxis
+```
+
 ### Qoder CLI CN
 
 Qoder CLI CN auto-discovers skills from the project's `skills/` directory — no hooks or manual loading needed.
@@ -398,6 +438,7 @@ hooks/
   hooks.json           # hook registry
   run-hook.cmd         # Windows hook runner
   session-start        # session-start hook script
+package.json           # npm package + pi package manifest (pi auto-discovers skills)
 .claude/               # Claude Code settings
 .claude-plugin/        # Claude Code plugin manifest
 .codex-plugin/         # Codex plugin manifest

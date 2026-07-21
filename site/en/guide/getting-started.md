@@ -37,6 +37,32 @@ agy plugin install https://github.com/ouonet/praxis
 gemini extensions install https://github.com/ouonet/praxis
 ```
 
+### pi CLI
+
+```bash
+pi install git:github.com/ouonet/praxis
+```
+
+**Install to project scope** (writes to `.pi/settings.json`, shared with team):
+
+```bash
+pi install -l git:github.com/ouonet/praxis
+```
+
+**Update**:
+
+```bash
+pi update git:github.com/ouonet/praxis      # update one package
+pi update --extensions                       # update all packages
+pi update --all                              # update pi + packages
+```
+
+**Uninstall**:
+
+```bash
+pi remove git:github.com/ouonet/praxis
+```
+
 ## Install from a branch
 
 To try an unreleased version:
@@ -52,6 +78,11 @@ claude plugins install praxis
 {
   "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#<branch>"]
 }
+```
+
+**pi CLI**
+```bash
+pi install git:github.com/ouonet/praxis@<branch>
 ```
 
 ## Verify
