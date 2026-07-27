@@ -23,12 +23,12 @@ EXTRA: <only what's NOT in referenced files>
 
 Pasting >10 lines from the spec? Stop - let the subagent read it.
 
-Expand milestone -> atomic steps **at dispatch time**, not in the plan.
+Expand milestone → atomic steps **at dispatch time**, not in the plan.
 
 One task has one repository and module write scope. Agents may read shared coordinator contracts, but must not edit another module or repository. Never dispatch two writers to overlapping module roots. Integration tasks are dispatched only after every required module reports local acceptance.
 
 ## Loop per task
-implementer -> on DONE: spec-reviewer (matches spec?) -> quality-reviewer (`review`) -> mark complete, continue.
+implementer → on DONE: spec-reviewer (matches spec?) → quality-reviewer (`review`) → mark complete, continue.
 The coordinator marks `- [x]`, never the subagent.
 
 ## Status
@@ -37,6 +37,6 @@ The coordinator marks `- [x]`, never the subagent.
 - `BLOCKED` - diagnose (missing context / stronger model / too big / plan wrong). Never silently retry.
 
 ## Model
-1-2 files mechanical -> cheap. Multi-file integration -> standard. Design/review -> strongest.
+1-2 files mechanical → cheap. Multi-file integration → standard. Design/review → strongest.
 
-All done -> `review` whole diff -> `ship`.
+All done → `review` whole diff → `ship`.

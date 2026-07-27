@@ -13,4 +13,4 @@ git worktree add ../<repo>-<topic> -b <type>/<topic>   # <type>: feat | fix | ch
 cd ../<repo>-<topic> && <setup> && <run tests>
 ```
 
-Baseline must be green in every participating repository. If red, STOP - don't build on broken ground. Done -> `ship`.
+Baseline must be green in every participating repository. If red, STOP - don't build on broken ground. Done → `ship`.

@@ -8,12 +8,13 @@ If `topology=multi-module` (triage announcement or coordinator spec/plan declara
 
 Check in order:
 1. **Spec match** (if spec exists) - diff does what the spec/plan said? List drift.
-2. **Documentation** (always) - README/comments reflect actual behavior?
+2. **Standards** — lint/format/typecheck green? Code matches `convention`, idiomatic for the stack? (see `../references/quality.md`)
 3. **Tests** - new behavior covered, all green?
-4. **Edges** - null, empty, large, concurrent, malformed, unicode, timezone.
-5. **Security** - input validation, secrets, authz, injection, path traversal.
-6. **Scope** - unrelated changes? Revert. Implementation >2x necessary? Flag as FIX.
-7. **Integration** (multi-module) - dependency order, compatibility, failure propagation, and coordinator acceptance cover the exact participating modules?
+4. **Doc-coverage** — `contract` covers full public surface? Env vars/config/error modes documented? README commands runnable? tech-spec `contract`/`convention` match code? (see `../references/quality.md`)
+5. **Edges** - null, empty, large, concurrent, malformed, unicode, timezone.
+6. **Security** - input validation, secrets, authz, injection, path traversal.
+7. **Scope** - unrelated changes? Revert. Implementation >2x necessary? Flag as FIX.
+8. **Integration** (multi-module) - dependency order, compatibility, failure propagation, and coordinator acceptance cover the exact participating modules?
 
 For spec/plan reviews, also block unresolved implementation notes, plan assumptions absent from spec, vague acceptance, or premature `[parallel]`.
 

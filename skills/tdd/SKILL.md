@@ -8,7 +8,7 @@ If `topology=multi-module` (triage announcement or coordinator spec/plan declara
 
 **No production code without a failing test first.** Wrote code before the test? Delete it. Rewrite from the test. Exception — ask user first: prototypes, generated code, throwaway scripts.
 
-RED (fail for the *right reason*) -> GREEN (minimum to pass) -> refactor -> **sync docs** -> commit -> **edit `docs/staging/plans/YYYY-MM-DD-<topic>.md` and change this task's `- [ ]` to `- [x]`. Do not start the next task without this edit.**
+RED (fail for the *right reason*) → GREEN (minimum to pass) → refactor → **sync docs** → commit → **edit `docs/staging/plans/YYYY-MM-DD-<topic>.md` and change this task's `- [ ]` to `- [x]`. Do not start the next task without this edit.**
 
 **Sync docs** means:
 - If staging spec exists (`docs/staging/specs/*.md`): update it to match code reality.
@@ -22,7 +22,7 @@ For a linked multi-repository change, defer commits until integration passes, th
 
 Passing tests are not a quality bar.
 
-`<gate>` Before committing: evaluate the implementation against SOLID principles, design patterns, and clean code. State what you assessed and what (if anything) you improved — or why no changes were needed. `</gate>`
+`<gate>` Before committing: (1) run lint/format/typecheck — green if declared; (2) evaluate against `convention`; (3) assess design — coupling, cohesion, abstraction, idiomatic for the stack. State what you ran, assessed, and changed — or why not. See `../references/quality.md`. `</gate>`
 
 ## Don't
 - Test passes without the impl (tests nothing).

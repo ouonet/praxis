@@ -26,12 +26,12 @@ use-case:     <key scenarios, one line each>
 architecture: <structural shape — one line, or see docs/architecture.md>
 stack:        <language, runtime, frameworks, key deps>
 entry:        <where execution starts>
-contract:     <public APIs / interfaces that must not break>
+contract:     <public APIs / interfaces that must not break — stability set; full surface by doc-coverage>
 flow:         <name>: <trigger> → <steps> → <output>
               (complex — branching/async/multi-actor: one-line summary here, diagram in docs/specs/<flow>.md)
 invariant:    <what must always hold>
 constraint:   <limits, warnings from code>
-convention:   <naming, file structure, test patterns>
+convention:   <naming, file structure, test patterns, lint/format/typecheck tools, error-handling, security baseline>
 milestone:    <current milestone> (see docs/ROADMAP.md)
 ```
 

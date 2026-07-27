@@ -31,7 +31,7 @@ In a monorepo, the coordinator is the root and module docs stay with modules. In
 
 ## Minimal lifecycle
 
-`prepare -> implement -> sync docs -> test modules -> integrate -> record revisions -> archive`
+`prepare → implement → sync docs → test modules → integrate → record revisions → archive`
 
 The only completion checks are:
 

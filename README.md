@@ -98,7 +98,7 @@ repos: <repo paths>
 
 The workspace plan adds module plan paths and the integration task. Each module also gets its own spec and plan in its owning repository, referencing shared contracts defined once in the coordinator - never duplicated.
 
-**Lifecycle.** `design` (coordinator + per-module specs) -> `plan` (workspace + per-module plans) -> `tdd`/`subagents` per module -> integrate against the coordinator's acceptance -> commit in dependency order, coordinator last, recording each SHA as the revision set.
+**Lifecycle.** `design` (coordinator + per-module specs) → `plan` (workspace + per-module plans) → `tdd`/`subagents` per module → integrate against the coordinator's acceptance → commit in dependency order, coordinator last, recording each SHA as the revision set.
 
 **Safety.** Each repo is inspected before editing - a missing repo, red baseline, or unrelated dirty change blocks the change. Praxis never auto-clones, resets, rebases, or discards. Put the change-set ID in branch names and commit subjects, e.g. `[praxis:checkout-v2]`. Cross-repo commits aren't atomic; the recorded revision set is the reproducibility boundary.
 
@@ -149,6 +149,8 @@ Praxis enforces synchronization at multiple checkpoints:
   - If no staging spec (small tasks) → update living docs directly.
 - **At [`ship`](skills/ship/SKILL.md) gate**: Staging spec must reflect actual code behavior.
 - **At [`review`](skills/review/SKILL.md)**: Check that README/comments reflect actual behavior.
+
+**Quality and doc-coverage** are verified: `tdd` runs lint/format/typecheck + checks against `convention`; `review`/`ship` verify `contract` covers the full surface, env/errors documented, README commands runnable. See [`skills/references/quality.md`](skills/references/quality.md).
 
 **The rule**: Code changes without doc updates fail review. Docs that don't match code block merge.
 
@@ -317,7 +319,7 @@ Expected: agent outputs `praxis: scope=trivial, loading=` and just fixes it. **N
 
 ```
 You: I want to build something that helps developers manage their workflow
-Agent: triage -> vague -> design
+Agent: triage → vague → design
 ```
 
 Design asks one clarifying question per turn until the problem is concrete enough to spec. If exploration produces a knowledge artifact (protocol spec, RE findings), it goes to `docs/decisions/` via `archive`.
@@ -326,14 +328,14 @@ Design asks one clarifying question per turn until the problem is concrete enoug
 
 ```
 You: fix the typo "teh" in README
-Agent: triage -> trivial -> edit -> done
+Agent: triage → trivial → edit → done
 ```
 
 ### Standard feature
 
 ```
 You: add OAuth login with GitHub
-Agent: triage -> design -> plan -> tdd -> review -> ship
+Agent: triage → design → plan → tdd → review → ship
 ```
 
 Design asks only needed questions, plan writes milestone tasks, ship updates living specs and CHANGELOG `Unreleased`.
@@ -342,7 +344,7 @@ Design asks only needed questions, plan writes milestone tasks, ship updates liv
 
 ```
 You: migrate the entire API from REST to tRPC
-Agent: triage -> design -> plan -> worktree -> subagents -> review -> ship
+Agent: triage → design → plan → worktree → subagents → review → ship
 ```
 
 Subagents expand milestones at dispatch time; the coordinator reviews and marks tasks complete.
@@ -351,7 +353,7 @@ Subagents expand milestones at dispatch time; the coordinator reviews and marks 
 
 ```
 You: add a shared checkout flow across the api and web repos
-Agent: triage -> topology=multi-module -> design (asks you to designate coordinator) -> plan -> tdd/subagents per module -> integrate -> ship
+Agent: triage → topology=multi-module → design (asks you to designate coordinator) → plan → tdd/subagents per module → integrate → ship
 ```
 
 You designate one existing repo as coordinator; it holds the shared contract and integration check. Each module keeps its own spec/plan in its owning repo. At ship, non-coordinator repos commit in dependency order and the coordinator commits last, all sharing the change-set ID; their SHAs form the revision set.
@@ -360,7 +362,7 @@ You designate one existing repo as coordinator; it holds the shared contract and
 
 ```
 You: take over this project / add Praxis to this codebase
-Agent: triage -> onboard
+Agent: triage → onboard
 ```
 
 Onboard explores the codebase and produces `docs/tech-spec.md` — a factual record of stack, contracts, conventions, and invariants. No code changes, no plans. After confirmation, the normal `design → plan → tdd` flow resumes.
@@ -369,7 +371,7 @@ Onboard explores the codebase and produces `docs/tech-spec.md` — a factual rec
 
 ```
 You: release 1.2.0
-Agent: triage -> release
+Agent: triage → release
 ```
 
 Release confirms the version, moves CHANGELOG `Unreleased`, then asks before commit, tag, push, or publish.
@@ -380,9 +382,9 @@ Release confirms the version, moves CHANGELOG `Unreleased`, then asks before com
 | ---------------------- | ---------------------------------- |
 | I want to build X (vague) | vague → design (clarifies first) |
 | fix typo               | trivial                            |
-| add small field        | small -> tdd                       |
-| add feature            | standard -> design/plan/tdd/review |
-| migrate module         | complex -> worktree/subagents      |
+| add small field        | small → tdd                       |
+| add feature            | standard → design/plan/tdd/review |
+| migrate module         | complex → worktree/subagents      |
 | change spans repos/modules | topology=multi-module (coordinator) |
 | failing behavior       | debug                              |
 | take over this project | onboard                            |

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 3.2.0 - 2026-07-27
+
+- **Quality and doc-coverage gates**: new `skills/references/quality.md` defining the quality bar — mechanical checks (lint/format/typecheck), convention adherence, design assessment (coupling/cohesion/abstraction), and doc-coverage (full public surface, env/errors documented, README commands runnable). `tdd` refactor gate upgraded from generic "SOLID" to three-dimensional check; `review` adds Standards + Doc-coverage items; `ship`/`archive`/`onboard`/`design` updated to reference the quality standard.
+- **Arrow unification**: all `->` normalized to `→` across skill files and README.
+- **Skill wording trimmed**: `design`, `tdd`, `review`, `ship`, `archive`, `onboard`, and `quality.md` wording tightened without losing meaning.
+
 ## 3.1.0 - 2026-07-21
 
 - **pi CLI support**: Praxis now distributes as a native pi package — pi auto-discovers skills from the `package.json` manifest. Install with `pi install git:github.com/ouonet/praxis` and pin branches with `@<branch>` syntax. Full install/update/uninstall docs added to README and all four language sites.

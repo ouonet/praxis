@@ -56,4 +56,4 @@ background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
 
 Confirm plan with the user.
 
-mostly `[parallel]` -> `subagents`. Otherwise -> `tdd`.
+mostly `[parallel]` → `subagents`. Otherwise → `tdd`.

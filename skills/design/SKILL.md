@@ -31,17 +31,19 @@ A spec answers the open questions for THIS change. Typical:
 - failure modes?
 - out of scope?
 - what test proves it?
-- architecture? 
+- architecture?
+- convention?
 
-Do spec idiomatically.
+Do spec idiomatically. Record `convention` — stack best practices + project conventions for this change (see `../references/quality.md`); `tdd`/`review` verify against it.
 
-**No question -> no section.** Don't fill "Risks" / "Non-goals" if empty.
+**No question → no section.** Don't fill "Risks" / "Non-goals" if empty.
 
 Use declarations, not narrative:
 ```
 contract:  <interface>
 invariant: <what must hold>
 test:      <how we'll know>
+convention: <stack best practices + project conventions — see ../references/quality.md>
 deferred:  <not deciding now>
 ```
 
