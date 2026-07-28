@@ -54,7 +54,7 @@ pi install -l git:github.com/ouonet/praxis
 ```bash
 pi update git:github.com/ouonet/praxis      # 단일 패키지 업데이트
 pi update --extensions                      # 모든 패키지 업데이트
-pi update --all                             # pi + 패키지 업데이트
+pi update                                   # pi + 패키지 업데이트
 ```
 
 **제거**:

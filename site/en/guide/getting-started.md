@@ -54,7 +54,7 @@ pi install -l git:github.com/ouonet/praxis
 ```bash
 pi update git:github.com/ouonet/praxis      # update one package
 pi update --extensions                      # update all packages
-pi update --all                             # update pi + packages
+pi update                                   # update pi + packages
 ```
 
 **Uninstall**:

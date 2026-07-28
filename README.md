@@ -249,7 +249,7 @@ Update one package, all packages, or pi plus its packages:
 ```bash
 pi update git:github.com/ouonet/praxis
 pi update --extensions
-pi update --all
+pi update
 ```
 
 Uninstall:

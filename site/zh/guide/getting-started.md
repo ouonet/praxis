@@ -54,7 +54,7 @@ pi install -l git:github.com/ouonet/praxis
 ```bash
 pi update git:github.com/ouonet/praxis      # 更新单个包
 pi update --extensions                      # 更新所有包
-pi update --all                             # 更新 pi + 所有包
+pi update                                   # 更新 pi + 所有包
 ```
 
 **卸载**：

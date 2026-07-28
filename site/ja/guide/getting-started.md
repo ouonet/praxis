@@ -54,7 +54,7 @@ pi install -l git:github.com/ouonet/praxis
 ```bash
 pi update git:github.com/ouonet/praxis      # 1つのパッケージを更新
 pi update --extensions                      # すべてのパッケージを更新
-pi update --all                             # pi + パッケージを更新
+pi update                                   # pi + パッケージを更新
 ```
 
 **アンインストール**：
