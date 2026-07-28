@@ -9,6 +9,7 @@ description: Use when all plan tasks are done and green to review, archive plann
 - Tests pass — or, for tasks with no automated test, their manual acceptance was performed.
 - No `- [ ]` in `docs/staging/plans/YYYY-MM-DD-<topic>.md`.
 - Staging spec reflects actual code behavior.
+- README commands runnable; tech-spec `contract`/`convention` match code (see `../references/quality.md`).
 - No incomplete TodoWrite tasks.
 
 1. `review` the whole diff.

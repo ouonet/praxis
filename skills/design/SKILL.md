@@ -10,6 +10,8 @@ description: Use for standard or complex new work before coding or planning. Als
 
 Goal too vague to name what to build, for whom, or what success looks like? Ask one question per turn until it's concrete. Don't propose solutions until then. Working notes can hold hypotheses, experiments, ruled-out directions (spike code → temporary worktree).
 
+Clarify in dependency order. Resolve facts from the repo/tools; ask only the current decision frontier requiring user judgment. Don't ask downstream questions before prerequisite decisions or map the full dependency tree. Stop when implementation-affecting contract, data, failure, and test decisions are decided or deferred.
+
 Goal clear? Propose 2-3 approaches with trade-offs; recommend one. Then write the spec.
 
 ## Spec = list of decisions
@@ -20,9 +22,10 @@ A spec answers the open questions for THIS change. Typical:
 - failure modes?
 - out of scope?
 - what test proves it?
-- architecture? 
+- architecture?
+- convention?
 
-Do spec idiomatically.
+Do spec idiomatically. Record `convention` — stack best practices + project conventions for this change (see `../references/quality.md`); `tdd`/`review` verify against it.
 
 **No question -> no section.** Don't fill "Risks" / "Non-goals" if empty.
 
@@ -31,6 +34,7 @@ Use declarations, not narrative:
 contract:  <interface>
 invariant: <what must hold>
 test:      <how we'll know>
+convention: <stack best practices + project conventions — see ../references/quality.md>
 deferred:  <not deciding now>
 ```
 

@@ -18,7 +18,7 @@ All tasks `- [x]` and green -> `ship`.
 
 Passing tests are not a quality bar.
 
-`<gate>` Before committing: evaluate the implementation against SOLID principles, design patterns, and clean code. State what you assessed and what (if anything) you improved — or why no changes were needed. `</gate>`
+`<gate>` Before committing: (1) run declared lint/typecheck and check formatting without rewriting; if only a rewriting formatter is available, run it only on in-scope files — green if declared; (2) evaluate against `convention`; (3) assess design — coupling, cohesion, abstraction, idiomatic for the stack. State what you ran, assessed, and changed — or why not. See `../references/quality.md`. `</gate>`
 
 ## Don't
 - Test passes without the impl (tests nothing).
