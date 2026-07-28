@@ -44,17 +44,17 @@ The coordinator marks `- [x]`, never the subagent.
 
 ## Model tier
 
-`MODEL: fast | balanced | strongest`（可选，省略则用 harness 默认）
+`MODEL: fast | balanced | strongest` — optional, omitted → harness default.
 
-通过项目根目录或用户目录的 `.praxis/model-tiers.yaml` 解析为具体模型 ID。模板见 Praxis 仓库根目录的 `model-tiers.example.yaml`。
+Resolved via `.praxis/model-tiers.yaml` in project root or user home. Template at Praxis repo root: `model-tiers.example.yaml`.
 
-**Coordinator 在 dispatch 时根据任务复杂度决定 tier**，不硬编码。下方 role charters 列出的是默认建议，在以下情况 override：
+**The coordinator decides the tier at dispatch time** based on task complexity — it is not hardcoded per role. The role charters below list defaults; override when:
 
-| 场景 | 推荐 tier | 例子 |
-|------|----------|------|
-| 机械修改、简单检查 | `fast` | 改常量、修 typo、spec-reviewer 对照检查 |
-| 标准实现、单文件 feature | `balanced` | 加函数、改单个模块、写常规测试 |
-| 多文件重构、并发/状态机、安全审查 | `strongest` | 实现 protocol、审查崩溃恢复、跨模块集成 |
+| Scenario | Tier | Examples |
+|----------|------|----------|
+| Mechanical edits, simple checks | `fast` | rename a constant, fix a typo, pattern-match review |
+| Standard implementation, single-file feature | `balanced` | add a function, modify one module, write routine tests |
+| Multi-file refactor, concurrency/state-machine, safety review | `strongest` | implement a protocol, review crash-recovery, cross-module integration |
 
 ## Role charters
 
