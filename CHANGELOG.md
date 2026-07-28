@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 4.0.0 - 2026-07-29
+
 - **Spec review gate**: `design` now dispatches focused reviewers before handing off to `plan`. Reviewers are selected by a trigger table — only the ones matching the spec's characteristics run. A simple spec gets one baseline reviewer (same cost as today); a complex spec gets additional reviewers for state-machine completeness, cross-rule consistency, cross-module boundaries, crash-recovery safety, and implementability. All run in parallel. Trigger table and reviewer charters in new `skills/references/reviewers.md`.
 - **Model tier dispatch**: `subagents` dispatch format now includes `MODEL: fast | balanced | strongest` and `ROLE: implementer | spec-reviewer | quality-reviewer`. Model tiers are resolved via `.praxis/model-tiers.yaml` (template at `model-tiers.example.yaml`) — no config file means all subagents use the harness default. Each role has an explicit charter defining what it owns, what it does not own, and when to override the default tier. The coordinator decides the tier at dispatch time based on task complexity, not a hardcoded role mapping.
 

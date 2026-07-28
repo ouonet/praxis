@@ -1,6 +1,6 @@
 {
   "name": "praxis",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "description": "Token-lean discipline skills for coding agents.",
   "icon": "https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-mark.svg",
   "hooks": {
