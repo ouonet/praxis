@@ -338,7 +338,7 @@ You: add OAuth login with GitHub
 Agent: triage → design → plan → tdd → review → ship
 ```
 
-Design asks only needed questions, plan writes milestone tasks, ship updates living specs and CHANGELOG `Unreleased`.
+Design investigates facts and asks only the current decision frontier in dependency order; plan writes milestone tasks; ship updates living specs and CHANGELOG `Unreleased`.
 
 ### Parallel work
 

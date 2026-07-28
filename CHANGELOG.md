@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 3.2.1 - 2026-07-28
+
+- **Dependency-aware clarification**: `design` now investigates discoverable facts, asks only the current decision frontier in prerequisite order, and stops without mapping or exhausting the full dependency tree.
+
 ## 3.2.0 - 2026-07-27
 
 - **Quality and doc-coverage gates**: new `skills/references/quality.md` defining the quality bar — mechanical checks (lint/format/typecheck), convention adherence, design assessment (coupling/cohesion/abstraction), and doc-coverage (full public surface, env/errors documented, README commands runnable). `tdd` refactor gate upgraded from generic "SOLID" to three-dimensional check; `review` adds Standards + Doc-coverage items; `ship`/`archive`/`onboard`/`design` updated to reference the quality standard.

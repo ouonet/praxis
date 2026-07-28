@@ -10,6 +10,8 @@ description: Use for standard or complex new work before coding or planning. Als
 
 Goal too vague to name what to build, for whom, or what success looks like? Ask one question per turn until it's concrete. Don't propose solutions until then. Working notes can hold hypotheses, experiments, ruled-out directions (spike code → temporary worktree).
 
+Clarify in dependency order. Resolve facts from the repo/tools; ask only the current decision frontier requiring user judgment. Don't ask downstream questions before prerequisite decisions or map the full dependency tree. Stop when implementation-affecting contract, data, failure, and test decisions are decided or deferred.
+
 Goal clear? Propose 2-3 approaches with trade-offs; recommend one. Then write the spec.
 
 ## Multi-module changes
