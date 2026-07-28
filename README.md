@@ -187,7 +187,7 @@ Praxis is distributed as a Codex marketplace. Register the marketplace from the 
 codex plugin marketplace add ouonet/praxis
 ```
 
-> **Branch (multi-module):** `"plugin": ["praxis@git+https://github.com/ouonet/praxis.git#feat/multi-module-workspaces"]` in your Codex plugin config.
+> **Branch (multi-module):** `codex plugin marketplace add ouonet/praxis --ref feat/multi-module-workspaces`.
 
 Then open the plugin directory and install it from the Codex UI:
 
