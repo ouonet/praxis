@@ -85,7 +85,7 @@ After spec is written to disk and before handing off to `plan`, inspect the spec
 
 Count the triggers that match the spec. If only trigger 1 fires (the baseline), dispatch a single `spec-compliance` reviewer — this is the default behavior, same cost as today. If multiple triggers fire, dispatch each reviewer as an independent subagent in parallel.
 
-All reviewers receive the spec path (not the spec content — let them read it). Collect findings, deduplicate, and patch the spec once before presenting to the user.
+All reviewers receive the spec path (not the spec content — let them read it). Collect findings, then synthesize: evaluate each finding critically, resolve conflicts between reviewers, spot what was missed, judge severity, and patch the spec once. Present to user: what was found, fixed, deferred — and why.
 
 Report to user: which triggers fired, which reviewers ran, what was found and fixed.
 

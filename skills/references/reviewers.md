@@ -103,13 +103,17 @@ Read the spec as a developer about to implement it. Check:
 
 Report: undefined data structures, ambiguous ordering, unspecified error handling, missing None semantics.
 
-## Coordinator merge
+## Coordinator synthesis
 
-After all reviewers return, the coordinator:
+After all reviewers return, the coordinator thinks critically about every finding before acting:
 
-1. Deduplicate findings that point to the same spec section
-2. Classify: BLOCK (must fix before handoff) vs DEFER (notable but not blocking)
-3. Patch the spec in one pass
-4. Report to user: what was found, what was fixed, what was deferred
+1. **Evaluate each finding.** Is it actually a problem, or did the reviewer misunderstand? Two reviewers flagging the same section from different angles is a stronger signal than a single isolated flag.
+2. **Resolve conflicts.** When reviewers disagree — one says a transition is missing, another implies it's covered elsewhere — decide which is correct. Do not pick a side mechanically; reason from the spec text.
+3. **Spot what was missed.** The coordinator sees the full picture. Reviewers each had a narrow lens. Ask: what category of problem could fall between their charters?
+4. **Judge severity.** Classify each confirmed finding:
+   - `BLOCK`: must fix before handoff (missing contract, contradiction, crash-recovery gap)
+   - `DEFER`: notable but not blocking (ambiguous wording that implementation can resolve, edge case unlikely in practice)
+5. **Fix the spec.** Apply fixes in one pass. When a finding is valid but the reviewer's suggested fix is wrong, write a better one.
+6. **Report.** Tell the user: which triggers fired, which reviewers ran, what was found, what was fixed, what was deferred and why.
 
-Findings that are observation-only (no fix needed) are noted in working notes, not applied.
+The coordinator does not summarize reviewer output — it judges it. Every deferred finding comes with a reason, not just a label.
