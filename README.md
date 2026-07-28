@@ -23,19 +23,30 @@ Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be 
 
 ## Quick Start
 
+**Claude Code**
+
 ```bash
 claude plugins marketplace add ouonet/praxis 
 claude plugins install praxis@praxis
 claude 'do a todo list app'
 ```
 
+**pi CLI**
+
+```bash
+pi install git:github.com/ouonet/praxis
+pi 'do a todo list app'
+```
+
 ## How it works
 
-At session start, a hook injects the `praxis:using-praxis` startup skill. It tells your agent:
+At session start, the harness integration injects the `praxis:using-praxis` startup skill. It tells your agent:
 
 1. Classify scope inline using the triage table embedded in `using-praxis` — no Skill call needed.
 2. Load only the skills that scope needs. **Trivial tasks skip the waterfall entirely.**
 3. Follow the loaded skill literally; don't freelance past `<gate>` markers.
+
+Before writing a spec, `design` resolves facts available from the repository and tools, then asks only for the current decision frontier in prerequisite order. Clarification stops when implementation-affecting contract, data, failure, and test decisions are decided or explicitly deferred.
 
 ## Skills
 
@@ -110,6 +121,8 @@ Praxis enforces synchronization at multiple checkpoints:
 - **At [`ship`](skills/ship/SKILL.md) gate**: Staging spec must reflect actual code behavior.
 - **At [`review`](skills/review/SKILL.md)**: Check that README/comments reflect actual behavior.
 
+**Quality and documentation coverage** are also gated. `tdd` and `review` run the declared lint, format, and typecheck tools; assess project conventions and design quality; and report what was checked. `review` and `ship` verify that public contracts, configuration, environment variables, and error modes are documented and that README commands are runnable. See [`skills/references/quality.md`](skills/references/quality.md).
+
 **The rule**: Code changes without doc updates fail review. Docs that don't match code block merge.
 
 ## Install
@@ -135,6 +148,11 @@ claude plugins install praxis
 ```bash
 git clone --branch <branch> https://github.com/ouonet/praxis.git ~/.qoder-cn/praxis
 ln -s ~/.qoder-cn/praxis/skills ./skills
+```
+
+**pi CLI**
+```bash
+pi install git:github.com/ouonet/praxis@<branch>
 ```
 
 Replace `<branch>` with the branch name.
@@ -212,6 +230,40 @@ gemini extensions install https://github.com/ouonet/praxis
 
 The extension loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
 
+### pi CLI
+
+```bash
+pi install git:github.com/ouonet/praxis
+```
+
+Praxis is a native pi package. Pi discovers the extension and skills from `package.json`; the extension injects `skills/using-praxis/SKILL.md` once per session.
+
+Install for the current project instead of globally (writes `.pi/settings.json`, which can be shared with the team):
+
+```bash
+pi install -l git:github.com/ouonet/praxis
+```
+
+Update one package, all packages, or pi plus its packages:
+
+```bash
+pi update git:github.com/ouonet/praxis
+pi update --extensions
+pi update --all
+```
+
+Uninstall:
+
+```bash
+pi remove git:github.com/ouonet/praxis
+```
+
+To pin any branch, append `@<branch>`:
+
+```bash
+pi install git:github.com/ouonet/praxis@<branch>
+```
+
 ### Qoder CLI CN
 
 Qoder CLI CN auto-discovers skills from the project's `skills/` directory — no hooks or manual loading needed.
@@ -266,7 +318,7 @@ You: add OAuth login with GitHub
 Agent: triage -> design -> plan -> tdd -> review -> ship
 ```
 
-Design asks only needed questions, plan writes milestone tasks, ship updates living specs and CHANGELOG `Unreleased`.
+Design investigates discoverable facts and asks only the current decision frontier in dependency order; plan writes milestone tasks; ship updates living specs and CHANGELOG `Unreleased`.
 
 ### Parallel work
 
@@ -358,6 +410,9 @@ hooks/
   hooks.json           # hook registry
   run-hook.cmd         # Windows hook runner
   session-start        # session-start hook script
+extensions/
+  praxis.js            # pi once-per-session bootstrap extension
+package.json           # npm metadata + pi extension/skills manifest
 .claude/               # Claude Code settings
 .claude-plugin/        # Claude Code plugin manifest
 .codex-plugin/         # Codex plugin manifest
