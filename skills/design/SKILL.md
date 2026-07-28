@@ -79,6 +79,16 @@ If roadmap exists or was created, reference the current milestone in staging spe
 milestone: M1 (see docs/ROADMAP.md)
 ```
 
+## Spec review gate
+
+After spec is written to disk and before handing off to `plan`, inspect the spec to decide how many reviewers to dispatch. Read `../references/reviewers.md` for the trigger table and reviewer charters.
+
+Count the triggers that match the spec. If only trigger 1 fires (the baseline), dispatch a single `spec-compliance` reviewer — this is the default behavior, same cost as today. If multiple triggers fire, dispatch each reviewer as an independent subagent in parallel.
+
+All reviewers receive the spec path (not the spec content — let them read it). Collect findings, deduplicate, and patch the spec once before presenting to the user.
+
+Report to user: which triggers fired, which reviewers ran, what was found and fixed.
+
 ## Abandon
 
 If the user decides not to proceed after clarification, stop here. No spec, no plan, no ship. Record reason briefly in working notes. If exploration produced a knowledge artifact (protocol spec, RE findings, data structure map), save it to `docs/decisions/` via `archive`.
