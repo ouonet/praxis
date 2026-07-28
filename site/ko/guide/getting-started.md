@@ -37,6 +37,32 @@ agy plugin install https://github.com/ouonet/praxis
 gemini extensions install https://github.com/ouonet/praxis
 ```
 
+### pi CLI
+
+```bash
+pi install git:github.com/ouonet/praxis
+```
+
+**프로젝트 범위에 설치** (`.pi/settings.json`에 저장, 팀과 공유):
+
+```bash
+pi install -l git:github.com/ouonet/praxis
+```
+
+**업데이트**:
+
+```bash
+pi update git:github.com/ouonet/praxis      # 단일 패키지 업데이트
+pi update --extensions                      # 모든 패키지 업데이트
+pi update --all                             # pi + 패키지 업데이트
+```
+
+**제거**:
+
+```bash
+pi remove git:github.com/ouonet/praxis
+```
+
 ## 브랜치에서 설치
 
 미출시 버전을 사용하려면:
@@ -52,6 +78,12 @@ claude plugins install praxis
 {
   "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#<branch>"]
 }
+```
+
+**pi CLI**
+
+```bash
+pi install git:github.com/ouonet/praxis@<branch>
 ```
 
 ## 확인
