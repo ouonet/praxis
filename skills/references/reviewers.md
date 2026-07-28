@@ -117,3 +117,9 @@ After all reviewers return, the coordinator thinks critically about every findin
 6. **Report.** Tell the user: which triggers fired, which reviewers ran, what was found, what was fixed, what was deferred and why.
 
 The coordinator does not summarize reviewer output — it judges it. Every deferred finding comes with a reason, not just a label.
+
+**Judgment principles:**
+- The coordinator has final authority. Reviewers advise; the coordinator decides. Consensus is not required.
+- When unsure about a finding, escalate to the user rather than silently deferring. Present the finding, the coordinator's reasoning, and ask. One sentence each.
+- If the coordinator overrides a reviewer BLOCK, record the override and reason in working notes. This creates an audit trail — if the override proves wrong during implementation, the pattern is learnable.
+- The synthesis step runs exactly once. No back-and-forth with reviewers. This prevents deadlock and bounds the token cost.
