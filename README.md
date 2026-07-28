@@ -51,13 +51,13 @@ Multi-module is a **topology**, declared alongside scope: when one change spans 
 | Skill     | When                                        |
 | --------- | ------------------------------------------- |
 | [onboard](skills/onboard/SKILL.md)   | existing project with no docs/tech-spec.md  |
-| [design](skills/design/SKILL.md)    | scope ≥ standard, anything new; also handles vague goals — clarifies before designing |
+| [design](skills/design/SKILL.md)    | scope ≥ standard, anything new; also handles vague goals — clarifies before designing. After spec, dispatches focused reviewers (trigger-based, parallel) |
 | [plan](skills/plan/SKILL.md)      | after design                                |
 | [tdd](skills/tdd/SKILL.md)       | implementing or fixing                      |
 | [debug](skills/debug/SKILL.md)     | something broken                            |
 | [review](skills/review/SKILL.md)    | before merge / after subagent task          |
 | [worktree](skills/worktree/SKILL.md)  | non-trivial or parallel work                |
-| [subagents](skills/subagents/SKILL.md) | independent tasks, fan-out                  |
+| [subagents](skills/subagents/SKILL.md) | independent tasks, fan-out. Each dispatch gets a ROLE charter, optional MODEL tier |
 | [ship](skills/ship/SKILL.md)      | merge / PR / cleanup                        |
 | [release](skills/release/SKILL.md)   | version / tag / publish                     |
 
@@ -72,6 +72,18 @@ Skills range from ~100 to ~400 tokens each. Compare to Superpowers' 2,500–3,50
 | Trivial task                 | ~11,000       | ~450 (bootstrap only)               |
 | Standard task (design→ship) | ~30–50k      | ~1,300 (bootstrap + 4 skills)       |
 | Complex task (all skills)    | ~40–60k      | ~2,900 (all skills combined)  |
+
+## Model tiers
+
+When dispatching subagents (`subagents` skill) or design reviewers (`design` review gate), Praxis uses three capability tiers instead of hardcoded model IDs:
+
+| Tier | Use when | Examples |
+|------|----------|----------|
+| `fast` | Mechanical edits, simple checks | rename a constant, pattern-match review |
+| `balanced` | Standard implementation, single-file work | add a function, write routine tests |
+| `strongest` | Complex reasoning, safety review | implement a protocol, review crash-recovery |
+
+Resolution: `.praxis/model-tiers.yaml` in project root or user home maps each tier to a concrete model ID. No config file → all subagents use the harness default. Template: [`model-tiers.example.yaml`](model-tiers.example.yaml).
 
 ## Multi-module work
 
@@ -436,6 +448,8 @@ Praxis is directly inspired by [Superpowers](https://github.com/obra/superpowers
 
 ```
 skills/<name>/SKILL.md # skills (using-praxis is the entrypoint; manual/fallback reads it directly)
+skills/references/     # shared protocols (multi-module, quality, reviewers)
+model-tiers.example.yaml # template for .praxis/model-tiers.yaml
 hooks/
   hooks.json           # hook registry
   run-hook.cmd         # Windows hook runner
