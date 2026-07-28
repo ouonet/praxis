@@ -17,7 +17,8 @@
       "category": "coding",
       "source": {
         "source": "github",
-        "repo": "ouonet/praxis"
+        "repo": "ouonet/praxis",
+        "ref": "feat/multi-module-workspaces"
       }
     }
   ]
