@@ -3,6 +3,9 @@
   "version": "2.3.9",
   "type": "module",
   "main": ".opencode/plugins/praxis.js",
+  "scripts": {
+    "quality": "node --check extensions/praxis.js && node --test tests/pi-extension.test.mjs"
+  },
   "keywords": ["triage", "discipline", "skills", "agent", "coding", "pi-package"],
   "pi": {
     "extensions": ["./extensions"],

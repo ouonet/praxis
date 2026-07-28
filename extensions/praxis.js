@@ -9,9 +9,15 @@ const BOOTSTRAP_MARKER = 'praxis.using-praxis.injected.v1';
 let cachedBootstrap;
 
 const stripFrontmatter = (content) => {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  return match ? match[2] : content;
+  const match = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n([\s\S]*)$/);
+  return match ? match[1] : content;
 };
+
+const adaptSkillLoadingForPi = (content) =>
+  content.replaceAll(
+    '`skills/<name>/SKILL.md`',
+    'the installed skill path advertised by pi',
+  );
 
 const loadBootstrap = () => {
   if (cachedBootstrap !== undefined) return cachedBootstrap;
@@ -20,7 +26,9 @@ const loadBootstrap = () => {
     return cachedBootstrap;
   }
 
-  const content = stripFrontmatter(fs.readFileSync(SKILL_PATH, 'utf8')).trim();
+  const content = adaptSkillLoadingForPi(
+    stripFrontmatter(fs.readFileSync(SKILL_PATH, 'utf8')),
+  ).trim();
 
   cachedBootstrap = `**Praxis bootstrap**
 
@@ -28,7 +36,8 @@ ${content}
 
 **Pi note**
 - This bootstrap is injected once per session by a pi extension.
-- There is no separate Skill tool in pi; load skills by reading skills/<name>/SKILL.md with the native read tool when needed.
+- There is no separate Skill tool in pi; read the installed path advertised by pi for each required Praxis skill.
+- This pi-specific loading rule overrides any generic file-read guidance in the bootstrap above.
 - Keep the normal Praxis triage flow and skill discipline unchanged.
 `;
 
