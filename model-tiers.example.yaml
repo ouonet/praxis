@@ -1,0 +1,21 @@
+# Praxis model-tier mapping — resolve capability tier to concrete model ID.
+# Copy this file to .praxis/model-tiers.yaml in your project root or user home.
+# Omit entirely to use harness defaults for all subagents.
+#
+# Tiers:
+#   fast      — minimal latency/cost (mechanical edits, simple checks)
+#   balanced  — default for most work (implementation, standard review)
+#   strongest — maximum quality (design exploration, safety review, state-machine analysis)
+#
+# Providers: anthropic | openai | bedrock | vertex | ollama
+
+tiers:
+  fast:
+    provider: anthropic
+    model: claude-haiku-4-5
+  balanced:
+    provider: anthropic
+    model: claude-sonnet-5
+  strongest:
+    provider: anthropic
+    model: claude-opus-5
