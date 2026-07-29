@@ -62,3 +62,11 @@ Cross-repo commits are not atomic. The revision set is the reproducibility bound
 Multiple change sets may share a repo. Give each its own branch/worktree. Stop only for an overlapping edit or shared-contract conflict; record and resolve it in the affected plan.
 
 Use branches for implementation. Fixed-SHA detached checkouts are valid for read-only integration, not commits.
+
+## Tool scope
+
+Harnesses launch from a single working directory. Semantic indexing (code graph, symbol search) only covers the coordinator repo — sibling modules at `../` paths are not indexed. File tools (`read`, `grep`, `glob`) still work across repos with relative paths.
+
+When dispatching a subagent to a module repo, note the repo path and that semantic tools may need an explicit project parameter. If the harness has no cross-repo tooling, fall back to file-level search.
+
+This is a harness limitation, not a Praxis defect.
