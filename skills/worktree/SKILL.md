@@ -14,3 +14,7 @@ cd ../<repo>-<topic> && <setup> && <run tests>
 ```
 
 Baseline must be green in every participating repository. If red, STOP - don't build on broken ground. Done → `ship`.
+
+## Tool scope
+
+Worktrees are separate directories from the main repo. Semantic indexing (code graph, symbol search) covers the original repo, not the worktree. File tools (`read`, `grep`, `glob`) work normally. For short-lived worktrees this is acceptable; for long sessions, note this limitation to the agent at dispatch.
