@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.4.0 - 2026-07-29
+
 - **pi CLI support**: distribute Praxis as a native pi package with manifest-discovered skills and a once-per-session bootstrap extension; document global and project installs, updates, removal, and generic branch pinning.
 - **Quality and documentation-coverage gates**: add a shared standard for declared mechanical checks, convention and design assessment, complete public-contract documentation, documented configuration and error modes, and runnable README commands across `design`, `onboard`, `tdd`, `review`, `ship`, and `archive`.
 - **Dependency-aware clarification**: `design` now resolves discoverable facts first, asks only the current decision frontier in prerequisite order, and stops once implementation-affecting contract, data, failure, and test decisions are decided or deferred.

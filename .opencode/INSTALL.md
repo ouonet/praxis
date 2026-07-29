@@ -34,7 +34,7 @@ To pin a specific version:
 
 ```json
 {
-  "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#v2.3.9"]
+  "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#v2.4.0"]
 }
 ```
 
