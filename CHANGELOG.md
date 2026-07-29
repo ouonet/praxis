@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 4.0.1 - 2026-07-29
+
+- **Coordinator synthesis**: spec review gate coordinator now thinks critically about reviewer findings — evaluates, resolves conflicts, spots gaps, and judges severity — rather than passively merging output. Reviewers advise; coordinator decides. Judgment principles prevent deadlock: hierarchy with escalation to user, overrides recorded in working notes, synthesis runs once.
+- **Tool scope documented**: `multi-module.md` now records that AI coding tools launch from a single working directory — semantic indexing only covers the coordinator repo, sibling modules need explicit project parameters or fall back to file-level search.
+
 ## 4.0.0 - 2026-07-29
 
 - **Spec review gate**: `design` now dispatches focused reviewers before handing off to `plan`. Reviewers are selected by a trigger table — only the ones matching the spec's characteristics run. A simple spec gets one baseline reviewer (same cost as today); a complex spec gets additional reviewers for state-machine completeness, cross-rule consistency, cross-module boundaries, crash-recovery safety, and implementability. All run in parallel. Trigger table and reviewer charters in new `skills/references/reviewers.md`.
