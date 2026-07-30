@@ -21,6 +21,8 @@ Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be 
 
 **📖 [Full documentation](https://ouonet.github.io/praxis/)**
 
+> 💡 **Looking for the single-module version (v2.4.0)?** If you prefer the legacy single-module setup of Praxis without multi-module topology or spec review gates, checkout or install from the [`single-module`](https://github.com/ouonet/praxis/tree/single-module) branch.
+
 ## Quick Start
 
 **Claude Code**
@@ -87,7 +89,7 @@ Resolution: `.praxis/model-tiers.yaml` in project root or user home maps each ti
 
 ## Multi-module work
 
-> **Availability:** Multi-module mode is experimental and currently ships only on the [`feat/spec-review-gate`](https://github.com/ouonet/praxis/tree/feat/spec-review-gate) branch - not on `main`. To use it, [install from that branch](#install-from-a-branch).
+> **Availability:** Multi-module topology is fully supported in Praxis v4.0+.
 
 When one change spans multiple modules or repositories, Praxis runs in **multi-module topology**. The agent declares it at triage and carries it on every turn:
 
@@ -170,7 +172,9 @@ Praxis enforces synchronization at multiple checkpoints:
 
 ### Install from a branch
 
-Multi-module mode currently lives on the `feat/spec-review-gate` branch (not `main`). Each agent's branch install is shown in its section below. The common pattern is to pin `#<branch>` on the source; if an installer ignores the ref, `git clone --branch <branch>` and install from the local checkout.
+To pin or test a specific git branch or tag, append `#<branch>` (or `--ref <branch>`) to the install source URL as supported by your agent harness.
+
+> **Single-module (v2.4.0 legacy):** Append `#single-module` or `@single-module` to install from the legacy single-module branch (e.g. `pi install git:github.com/ouonet/praxis@single-module`).
 
 ---
 
@@ -180,8 +184,6 @@ Multi-module mode currently lives on the `feat/spec-review-gate` branch (not `ma
 claude plugins marketplace add ouonet/praxis
 claude plugins install praxis
 ```
-
-> **Branch (multi-module):** `claude plugins marketplace add ouonet/praxis#feat/spec-review-gate` then `claude plugins install praxis`.
 
 To update after new releases:
 
@@ -198,8 +200,6 @@ Praxis is distributed as a Codex marketplace. Register the marketplace from the 
 ```bash
 codex plugin marketplace add ouonet/praxis
 ```
-
-> **Branch (multi-module):** `codex plugin marketplace add ouonet/praxis --ref feat/spec-review-gate`.
 
 Then open the plugin directory and install it from the Codex UI:
 
@@ -219,15 +219,11 @@ codex plugin marketplace upgrade praxis-marketplace
 
 See [`.opencode/INSTALL.md`](.opencode/INSTALL.md).
 
-> **Branch (multi-module):** in `opencode.json` - `"plugin": ["praxis@git+https://github.com/ouonet/praxis.git#feat/spec-review-gate"]` (see [`.opencode/INSTALL.md`](.opencode/INSTALL.md)).
-
 ### GitHub Copilot CLI
 
 ```
 copilot plugin install ouonet/praxis
 ```
-
-> **Branch (multi-module):** `copilot plugin install ouonet/praxis#feat/spec-review-gate`.
 
 (Or symlink `.copilot-plugin/plugin.json` per Copilot's plugin convention.)
 
@@ -237,15 +233,11 @@ copilot plugin install ouonet/praxis
 open customization of copilot -> Plugins -> Install Plugin From Source -> input  "ouonet/praxis"
 ```
 
-> **Branch (multi-module):** input `ouonet/praxis#feat/spec-review-gate` as the source.
-
 ### Antigravity CLI
 
 ```
 agy plugin install https://github.com/ouonet/praxis
 ```
-
-> **Branch (multi-module):** `agy plugin install https://github.com/ouonet/praxis#feat/spec-review-gate`.
 
 Antigravity imports Praxis through the Gemini-compatible plugin path, including the session-start hook.
 
@@ -254,8 +246,6 @@ Antigravity imports Praxis through the Gemini-compatible plugin path, including 
 ```
 gemini extensions install https://github.com/ouonet/praxis
 ```
-
-> **Branch (multi-module):** `gemini extensions install https://github.com/ouonet/praxis#feat/spec-review-gate`.
 
 The extension loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
 
@@ -267,10 +257,7 @@ pi install git:github.com/ouonet/praxis
 
 Praxis is distributed as a native pi package — pi auto-discovers skills from the `package.json` manifest. The `using-praxis` bootstrap is injected at session start automatically.
 
-> **Branch (multi-module):** append `@<branch>` to install from a specific branch:
-> ```bash
-> pi install git:github.com/ouonet/praxis@feat/spec-review-gate
-> ```
+> **Specific branch/tag:** append `@<branch>` to install from a specific branch or tag (e.g. `pi install git:github.com/ouonet/praxis@single-module`).
 
 **Install to project scope** (`.pi/settings.json`, shared with team):
 
@@ -303,8 +290,6 @@ git clone https://github.com/ouonet/praxis.git ~/.qoder-cn/praxis
 ln -s ~/.qoder-cn/praxis/skills ./skills
 ```
 
-> **Branch (multi-module):** `git clone --branch feat/spec-review-gate https://github.com/ouonet/praxis.git ~/.qoder-cn/praxis`, then symlink as above.
-
 Or install as an SDK plugin by pointing to the `.qoder-plugin/` manifest in your project config.
 
 The `using-praxis` skill is auto-discovered and triggered at session start by its description.
@@ -313,7 +298,6 @@ The `using-praxis` skill is auto-discovered and triggered at session start by it
 
 For harnesses without plugin support, add an instruction that reads `skills/using-praxis/SKILL.md` first.
 
-> **Branch (multi-module):** `git clone --branch feat/spec-review-gate https://github.com/ouonet/praxis.git` and point the instruction at that checkout.
 
 ## Verify it's working
 

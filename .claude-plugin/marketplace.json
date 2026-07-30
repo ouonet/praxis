@@ -18,7 +18,7 @@
       "source": {
         "source": "github",
         "repo": "ouonet/praxis",
-        "ref": "feat/spec-review-gate"
+        "ref": "main"
       }
     }
   ]
