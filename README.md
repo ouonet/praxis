@@ -15,26 +15,28 @@
 
 ---
 
+> ⚠️ **Legacy Branch:** This branch (`single-module`) contains the legacy v2.4.0 (single-module) release of Praxis. For the active release (v4.0+), see the [`main`](https://github.com/ouonet/praxis/tree/main) branch.
+
 **Praxis** is a discipline framework for AI coding agents. Tell your agent *what you need* and *what done looks like*—not *how to do it*. As AI gets smarter, this gap widens: the agent can apply domain expertise, handle edge cases, and adapt faster than step-by-step instructions allow.
 
 Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be significantly cheaper while keeping the core capabilities.
 
 **📖 [Full documentation](https://ouonet.github.io/praxis/)**
 
-## Quick Start
+## Quick Start (v2.4.0 Legacy)
 
 **Claude Code**
 
 ```bash
-claude plugins marketplace add ouonet/praxis 
-claude plugins install praxis@praxis
+claude plugins marketplace add ouonet/praxis#single-module
+claude plugins install praxis
 claude 'do a todo list app'
 ```
 
 **pi CLI**
 
 ```bash
-pi install git:github.com/ouonet/praxis
+pi install git:github.com/ouonet/praxis@single-module
 pi 'do a todo list app'
 ```
 
