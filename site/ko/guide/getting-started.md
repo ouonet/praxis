@@ -102,3 +102,18 @@ add OAuth login with GitHub
 ```
 
 예상: `praxis: scope=standard, loading=design,plan,tdd,review` — 에이전트가 코드를 건드리기 전에 명확화 질문을 한다.
+
+## 모델 계층 설정 (선택 사항)
+
+병렬 서브에이전트(`subagents`)나 명세 리뷰어(`design` 게이트)를 전출할 때 Praxis는 작업 능력 계층(`fast`, `balanced`, `strongest`)을 할당합니다.
+
+프로젝트 루트 또는 홈 디렉토리에 `.praxis/model-tiers.yaml` 파일을 생성하여 계층을 구체적인 모델에 매핑할 수 있습니다:
+
+```yaml
+fast: claude-3-5-haiku
+balanced: claude-3-7-sonnet
+strongest: claude-3-7-sonnet
+```
+
+설정 파일이 존재하지 않는 경우 모든 서브에이전트는 하네스의 기본 모델을 사용합니다.
+

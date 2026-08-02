@@ -12,5 +12,13 @@ Skills are short markdown files that inject structured discipline into an agent 
 | [worktree](./worktree) | non-trivial or parallel work | ~150 |
 | [subagents](./subagents) | independent tasks, fan-out | ~150 |
 | [ship](./ship) | merge / PR / cleanup | ~100 |
+| [archive](./archive) | merge spec into living docs, delete staging files | ~150 |
 | [release](./release) | version / tag / publish | ~150 |
 | [onboard](./onboard) | existing project, no tech-spec | ~200 |
+
+## Shared Protocols & References
+
+- [Quality Standard](./quality): Mechanical checks, convention adherence, design assessment, and doc-coverage rules.
+- [Spec Reviewers](./reviewers): Trigger table and charters for parallel spec review subagents.
+- [Multi-Module Protocol](./multi-module): Topology specification for cross-repository/module changes.
+

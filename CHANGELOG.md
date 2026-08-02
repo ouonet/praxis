@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-## 4.0.1 - 2026-07-29
+## 4.0.2 - 2026-08-03
+
+- **Documentation & Site Overhaul**: Complete update of `README.md` and VitePress site across 4 languages (English, Chinese, Japanese, Korean) to reflect v4.0+ capabilities, including Spec Review Gates, 3D Quality Standards, Model Tiers, and Multi-Module Topology.
+- **Core Vision & Pillars**: Documented Praxis's core mission — building multi-module, multi-repository projects via structured workflows with high quality, high efficiency, and token savings.
+- **Accurate Token Recount**: Updated token budget tables with precise BPE token metrics (~150 to ~1,180 tokens per skill; ~3,600 tokens for standard feature flow).
+- **Standalone Framework Positioning**: Removed legacy Superpowers comparisons to present Praxis as a standalone, enterprise-grade engineering discipline framework.
+
 
 - **Coordinator synthesis**: spec review gate coordinator now thinks critically about reviewer findings — evaluates, resolves conflicts, spots gaps, and judges severity — rather than passively merging output. Reviewers advise; coordinator decides. Judgment principles prevent deadlock: hierarchy with escalation to user, overrides recorded in working notes, synthesis runs once.
 - **Tool scope documented**: `multi-module.md` now records that AI coding tools launch from a single working directory — semantic indexing only covers the coordinator repo, sibling modules need explicit project parameters or fall back to file-level search.

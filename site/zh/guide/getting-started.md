@@ -102,3 +102,18 @@ add OAuth login with GitHub
 ```
 
 预期：`praxis: scope=standard, loading=design,plan,tdd,review` —— 智能体在接触代码前先问澄清问题。
+
+## 模型分级配置（可选）
+
+当派发并行子智能体（`subagents`）或规范评审员（`design` 关卡）时，Praxis 会分配任务能力分级（`fast`、`balanced`、`strongest`）。
+
+可在项目根目录或用户主目录下创建 `.praxis/model-tiers.yaml` 将分级映射到具体模型：
+
+```yaml
+fast: claude-3-5-haiku
+balanced: claude-3-7-sonnet
+strongest: claude-3-7-sonnet
+```
+
+若未配置文件，所有子智能体默认使用宿主环境的默认模型。
+

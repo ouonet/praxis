@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Praxis
   text: 목표를 정하고, 간섭하지 않는다.
-  tagline: AI 코딩 에이전트를 위한 규율 프레임워크. 에이전트에게 목표와 완료의 모습을 알려라 — 방법이 아닌.
+  tagline: 구조화된 워크플로우를 통해 고품질, 고효율, 극도의 토큰 절약으로 멀티 모듈 및 멀티 리포지토리 프로젝트를 구축하는 AI 에이전트 규율 프레임워크.
   image:
     light: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
     dark: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg
@@ -18,14 +18,14 @@ hero:
       link: https://github.com/ouonet/praxis
 
 features:
-  - title: 트리아지 기반
-    details: 스킬이 로드되기 전에 모든 작업을 범위별로 분류한다. 사소한 작업은 전체 흐름을 건너뛴다 — 필요할 때만 규율을 적용한다.
-  - title: 토큰 효율
-    details: 스킬 평균은 약 230토큰. 설계→출시 전체 사이클은 약 1,300토큰. 다른 대안의 30~50k와 비교하여.
-  - title: 지시가 아닌 의도
-    details: 명세는 결정 목록이다. 계획은 마일스톤 프레임워크다. 에이전트는 도메인 지식을 가져온다 — Praxis는 중요한 것을 제공한다.
-  - title: 멀티 도구 지원
-    details: pi CLI, Claude Code, Codex, OpenCode, Antigravity CLI, Gemini CLI, GitHub Copilot CLI, 그리고 마크다운 파일을 읽을 수 있는 모든 도구에서 작동한다.
+  - title: 멀티 모듈 & 멀티 리포지토리
+    details: Coordinator 계약과 change-set을 통해 복잡한 리포지토리 교차 변경 사항을 매끄럽게 조율 및 관리.
+  - title: 고품질 보증 (High Quality)
+    details: 트리거 기반 명세 리뷰어 게이트 (Spec Review Gate)와 3차원 품질 검증 (3D Quality Standard)으로 고표준 배포 보장.
+  - title: 고효율 & 극도의 토큰 절약
+    details: 진단 기반으로 필요한 스킬만 로드. 스킬당 약 ~150~~1,180 토큰, 표준 기능 사이클은 약 ~3,600 토큰.
+  - title: 의도 기반 & 크로스 하네스 지원
+    details: 절차서가 아닌 선언적 계약으로 의도를 전달. pi CLI, Claude Code, Codex, Antigravity, Gemini, Copilot 등 지원.
 ---
 
 ## 실제 동작

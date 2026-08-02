@@ -48,10 +48,21 @@
 
 **如果假设实质改变，停止并重新探索。** 不要强行通过如果你在解决的问题不再是问题了。在探索笔记中标记出尝试后得到的原因和经验。
 
-**如果里程碑目标移位 ≥50%，回到设计。** 不要扩展计划。承认新方向并重启。
+## 规范评审合成 (Spec Review Synthesis)
+
+**评审员建议，Coordinator 裁决。** 规范评审员作为独立 Subagent 按照特定契约运行。主智能体（Coordinator）对审查结果进行批判性评估，解决冲突、补齐遗漏边界，并一次性修补规范，而不是被动堆砌 Subagent 输出。
+
+## 模型分级映射 (Model Tier Mapping)
+
+**根据任务风险匹配模型能力。** 将 `fast` 用于机械化修改或 Lint 检查，`balanced` 用于单组件实现，`strongest` 用于核心协议、安全评审或复杂状态机。在 `.praxis/model-tiers.yaml` 中配置这些分级。
+
+## 多模块协同 (Multi-Module Coordination)
+
+**明确指定一个 Coordinator 仓库。** Coordinator 持有 change-set ID、跨模块规范及工作区计划。严禁在各模块规范中重复定义共享契约；统一引用 Coordinator 规范。提交修改时按依赖顺序执行，Coordinator 仓库最后提交。
 
 ## 文档同步
 
 **Living docs 是事实，staging docs 是草稿。** `ship` 后，规范移到 living docs。代码中的测试和注释与两者保持当前。
 
 **README 是第一个规范。** 如果它不匹配代码，PR 失败评审。同样规则适用于所有公共契约。
+

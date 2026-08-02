@@ -102,3 +102,18 @@ add OAuth login with GitHub
 ```
 
 期待される出力：`praxis: scope=standard, loading=design,plan,tdd,review` — エージェントはコードに触れる前に確認の質問をする。
+
+## モデル階層設定（オプション）
+
+並列サブエージェント（`subagents`）や仕様レビュアー（`design` ゲート）を起動する際、Praxis はタスクの能力階層（`fast`, `balanced`, `strongest`）を割り当てます。
+
+プロジェクトルートまたはホームディレクトリに `.praxis/model-tiers.yaml` を作成して、階層を具体的なモデルにマッピングします：
+
+```yaml
+fast: claude-3-5-haiku
+balanced: claude-3-7-sonnet
+strongest: claude-3-7-sonnet
+```
+
+設定ファイルが存在しない場合、すべてのサブエージェントはハーネスのデフォルトモデルを使用します。
+

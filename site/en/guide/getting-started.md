@@ -102,3 +102,18 @@ add OAuth login with GitHub
 ```
 
 Expected: `praxis: scope=standard, loading=design,plan,tdd,review` — the agent starts asking clarifying questions before touching code.
+
+## Model Tiers Configuration (Optional)
+
+When dispatching parallel subagents (`subagents`) or spec reviewers (`design` gate), Praxis assigns task capability tiers (`fast`, `balanced`, `strongest`).
+
+Create `.praxis/model-tiers.yaml` in your project root or home directory to map tiers to concrete models:
+
+```yaml
+fast: claude-3-5-haiku
+balanced: claude-3-7-sonnet
+strongest: claude-3-7-sonnet
+```
+
+If no configuration file exists, all subagents default to the harness default model.
+

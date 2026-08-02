@@ -10,15 +10,16 @@ Step-by-step recipes become obsolete as agents get smarter. Declarations of inte
 
 Triage decides. A typo fix doesn't need a spec. A new system does. Praxis applies overhead proportional to complexity.
 
-| Task | Praxis cost |
+| Task | Praxis Cost |
 |------|-------------|
-| Fix a typo | ~450 tokens (bootstrap only) |
-| Standard feature (design→ship) | ~1,300 tokens |
-| Complex task (all skills) | ~2,900 tokens |
+| Fix a typo / Trivial task | ~680 tokens (bootstrap only) |
+| Small task (`tdd`) | ~1,270 tokens |
+| Standard feature (`design`→`review`) | ~3,600 tokens |
+| Complex task (`design`→`ship`) | ~4,800 tokens |
 
 ## Skills are short
 
-If a rule needs 3,000 tokens to express, it's probably not a rule — it's a manual. Praxis skills average ~230 tokens each.
+If a rule needs 3,000 tokens to express, it's probably not a rule — it's a manual. Praxis skills are concise and intent-focused (~150 to ~1,180 tokens each).
 
 Short skills mean agents read them fully, follow them reliably, and the framework stays maintainable as AI capabilities evolve.
 

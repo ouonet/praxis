@@ -50,8 +50,21 @@
 
 **If a milestone's goal shifts ≥50%, return to design.** Don't extend the plan. Acknowledge the new direction and restart.
 
+## Spec Review Synthesis
+
+**Reviewers advise; coordinator decides.** Spec reviewers operate as independent subagents using focused charters. The primary agent (coordinator) evaluates findings critically, resolves conflicts, identifies missed edge cases, and applies fixes in a single pass rather than passively dumping subagent text.
+
+## Model Tier Mapping
+
+**Match model capabilities to task risk.** Use `fast` for mechanical edits or linting checks, `balanced` for single-component implementations, and `strongest` for core protocols, safety reviews, or complex state machines. Map these tiers in `.praxis/model-tiers.yaml`.
+
+## Multi-Module Coordination
+
+**Designate one coordinator repo.** The coordinator owns the change-set ID, cross-module spec, and workspace plan. Never duplicate shared contracts across module specs; reference the coordinator spec directly. Commit changes in dependency order, with the coordinator repo committing last.
+
 ## Documentation sync
 
 **Living docs are facts, staging docs are drafts.** After `ship`, spec moves to living docs. Tests and comments in code stay current with both.
 
 **README is the first spec.** If it doesn't match the code, PRs fail review. Same rule applies to all public contracts.
+

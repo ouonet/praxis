@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Praxis
   text: 定目标，不干预。
-  tagline: AI 编程智能体的工程规范框架。用目标和完成标准指导智能体，而不是步骤。
+  tagline: 通过结构化工作流，以高质量、高效、极省 Token 的方式构建多模块多仓库项目的 AI 智能体工程规范框架。
   image:
     light: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
     dark: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg
@@ -18,14 +18,14 @@ hero:
       link: https://github.com/ouonet/praxis
 
 features:
-  - title: 诊断驱动
-    details: 每个任务在加载任何技能前都先诊断范围。微小的任务跳过整个流程 —— 没有必要的复杂度。
-  - title: 轻量
-    details: 每个技能平均 230 token。完整的设计→交付流程约 1,300 token。与其他方案的 30-50k 相比。
-  - title: 目标驱动，不是指令驱动
-    details: 规范是决策列表。计划是里程碑框架。智能体会带来领域知识 —— Praxis 提供验收标准。
-  - title: 跨工具
-    details: 支持 pi CLI、Claude Code、Codex、OpenCode、Antigravity CLI、Gemini CLI、GitHub Copilot CLI，以及任何能读 markdown 的工具。
+  - title: 多模块与多仓库 (Multi-Module)
+    details: 支持 Coordinator 契约与 change-set 跨仓库协同，透明掌控复杂多模块项目的演进。
+  - title: 高质量保证 (High Quality)
+    details: 触发式规范评审关卡 (Spec Review Gate) 与三维质量校验 (3D Quality Standard)，保障高标准交付。
+  - title: 高效且极省 Token (Token-Lean)
+    details: 诊断驱动仅按需加载技能。单个技能约 ~150 至 ~1,180 token，标准迭代流程仅需 ~3,600 token。
+  - title: 目标驱动与跨工具 (Intent-driven)
+    details: 用声明式契约传递意图。原生支持 pi CLI、Claude Code、Codex、Antigravity、Gemini、Copilot 等。
 ---
 
 ## 效果展示

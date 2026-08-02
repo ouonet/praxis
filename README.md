@@ -15,9 +15,16 @@
 
 ---
 
-**Praxis** is a discipline framework for AI coding agents. Tell your agent *what you need* and *what done looks like*—not *how to do it*. As AI gets smarter, this gap widens: the agent can apply domain expertise, handle edge cases, and adapt faster than step-by-step instructions allow.
+**Praxis** is a discipline framework for AI coding agents to build complex, multi-module, multi-repository projects through structured workflows—delivering **high quality**, **high efficiency**, and **extreme token savings**.
 
-Inspired by [Superpowers](https://github.com/obra/superpowers), rewritten to be significantly cheaper while keeping the core capabilities.
+Tell your agent *what you need* and *what done looks like*—not *how to do it*. As AI gets smarter, declarations of intent, trigger-based spec review gates, 3D quality standards, and multi-module topology ensure robust, enterprise-grade execution without context bloat.
+
+### Core Value Pillars
+
+- 🎯 **Workflow-Driven**: Inline triage routes tasks to precise skill chains (`design` → `plan` → `tdd` → `review` → `ship`).
+- 🛡️ **High Quality**: Parallel spec review gates and 3D quality standards (mechanical checks, convention adherence, design cohesion, doc-coverage) guarantee production readiness.
+- ⚡ **High Efficiency & Token-Lean**: Skills average ~230 tokens each (~1,300 tokens per full feature cycle vs 30–50k in legacy frameworks). No ceremony for trivial edits.
+- 📦 **Multi-Module & Multi-Repo**: Coordinate complex changes across multiple repositories seamlessly via designated coordinator specs and change-set manifests.
 
 **📖 [Full documentation](https://ouonet.github.io/praxis/)**
 
@@ -50,30 +57,36 @@ Multi-module is a **topology**, declared alongside scope: when one change spans 
 
 ## Skills
 
-| Skill     | When                                        |
-| --------- | ------------------------------------------- |
-| [onboard](skills/onboard/SKILL.md)   | existing project with no docs/tech-spec.md  |
-| [design](skills/design/SKILL.md)    | scope ≥ standard, anything new; also handles vague goals — clarifies before designing. After spec, dispatches focused reviewers (trigger-based, parallel) |
-| [plan](skills/plan/SKILL.md)      | after design                                |
-| [tdd](skills/tdd/SKILL.md)       | implementing or fixing                      |
-| [debug](skills/debug/SKILL.md)     | something broken                            |
-| [review](skills/review/SKILL.md)    | before merge / after subagent task          |
-| [worktree](skills/worktree/SKILL.md)  | non-trivial or parallel work                |
-| [subagents](skills/subagents/SKILL.md) | independent tasks, fan-out. Each dispatch gets a ROLE charter, optional MODEL tier |
-| [ship](skills/ship/SKILL.md)      | merge / PR / cleanup                        |
-| [release](skills/release/SKILL.md)   | version / tag / publish                     |
+| Skill | Description | Tokens |
+| ----- | ----------- | ------ |
+| [onboard](skills/onboard/SKILL.md) | existing project with no docs/tech-spec.md | ~450 |
+| [design](skills/design/SKILL.md) | scope ≥ standard, anything new; handles vague goals & trigger-based spec reviewers | ~1,180 |
+| [plan](skills/plan/SKILL.md) | after design approval; milestone tasks | ~740 |
+| [tdd](skills/tdd/SKILL.md) | implementing or fixing; 3D quality refactor gate | ~590 |
+| [debug](skills/debug/SKILL.md) | something broken; root cause isolation | ~160 |
+| [review](skills/review/SKILL.md) | before merge / after subagent task; checks standards & doc-coverage | ~420 |
+| [worktree](skills/worktree/SKILL.md) | non-trivial or parallel work in Git worktrees | ~320 |
+| [subagents](skills/subagents/SKILL.md) | independent tasks, fan-out; includes ROLE charters and MODEL tiers | ~1,030 |
+| [ship](skills/ship/SKILL.md) | merge / PR / cleanup | ~430 |
+| [archive](skills/archive/SKILL.md) | merge spec into living docs, delete staging files | ~730 |
+| [release](skills/release/SKILL.md) | version / tag / publish | ~230 |
 
-Skills range from ~100 to ~400 tokens each. Compare to Superpowers' 2,500–3,500 per skill.
+Shared protocols & reference standards:
+- [Quality Standard](skills/references/quality.md) (~430 tokens): mechanical checks, convention adherence, design assessment, and doc-coverage rules.
+- [Spec Reviewers](skills/references/reviewers.md) (~1,640 tokens): trigger table and charters for parallel spec review subagents.
+- [Multi-Module Protocol](skills/references/multi-module.md) (~870 tokens): topology specification for cross-repository/module changes.
 
 ## Token budget
 
-|                              | Superpowers   | Praxis                        |
-| ---------------------------- | ------------- | ----------------------------- |
-| Bootstrap (every session)    | ~2,200        | ~450 (using-praxis + inline triage) |
-| Per skill load               | ~2,500–3,500 | ~100–400                            |
-| Trivial task                 | ~11,000       | ~450 (bootstrap only)               |
-| Standard task (design→ship) | ~30–50k      | ~1,300 (bootstrap + 4 skills)       |
-| Complex task (all skills)    | ~40–60k      | ~2,900 (all skills combined)  |
+Praxis minimizes prompt overhead by executing triage inline at session start and loading skills only when their scope is required:
+
+| Task Scope | Loaded Skills | Approximate Token Budget |
+| ---------- | ------------- | ------------------------ |
+| Bootstrap (session start) | `using-praxis` (inline triage) | ~680 |
+| Trivial task | None (bootstrap only) | ~680 |
+| Small task | `tdd` | ~1,270 |
+| Standard task | `design` + `plan` + `tdd` + `review` | ~3,600 |
+| Complex task | `design` + `plan` + `worktree` + `subagents` + `review` + `ship` | ~4,800 |
 
 ## Model tiers
 
@@ -385,40 +398,6 @@ Release confirms the version, moves CHANGELOG `Unreleased`, then asks before com
 | failing behavior       | debug                              |
 | take over this project | onboard                            |
 | release 1.2.0          | release                            |
-
-## Compared to Superpowers
-
-Praxis is directly inspired by [Superpowers](https://github.com/obra/superpowers). The core idea is the same: inject structured discipline into an agent session via skill files.
-
-| Superpowers skill                                                 | Praxis equivalent                          |
-| ----------------------------------------------------------------- | ------------------------------------------ |
-| `using-superpowers`                                             | `using-praxis` (triage inline)         |
-| `brainstorming`                                                 | `design`                                 |
-| `writing-plans`                                                 | `plan`                                   |
-| `executing-plans`                                               | `tdd`                                    |
-| `test-driven-development`                                       | `tdd`                                    |
-| `systematic-debugging`                                          | `debug`                                  |
-| `requesting-code-review` / `receiving-code-review`            | `review`                                 |
-| `using-git-worktrees`                                           | `worktree`                               |
-| `dispatching-parallel-agents` / `subagent-driven-development` | `subagents`                              |
-| `finishing-a-development-branch`                                | `ship`                                   |
-| `verification-before-completion`                                | gate markers in `tdd` / `ship`         |
-| `writing-skills`                                                | — (not needed; skills are plain Markdown) |
-| —                                                                | `onboard` (no Superpowers equivalent)    |
-| —                                                                | `archive` (no Superpowers equivalent)    |
-| —                                                                | `release` (no Superpowers equivalent)    |
-
-**Philosophy difference:** Superpowers gives agents detailed recipes—prose specs, step-by-step plans, narrative reasoning. Praxis gives agents *declarations of intent*—decisions, contracts, validation gates. This works because:
-
-- Agents get smarter; recipes become obsolete. Declarations stay relevant.
-- Leaner artifacts = faster iteration and long-term maintainability.
-- The agent brings domain knowledge; Praxis provides *what matters*, not *how to do it*.
-
-**Token savings:** The skill files are smaller (avg ~230 vs ~1,760 tokens), and artifacts are too. Praxis `design` outputs a spec (decisions, contracts, invariants) with no narrative; `plan` outputs milestone stubs with one-line goals. At `ship`, working notes are archived and the spec merges into living docs—context stays lean across sessions.
-
-**When to use Superpowers:** You want battle-tested, narrative-rich workflows and token cost isn't a constraint.
-
-**When to use Praxis:** You want agents to think, not follow recipes. You want specs and plans that survive across sessions and scale with AI capability.
 
 ## Philosophy
 

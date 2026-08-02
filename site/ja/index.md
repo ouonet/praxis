@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Praxis
   text: 目標を定め、介入しない。
-  tagline: AIコーディングエージェントのための規律フレームワーク。エージェントに目標と完了の形を伝える — やり方ではなく。
+  tagline: 構造化されたワークフローを通じて、高品質・高効率・極めて高いトークン節約でマルチモジュール・マルチリポジトリプロジェクトを構築する AI エージェントの規律フレームワーク。
   image:
     light: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
     dark: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg
@@ -18,14 +18,14 @@ hero:
       link: https://github.com/ouonet/praxis
 
 features:
-  - title: トリアージ駆動
-    details: スキルが読み込まれる前に、すべてのタスクがスコープ別に分類される。些細なタスクはフロー全体をスキップ — 必要なときだけ規律を適用する。
-  - title: トークン効率
-    details: スキルの平均は約230トークン。設計→出荷の完全サイクルは約1,300トークン。他の代替案の30〜50kと比較して。
-  - title: 意図で動かす、指示ではなく
-    details: 仕様は決定事項のリスト。計画はマイルストーンのフレームワーク。エージェントはドメイン知識をもたらす — Praxisは重要なことを提供する。
-  - title: マルチツール対応
-    details: pi CLI、Claude Code、Codex、OpenCode、Antigravity CLI、Gemini CLI、GitHub Copilot CLI、そしてmarkdownファイルを読めるあらゆるツールで動作する。
+  - title: マルチモジュール & マルチリポジトリ
+    details: Coordinator 契約と change-set により、複雑なリポジトリ横断変更をシームレスに調整・管理。
+  - title: 高品質保証 (High Quality)
+    details: トリガー型仕様レビュアーゲート (Spec Review Gate) と3次元品質検証 (3D Quality Standard) で高品質なデリバリーを保証。
+  - title: 高効率 & 極めて高いトークン節約
+    details: トリアージ駆動で必要なスキルのみをロード。1スキルあたり約 ~150〜~1,180 トークン、標準機能サイクルでも約 ~3,600 トークン。
+  - title: 意図駆動 & クロスハーネス対応
+    details: 手順書ではなく宣言的契約で意図を伝達。pi CLI、Claude Code、Codex、Antigravity、Gemini、Copilot 等にネイティブ対応。
 ---
 
 ## 動作例

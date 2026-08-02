@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Praxis
   text: What, not how.
-  tagline: A discipline framework for AI coding agents. Tell your agent what you need and what done looks like — not how to do it.
+  tagline: A discipline framework for AI coding agents to build complex multi-module, multi-repo projects through structured workflows — delivering high quality, high efficiency, and extreme token savings.
   image:
     light: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo.svg
     dark: https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-dark.svg
@@ -18,14 +18,14 @@ hero:
       link: https://github.com/ouonet/praxis
 
 features:
-  - title: Triage-driven
-    details: Every task is classified by scope before any skill loads. Trivial tasks skip the waterfall entirely — no ceremony unless it pays back.
-  - title: Token-lean
-    details: Skills average ~230 tokens each. A full design→ship cycle costs ~1,300 tokens. Compare to alternatives at 30–50k.
-  - title: Intent, not instruction
-    details: Specs are lists of decisions. Plans are milestone stubs. The agent brings domain knowledge — Praxis provides what matters.
-  - title: Cross-harness
-    details: Works with pi CLI, Claude Code, Codex, OpenCode, Antigravity CLI, Gemini CLI, GitHub Copilot CLI, and any harness that can read a markdown file.
+  - title: Multi-Module & Multi-Repo
+    details: Coordinate complex cross-repository changes seamlessly via designated coordinator specs, module plans, and stable change-sets.
+  - title: High Quality Assurance
+    details: Trigger-based Spec Review Gates and 3-dimensional quality standards (mechanical checks, convention adherence, design, doc-coverage).
+  - title: High Efficiency & Token-Lean
+    details: Inline triage loads only required skills. Skills range from ~150 to ~1,180 tokens each (~3,600 tokens for a standard feature cycle).
+  - title: Intent-Driven & Cross-Harness
+    details: Declarations of intent over verbose instructions. Native support for pi CLI, Claude Code, Codex, Antigravity, Gemini, Copilot, and more.
 ---
 
 ## See It In Action
