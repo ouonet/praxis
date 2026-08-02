@@ -21,12 +21,12 @@ Tell your agent *what you need* and *what done looks like*—not *how to do it*.
 
 ### Core Value Pillars
 
-- 🎯 **Workflow-Driven**: Inline triage routes tasks to precise skill chains (`design` → `plan` → `tdd` → `review` → `ship`).
-- 🛡️ **High Quality**: Parallel spec review gates and 3D quality standards (mechanical checks, convention adherence, design cohesion, doc-coverage) guarantee production readiness.
-- ⚡ **High Efficiency & Token-Lean**: Skills average ~230 tokens each (~1,300 tokens per full feature cycle vs 30–50k in legacy frameworks). No ceremony for trivial edits.
-- 📦 **Multi-Module & Multi-Repo**: Coordinate complex changes across multiple repositories seamlessly via designated coordinator specs and change-set manifests.
+- **Workflow-Driven**: Inline triage routes tasks to precise skill chains (`design` → `plan` → `tdd` → `review` → `ship`).
+- **High Quality**: Parallel spec review gates and 3D quality standards (mechanical checks, convention adherence, design cohesion, doc-coverage) guarantee production readiness.
+- **High Efficiency & Token-Lean**: Inline triage loads only required skills (~150 to ~1,180 tokens per skill; ~3,600 tokens for a standard feature cycle). No ceremony for trivial edits.
+- **Multi-Module & Multi-Repo**: Coordinate complex changes across multiple repositories seamlessly via designated coordinator specs and change-set manifests.
 
-**📖 [Full documentation](https://ouonet.github.io/praxis/)**
+**[Full documentation](https://ouonet.github.io/praxis/)**
 
 > 💡 **Looking for the single-module version (v2.4.0)?** If you prefer the legacy single-module setup of Praxis without multi-module topology or spec review gates, checkout or install from the [`single-module`](https://github.com/ouonet/praxis/tree/single-module) branch.
 
