@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **SessionStart inject policy (docs-aligned):** full bootstrap on startup/resume/clear/fork; brief reminder on `compact`; Gemini skips hook body when `contextFileName` owns bootstrap; Codex matcher narrowed from `.*` to documented sources.
 - **Dogfood:** add living `docs/tech-spec.md` and `docs/ROADMAP.md` for the Praxis repository itself.
 - **Remove retired `discover` skill** from the publish surface (vague goals remain `design` only).
 - **Harness-neutral wording:** skills and session-start no longer require Claude-only `Skill` / `TodoWrite` names.

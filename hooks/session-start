@@ -1,22 +1,56 @@
 #!/usr/bin/env bash
-# Praxis SessionStart hook - injects the startup skill into agent context.
+# Praxis SessionStart hook — injects using-praxis bootstrap per host docs.
+#
+# Sources (official):
+#   Claude Code: startup | resume | clear | compact | fork
+#   Codex:       startup | resume | clear | compact
+#   Copilot CLI: startup | resume | new
+#   Gemini CLI:  startup | resume | clear
+#
+# Inject policy:
+#   full  → startup, resume, clear, fork, new, unknown
+#   brief → compact (avoid re-pasting full skill after compaction)
+#   none  → Gemini/Antigravity when contextFileName already loads using-praxis
+#           (detected: stdin has hook_event_name, no CLAUDE_PLUGIN_ROOT/PLUGIN_ROOT/COPILOT_CLI)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PRAXIS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 SKILL_PATH="${PRAXIS_ROOT}/skills/using-praxis/SKILL.md"
 
-# Gemini passes hook context as JSON on stdin; read it non-blocking to detect the harness.
 stdin_json=""
 if [ -t 0 ]; then
-  : # stdin is a terminal — not Gemini
+  :
 else
   stdin_json=$(cat 2>/dev/null || true)
 fi
 
-# JSON-escape a string for inclusion in a JSON string value (RFC 8259).
+detect_source() {
+  local raw="$1"
+  if [ -z "$raw" ]; then
+    printf '%s' ""
+    return
+  fi
+  if command -v python3 >/dev/null 2>&1; then
+    printf '%s' "$raw" | PYTHONIOENCODING=utf-8 python3 -c '
+import json,sys
+try:
+    d=json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+src=d.get("source") or d.get("Source") or ""
+print(src if isinstance(src,str) else "")
+' 2>/dev/null || true
+    return
+  fi
+  printf '%s' "$raw" | tr -d '\n' | sed -n 's/.*"source"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1
+}
+
+has_hook_event_name() {
+  printf '%s' "$1" | grep -q '"hook_event_name"' 2>/dev/null
+}
+
 json_escape() {
-  # Prefer Python for complete control-char handling when available.
   if command -v python3 >/dev/null 2>&1; then
     PYTHONIOENCODING=utf-8 python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])'
     return
@@ -25,7 +59,6 @@ json_escape() {
     PYTHONIOENCODING=utf-8 python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])'
     return
   fi
-  # Minimal fallback: backslash, quotes, and common whitespace only.
   local s
   s=$(cat)
   s="${s//\\/\\\\}"
@@ -36,39 +69,83 @@ json_escape() {
   printf '%s' "$s"
 }
 
-if [ ! -f "${SKILL_PATH}" ]; then
-  # No skill file — emit empty additional context rather than failing the session.
-  content=""
-else
-  # Strip YAML frontmatter if present (--- ... ---).
-  startup_skill=$(awk '
+strip_frontmatter() {
+  awk '
     BEGIN { skip=0; seen=0 }
     /^---[[:space:]]*$/ {
       if (seen==0) { seen=1; skip=1; next }
       if (skip==1) { skip=0; next }
     }
     skip==0 { print }
-  ' "${SKILL_PATH}")
+  '
+}
 
-  content=$(printf '%s' "<EXTREMELY_IMPORTANT>
+BRIEF_CONTENT='<EXTREMELY_IMPORTANT>
+You still have Praxis after context compaction.
+
+Continue every turn with:
+`praxis: scope=<x>, loading=<skills>` (add `topology=multi-module` when required).
+
+Load skills via the harness skill loader when available, otherwise read `skills/<name>/SKILL.md`.
+Follow loaded skills and `<gate>` markers. Full triage table: skills/using-praxis/SKILL.md.
+</EXTREMELY_IMPORTANT>'
+
+build_full_content() {
+  if [ ! -f "${SKILL_PATH}" ]; then
+    printf '%s' ""
+    return
+  fi
+  local startup_skill
+  startup_skill=$(strip_frontmatter < "${SKILL_PATH}")
+  printf '%s' "<EXTREMELY_IMPORTANT>
 You have Praxis.
 
 Below is the full content of your 'praxis:using-praxis' skill — your introduction to using Praxis skills.
 Load other Praxis skills with the harness skill loader when available, otherwise read skills/<name>/SKILL.md with the native file-read tool.
 
 ${startup_skill}
-</EXTREMELY_IMPORTANT>")
+</EXTREMELY_IMPORTANT>"
+}
+
+emit() {
+  local payload
+  payload=$(printf '%s' "$1" | json_escape)
+  local shape="$2"
+  case "$shape" in
+    nested)
+      printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
+      ;;
+    flat)
+      printf '{"additionalContext":"%s"}\n' "$payload"
+      ;;
+    *)
+      printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
+      ;;
+  esac
+}
+
+SOURCE="$(detect_source "$stdin_json")"
+SOURCE="$(printf '%s' "$SOURCE" | tr '[:upper:]' '[:lower:]')"
+
+# Gemini/Antigravity: gemini-extension.json contextFileName already injects using-praxis.
+# If the shared hooks/hooks.json also runs (same path as Claude plugins), skip duplicate body.
+if has_hook_event_name "$stdin_json" \
+  && [ -z "${CLAUDE_PLUGIN_ROOT:-}" ] \
+  && [ -z "${PLUGIN_ROOT:-}" ] \
+  && [ -z "${COPILOT_CLI:-}" ]; then
+  emit "" nested
+  exit 0
 fi
 
-payload=$(printf '%s' "$content" | json_escape)
+case "${SOURCE}" in
+  compact) content="${BRIEF_CONTENT}" ;;
+  *) content="$(build_full_content)" ;;
+esac
 
-# Emit per-harness JSON shape.
-if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
-  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] || [ -n "${PLUGIN_ROOT:-}" ]; then
+  emit "$content" nested
 elif [ -n "${COPILOT_CLI:-}" ]; then
-  printf '{"additionalContext":"%s"}\n' "$payload"
-elif printf '%s' "$stdin_json" | grep -q '"hook_event_name"' 2>/dev/null; then
-  printf '{"additionalContext":"%s"}\n' "$payload"
+  emit "$content" flat
 else
-  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
+  emit "$content" nested
 fi

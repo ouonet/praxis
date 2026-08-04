@@ -1,14 +1,3 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/run-hook.cmd session-start"
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }

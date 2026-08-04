@@ -40,6 +40,7 @@ constraint:   Quality/lint/format tools are not declared for skill Markdown; ada
               Multi-module is an experimental coordination protocol (non-atomic cross-repo commits).
               Site (`site/`) is documentation publishing only; not required for agent runtime.
               Prompt-level `<gate>` markers are not enforced by a separate runtime state machine.
+              SessionStart inject policy: full using-praxis on startup/resume/clear/fork/new; brief reminder on compact; Gemini/Antigravity skip hook body when contextFileName already loads using-praxis (stdin hook_event_name without CLAUDE_PLUGIN_ROOT/PLUGIN_ROOT/COPILOT_CLI).
 convention:   Skills: one directory per skill; `SKILL.md` with YAML frontmatter `name` + `description`. Public set excludes retired `discover` (folded into `design`).
               References live under `skills/references/`, linked from workflow skills — not duplicated.
               Version source of truth: root `package.json` `version`; all plugin manifests and marketplace plugin entry must match.
