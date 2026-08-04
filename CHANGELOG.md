@@ -2,13 +2,15 @@
 
 ## Unreleased
 
+## 4.0.3 - 2026-08-04
+
 - **SessionStart inject policy (docs-aligned):** full bootstrap on startup/resume/clear/fork; brief reminder on `compact`; Gemini skips hook body when `contextFileName` owns bootstrap; Codex matcher narrowed from `.*` to documented sources.
 - **Dogfood:** add living `docs/tech-spec.md` and `docs/ROADMAP.md` for the Praxis repository itself.
 - **Remove retired `discover` skill** from the publish surface (vague goals remain `design` only).
 - **Harness-neutral wording:** skills and session-start no longer require Claude-only `Skill` / `TodoWrite` names.
 - **TDD vs manual acceptance:** RED-GREEN only for automated acceptance; manual acceptance is first-class.
 - **Session-start hardening:** control-char JSON escape; frontmatter strip; missing skill → empty valid JSON; drop dead `{{PRAXIS_ROOT}}` sed.
-- **Version alignment:** marketplace plugin version matches `package.json` (4.0.2).
+- **Version alignment:** marketplace plugin version matches `package.json`.
 - **Multi-module docs:** README matches experimental coordination protocol wording.
 - **Tests:** `npm test` / `npm run check` via Node built-in test runner.
 - **ship/archive:** tracked-task gate and archive approval wording clarified.
