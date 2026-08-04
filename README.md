@@ -102,7 +102,7 @@ Resolution: `.praxis/model-tiers.yaml` in project root or user home maps each ti
 
 ## Multi-module work
 
-> **Availability:** Multi-module topology is fully supported in Praxis v4.0+.
+> **Availability:** Multi-module topology is supported in Praxis v4.0+ as an **experimental coordination protocol** (declaration blocks, revision sets, non-atomic cross-repo commits). See `skills/references/multi-module.md`.
 
 When one change spans multiple modules or repositories, Praxis runs in **multi-module topology**. The agent declares it at triage and carries it on every turn:
 

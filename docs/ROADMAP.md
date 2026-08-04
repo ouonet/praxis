@@ -1,0 +1,4 @@
+- [x] M1: Dogfood baseline — living `docs/tech-spec.md` for the Praxis repo itself
+- [x] M2: Consistency cutover — remove retired surfaces, align versions/docs, neutralize harness tool names
+- [x] M3: Bootstrap hardening — session-start JSON/path safety, adapter tests, package scripts
+- [x] M4: Workflow rule repair — TDD vs manual acceptance, ship/archive gates, multi-module maturity wording

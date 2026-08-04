@@ -1,0 +1,3 @@
+context: Second-pass defect review found retired discover still published, Claude-only tool names, TDD/manual conflict, weak session-start JSON escaping, version drift, and no repo dogfood/tech-spec.
+choice: Dogfood with docs/tech-spec.md + ROADMAP; delete discover; harness-neutral skill/hook wording; TDD RED only for automated acceptance; harden session-start via python3 json.dumps; align marketplace to 4.0.2; add node --test scripts; keep multi-module labeled experimental protocol. site/ and hard gate engine deferred.
+ruled-out: Full workflow state-machine engine in this change-set (too large). Docs-only fix (runtime/publish defects need code). Bumping to 4.0.3 solely for alignment (Unreleased + same 4.0.2 sufficient).

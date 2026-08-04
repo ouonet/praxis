@@ -39,7 +39,7 @@ milestone:    <current milestone> (see docs/ROADMAP.md)
 
 If `topology=multi-module` (triage announcement or coordinator spec/plan declaration), read `../references/multi-module.md`. Merge each module's artifacts in its own repository first. Then merge shared contracts and integration facts in the coordinator, record the revision set, and archive it last. Keep module-local facts in module repos.
 
-`<gate>`Before proceeding: (1) verify `tdd`/`subagents` have completed all tasks listed in the plan; (2) confirm the user has provided explicit written approval.`</gate>`
+`<gate>` Before proceeding: (1) verify `tdd`/`subagents` have completed all tasks listed in the plan; (2) user has approved shipping/archiving this change (ship disposition or an explicit archive go-ahead). `</gate>`
 
 1. **Merge** staging spec (minus roadmap) into living doc. Not copy-paste — integrate, preserve existing structure.
 
@@ -47,7 +47,7 @@ If `topology=multi-module` (triage announcement or coordinator spec/plan declara
 
 3. **Decisions** (if spec or working notes contain a knowledge artifact — protocol spec, RE findings, architectural rationale): save to `docs/decisions/YYYY-MM-DD-<topic>.md` as `context / choice / ruled-out`.
 
-`<gate>`  confirm the merged content with the user before deleting staging spec and plan. ` </gate>`
+`<gate>` Confirm the merged living-doc content with the user before deleting the staging spec and plan. `</gate>`
 
 4. **Delete** `docs/staging/specs/YYYY-MM-DD-<topic>.md` — content absorbed; Git has the history.
 5. **Delete** `docs/staging/plans/YYYY-MM-DD-<topic>.md` — plans don't belong on `main`.

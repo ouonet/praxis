@@ -12,7 +12,7 @@ If `topology=multi-module` (triage announcement or coordinator spec/plan declara
 - No `- [ ]` remains in any relevant plan.
 - Staging spec reflects actual code behavior.
 - README commands runnable; tech-spec `contract`/`convention` match code (see `../references/quality.md`).
-- No incomplete TodoWrite tasks.
+- No incomplete tracked tasks in the harness task tracker (whatever the host calls it).
 - For multi-module work: module plans and local acceptance are complete, and coordinator integration passes (or the change is reported as `partial-commit`).
 
 1. `review` the whole diff.
@@ -26,7 +26,8 @@ If `topology=multi-module` (triage announcement or coordinator spec/plan declara
 
 4. If user-visible, add to CHANGELOG `Unreleased`. Releases move it to a version.
 
-5. Ask: **commit / merge / PR / keep / discard.** For an approved linked multi-repository implementation, commit is already in scope: commit non-coordinators in dependency order, write their commit IDs as the revision set, then commit the coordinator last. Use the shared change-set ID in every commit.
+5. Ask disposition: **commit / merge / PR / keep / discard.**  
+   For a linked multi-repository implementation whose approved plan already includes linked commits: run the commit protocol (non-coordinators in dependency order, record SHAs as the revision set, coordinator last, shared change-set ID in every commit) when the user chooses **commit** or previously approved that path — do not re-ask whether commits are in scope. Still never push or open a PR without explicit approval.
 
 If a linked commit fails, report `partial-commit`, preserve all commits and working trees, and report the exact recovery point.
 

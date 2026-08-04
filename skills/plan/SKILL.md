@@ -52,7 +52,7 @@ background, architecture, rationale (spec), CI commands, copy-pasted acceptance.
 
 ## Hand off
 
-`<gate>` The plan must exist on disk before handing off to `tdd`/`subagents`. For multi-module work, this means the coordinator workspace plan and every affected module plan in its owning repository.`</gate>`
+`<gate>` The plan must exist on disk before handing off to `tdd`/`subagents`. For multi-module work, this means the coordinator workspace plan and every affected module plan in its owning repository. `</gate>`
 
 Confirm plan with the user.
 

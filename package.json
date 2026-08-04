@@ -3,9 +3,24 @@
   "version": "4.0.2",
   "type": "module",
   "main": ".opencode/plugins/praxis.js",
-  "keywords": ["triage", "discipline", "skills", "agent", "coding", "pi-package"],
+  "keywords": [
+    "triage",
+    "discipline",
+    "skills",
+    "agent",
+    "coding",
+    "pi-package"
+  ],
   "pi": {
-    "extensions": ["./extensions"],
-    "skills": ["./skills"]
+    "extensions": [
+      "./extensions"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/**/*.test.js",
+    "check": "node --test test/invariants.test.js"
   }
 }

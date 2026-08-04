@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **Dogfood:** add living `docs/tech-spec.md` and `docs/ROADMAP.md` for the Praxis repository itself.
+- **Remove retired `discover` skill** from the publish surface (vague goals remain `design` only).
+- **Harness-neutral wording:** skills and session-start no longer require Claude-only `Skill` / `TodoWrite` names.
+- **TDD vs manual acceptance:** RED-GREEN only for automated acceptance; manual acceptance is first-class.
+- **Session-start hardening:** control-char JSON escape; frontmatter strip; missing skill → empty valid JSON; drop dead `{{PRAXIS_ROOT}}` sed.
+- **Version alignment:** marketplace plugin version matches `package.json` (4.0.2).
+- **Multi-module docs:** README matches experimental coordination protocol wording.
+- **Tests:** `npm test` / `npm run check` via Node built-in test runner.
+- **ship/archive:** tracked-task gate and archive approval wording clarified.
+
 ## 4.0.2 - 2026-08-03
 
 - **Documentation & Site Overhaul**: Complete update of `README.md` and VitePress site across 4 languages (English, Chinese, Japanese, Korean) to reflect v4.0+ capabilities, including Spec Review Gates, 3D Quality Standards, Model Tiers, and Multi-Module Topology.

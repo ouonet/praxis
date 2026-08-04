@@ -69,8 +69,8 @@ Then use the installed package path in `opencode.json`:
 
 ### Tool mapping
 
-When skills reference Claude Code tools:
-- `TodoWrite` → `todowrite`
-- `Task` with subagents → `@mention` syntax
-- `Skill` tool → OpenCode's native `skill` tool
+Skills are harness-neutral. On OpenCode:
+- task tracker → `todowrite`
+- subagents → `@mention` syntax
+- skill loader → OpenCode's native `skill` tool (or read `skills/<name>/SKILL.md`)
 - File operations → your native tools

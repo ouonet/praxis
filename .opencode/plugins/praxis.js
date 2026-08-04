@@ -65,12 +65,12 @@ export const PraxisPlugin = async ({ client, directory }) => {
     const fullContent = fs.readFileSync(skillPath, 'utf8');
     const { content } = extractAndStripFrontmatter(fullContent);
 
-    const toolMapping = `**Tool Mapping for OpenCode:**
-When skills reference tools you don't have, substitute OpenCode equivalents:
-- \`TodoWrite\` → \`todowrite\`
-- \`Task\` tool with subagents → Use OpenCode's subagent system (@mention)
-- \`Skill\` tool → OpenCode's native \`skill\` tool
-- \`Read\`, \`Write\`, \`Edit\`, \`Bash\` → Your native tools
+    const toolMapping = `**Harness note (OpenCode):**
+Skills use harness-neutral wording. On OpenCode:
+- task tracker → \`todowrite\`
+- subagents → OpenCode subagent system (@mention)
+- skill loader → native \`skill\` tool (or read skills/<name>/SKILL.md)
+- file/shell tools → your native tools
 
 Use OpenCode's native \`skill\` tool to list and load skills.`;
 

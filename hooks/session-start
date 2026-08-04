@@ -4,6 +4,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PRAXIS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SKILL_PATH="${PRAXIS_ROOT}/skills/using-praxis/SKILL.md"
 
 # Gemini passes hook context as JSON on stdin; read it non-blocking to detect the harness.
 stdin_json=""
@@ -13,14 +14,20 @@ else
   stdin_json=$(cat 2>/dev/null || true)
 fi
 
-# Substitute {{PRAXIS_ROOT}} with the actual absolute path so fallback readers can find skill files.
-startup_skill=$(sed "s|{{PRAXIS_ROOT}}|${PRAXIS_ROOT}|g" "${PRAXIS_ROOT}/skills/using-praxis/SKILL.md")
-
-content=$(printf '<EXTREMELY_IMPORTANT>\nYou have Praxis.\n\nBelow is the full content of your '\''praxis:using-praxis'\'' skill - your introduction to using Praxis skills. For all other Praxis skills, use the Skill tool in Claude Code.\n\n%s\n</EXTREMELY_IMPORTANT>' "$startup_skill")
-
-# JSON-escape
-escape() {
-  local s="$1"
+# JSON-escape a string for inclusion in a JSON string value (RFC 8259).
+json_escape() {
+  # Prefer Python for complete control-char handling when available.
+  if command -v python3 >/dev/null 2>&1; then
+    PYTHONIOENCODING=utf-8 python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])'
+    return
+  fi
+  if command -v python >/dev/null 2>&1; then
+    PYTHONIOENCODING=utf-8 python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])'
+    return
+  fi
+  # Minimal fallback: backslash, quotes, and common whitespace only.
+  local s
+  s=$(cat)
   s="${s//\\/\\\\}"
   s="${s//\"/\\\"}"
   s="${s//$'\n'/\\n}"
@@ -28,14 +35,39 @@ escape() {
   s="${s//$'\t'/\\t}"
   printf '%s' "$s"
 }
-payload=$(escape "$content")
+
+if [ ! -f "${SKILL_PATH}" ]; then
+  # No skill file — emit empty additional context rather than failing the session.
+  content=""
+else
+  # Strip YAML frontmatter if present (--- ... ---).
+  startup_skill=$(awk '
+    BEGIN { skip=0; seen=0 }
+    /^---[[:space:]]*$/ {
+      if (seen==0) { seen=1; skip=1; next }
+      if (skip==1) { skip=0; next }
+    }
+    skip==0 { print }
+  ' "${SKILL_PATH}")
+
+  content=$(printf '%s' "<EXTREMELY_IMPORTANT>
+You have Praxis.
+
+Below is the full content of your 'praxis:using-praxis' skill — your introduction to using Praxis skills.
+Load other Praxis skills with the harness skill loader when available, otherwise read skills/<name>/SKILL.md with the native file-read tool.
+
+${startup_skill}
+</EXTREMELY_IMPORTANT>")
+fi
+
+payload=$(printf '%s' "$content" | json_escape)
 
 # Emit per-harness JSON shape.
 if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
   printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"
 elif [ -n "${COPILOT_CLI:-}" ]; then
   printf '{"additionalContext":"%s"}\n' "$payload"
-elif echo "$stdin_json" | grep -q '"hook_event_name"' 2>/dev/null; then
+elif printf '%s' "$stdin_json" | grep -q '"hook_event_name"' 2>/dev/null; then
   printf '{"additionalContext":"%s"}\n' "$payload"
 else
   printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$payload"

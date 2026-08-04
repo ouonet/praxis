@@ -35,7 +35,7 @@ If multiple scopes fit, choose the smaller one. `vague` is a last resort — if 
 ## Rule
 
 0. Unfamiliar with this project? Read `docs/tech-spec.md` first.
-1. Classify inline using the table above — no Skill call needed for triage.
+1. Classify inline using the table above — no skill-loader call needed for triage.
 2. Announce: `praxis: scope=<x>, loading=<skills>` (add `topology=multi-module` when the change spans multiple modules - see Topology above)
-3. Load all required skills **in parallel** (single response, multiple Skill tool calls): `praxis:<name>`, or in file-read harnesses from `skills/<name>/SKILL.md`.
+3. Load all required skills **in parallel** (single response): use the harness skill loader when available (`praxis:<name>` / native skill tool), otherwise read `skills/<name>/SKILL.md` with the native file-read tool.
 4. Follow loaded skills literally; respect `<gate>` markers.
