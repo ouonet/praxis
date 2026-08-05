@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 4.0.5 - 2026-08-05
+
+- **Tool scope + structural search practice**: `multi-module.md` Tool scope states tools run from the coordinator's cwd — cross-repo access requires an explicit path parameter; tools without one stay coordinator-only. `using-praxis` gains Rule 5 — prefer structural search for code shapes (no index needed, works in any repo), a general best practice rather than a multi-module concern.
+
 ## 4.0.4 - 2026-08-05
 
 - **Multi-module doesn't change scope**: `multi-module.md` now states the skill chain follows scope alone — triage classifies cross-repo work exactly as single-repo work, with two fixed execution mechanics added (declaration block + commit protocol), not process weight. `debug` gains a multi-module branch (read-only investigation, registered-module fixes, commits deferred until integration passes). Adding a repo mid-change is now a declaration-block update plus user confirmation instead of a return to `design`. Triage guidance says start single-module when cross-repo scope is uncertain.

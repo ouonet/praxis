@@ -41,3 +41,4 @@ If multiple scopes fit, choose the smaller one. `vague` is a last resort — if 
 2. Announce: `praxis: scope=<x>, loading=<skills>` (add `topology=multi-module` when the change spans multiple modules - see Topology above)
 3. Load all required skills **in parallel** (single response): use the harness skill loader when available (`praxis:<name>` / native skill tool), otherwise read `skills/<name>/SKILL.md` with the native file-read tool.
 4. Follow loaded skills literally; respect `<gate>` markers.
+5. Search code shapes with structural search (no index needed, works in any repo); plain grep only when structure is irrelevant.
