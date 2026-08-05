@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 4.0.4 - 2026-08-05
+
+- **Multi-module doesn't change scope**: `multi-module.md` now states the skill chain follows scope alone — triage classifies cross-repo work exactly as single-repo work, with two fixed execution mechanics added (declaration block + commit protocol), not process weight. `debug` gains a multi-module branch (read-only investigation, registered-module fixes, commits deferred until integration passes). Adding a repo mid-change is now a declaration-block update plus user confirmation instead of a return to `design`. Triage guidance says start single-module when cross-repo scope is uncertain.
+
 ## 4.0.3 - 2026-08-04
 
 - **SessionStart inject policy (docs-aligned):** full bootstrap on startup/resume/clear/fork; brief reminder on `compact`; Gemini skips hook body when `contextFileName` owns bootstrap; Codex matcher narrowed from `.*` to documented sources.

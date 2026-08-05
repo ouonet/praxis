@@ -25,11 +25,12 @@ contract:     Public install surfaces and stability set:
               - Session-start hook must emit valid JSON context for the detected harness
 flow:         session-bootstrap: install/load plugin → inject using-praxis → every user turn triages scope → load skill chain → respect gates → optional ship/archive/release
               standard-change: design (spec + optional parallel spec reviewers) → user confirm → plan → user confirm → tdd/subagents → review → ship → archive
-              multi-module-change: declare topology → coordinator + per-module specs/plans → per-module implement → integration acceptance → dependency-ordered commits + revision set → archive
+              multi-module-change: declare topology → coordinator + per-module specs/plans (scope decides the skill chain; cross-repo adds declaration + commit protocol) → per-module implement → integration acceptance → dependency-ordered commits + revision set → archive
               onboard-flow: explore repo → write living docs only → user confirm → later design/plan/tdd
 invariant:    Triage chooses the smaller matching scope; trivial loads no workflow skills.
               `<gate>` markers are mandatory stop points in skill text (enforcement is prompt-level today).
               Multi-module mode is re-established from on-disk declaration or triage line, not session memory alone.
+              Scope decides the skill chain; topology only adds cross-repo execution mechanics (declaration + commit protocol).
               Living documentation is facts-only declarations; plans stay in staging until archive deletes them.
               Cross-repo commits are non-atomic; revision set is the reproducibility boundary.
               Semantic indexing may cover only the launch/coordinator repo; file tools still work across paths (documented harness limit).

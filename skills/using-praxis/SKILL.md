@@ -30,6 +30,8 @@ praxis: scope=<x>, topology=multi-module, loading=<skills>   # multi-module
 
 **Topology** is declared alongside scope, not chosen from the table. Default `single` (omit it). Announce `topology=multi-module` when one change spans multiple modules or repositories - every loaded workflow skill then follows `skills/references/multi-module.md`. Multiple repositories require a user-designated existing coordinator repository. Once a multi-module change is underway, a coordinator spec/plan declaring `topology: multi-module` exists on disk; read it and carry `topology=multi-module` forward every turn - do not re-decide from scratch. If unsure, check for that declaration before announcing.
 
+`topology` doesn't change scope: classify exactly as for single-repo work; multi-module only adds execution mechanics (`multi-module.md`). Unsure? Start single-module; upgrade the declaration once confirmed.
+
 If multiple scopes fit, choose the smaller one. `vague` is a last resort — if you can name a rough deliverable, use a lower scope instead. `feature change` = user-visible/public-contract change. `source code` = code/schema/config that changes shipped behavior; docs, tests, examples, CI, and tooling excluded.
 
 ## Rule

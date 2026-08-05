@@ -125,6 +125,8 @@ repos: <repo paths>
 
 The workspace plan adds module plan paths and the integration task. Each module also gets its own spec and plan in its owning repository, referencing shared contracts defined once in the coordinator - never duplicated.
 
+**Scope unchanged.** `topology` doesn't change scope — the skill chain follows scope alone. Multi-module adds execution mechanics (declaration + commit protocol), not process weight.
+
 **Lifecycle.** `design` (coordinator + per-module specs) → `plan` (workspace + per-module plans) → `tdd`/`subagents` per module → integrate against the coordinator's acceptance → commit in dependency order, coordinator last, recording each SHA as the revision set.
 
 **Safety.** Each repo is inspected before editing - a missing repo, red baseline, or unrelated dirty change blocks the change. Praxis never auto-clones, resets, rebases, or discards. Put the change-set ID in branch names and commit subjects, e.g. `[praxis:checkout-v2]`. Cross-repo commits aren't atomic; the recorded revision set is the reproducibility boundary.

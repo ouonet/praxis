@@ -17,7 +17,7 @@ If `topology=multi-module` (triage announcement or coordinator spec/plan declara
 - Every task names exactly one `repository:` and one `module:`. Cross-module verification is an `integration` task owned by the coordinator.
 - Order contract tasks before consumers, local acceptance before integration, and integration before linked commits.
 - Mark tasks parallel only when they have independent write scopes and acceptance.
-- Adding a repository after implementation starts requires returning to `design`.
+- Adding a repository after implementation starts: update the declaration block and confirm with the user. Return to `design` only if the addition changes a shared contract.
 
 ## Rolling wave
 
