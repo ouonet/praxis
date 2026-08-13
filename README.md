@@ -185,6 +185,34 @@ Praxis enforces synchronization at multiple checkpoints:
 
 ## Install
 
+### Praxis CLI (Recommended)
+
+Use the `praxis` CLI tool to easily install, update, inspect, or uninstall Praxis across any supported AI agent environment:
+
+```bash
+# Install for Codex in project scope
+npx praxis install --host codex --scope project
+
+# Install for Claude Code in user scope
+npx praxis install --host claude --scope user
+
+# Auto-detect available agent CLIs and install for all
+npx praxis install --host all
+
+# Check installation status across all agent hosts
+npx praxis status
+
+# Upgrade Praxis
+npx praxis update --host codex
+
+# Uninstall Praxis
+npx praxis uninstall --host codex --scope project
+```
+
+Supported hosts: `codex`, `claude`, `opencode`, `copilot`, `antigravity` (`agy`), `gemini`, `pi`, `qoder`, `agents` (generic), `all`.
+
+---
+
 ### Install from a branch
 
 To pin or test a specific git branch or tag, append `#<branch>` (or `--ref <branch>`) to the install source URL as supported by your agent harness.

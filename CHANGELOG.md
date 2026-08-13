@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-## 4.0.5 - 2026-08-05
+## 4.1.0 - 2026-08-14
+
+- **Praxis CLI tool**: Added `praxis` / `@ouonet/praxis` CLI (`praxis install`, `update`, `uninstall`, `status`) to simplify installation and management across AI agent platforms (Codex, Claude Code, OpenCode, Copilot CLI, Antigravity, Gemini CLI, Pi CLI, Qoder, and `.agents`).
+- **GitHub Actions CI/CD**: Added automated publish workflow (`.github/workflows/publish.yml`) for publishing `@ouonet/praxis` to npmjs.
 
 - **Tool scope + structural search practice**: `multi-module.md` Tool scope states tools run from the coordinator's cwd — cross-repo access requires an explicit path parameter; tools without one stay coordinator-only. `using-praxis` gains Rule 5 — prefer structural search for code shapes (no index needed, works in any repo), a general best practice rather than a multi-module concern.
 
