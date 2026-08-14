@@ -5,3 +5,5 @@ AGENT.md
 CLAUDE.md
 .opencode
 .omp
+node_modules
+package-lock.json
