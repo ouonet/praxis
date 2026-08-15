@@ -4,21 +4,25 @@ user:         Developers and teams running AI coding agents (Claude Code, pi, Co
 
 use-case:     Install as a harness plugin/package; session-start injects triage; agent loads only the skills required by scope; produce staging specs/plans, implement with TDD/review gates, archive into living docs, optionally release.
 
-architecture: Skill-pack + thin harness adapters. Core behavior lives in Markdown skills under `skills/`; executable entrypoints are session-start hooks and small JS plugins that inject `using-praxis` and register skill paths. No central runtime server.
+architecture: Skill-pack + thin harness adapters. Core behavior lives in Markdown skills under `skills/`; executable entrypoints are session-start hooks, Node.js CLI (`bin/praxis.js`), and small JS plugins that inject `using-praxis` and register skill paths. No central runtime server.
 
-stack:        Markdown skills; Bash session-start hooks; Node.js ESM plugins (`extensions/praxis.js`, `.opencode/plugins/praxis.js`); JSON plugin manifests per harness; optional VitePress docs site under `site/`; MIT license; package version from root `package.json`.
+stack:        Markdown skills; Bash session-start hooks; Node.js CLI & ESM plugins (`bin/praxis.js`, `src/cli/`, `extensions/praxis.js`, `.opencode/plugins/praxis.js`); JSON plugin manifests per harness; optional VitePress docs site under `site/`; MIT license; package version from root `package.json`.
 
-entry:        Session bootstrap via harness-specific install:
+entry:        Session bootstrap and installation entrypoints:
+  - CLI: `bin/praxis.js` (`npx @ouonet/praxis <command>`) for multi-host installation, inspection, and updates
   - Claude Code: marketplace/plugin; auto-loads `hooks/hooks.json` → `hooks/run-hook.cmd session-start`
   - Codex: `.codex-plugin/plugin.json` → `hooks/codex-hooks.json` → session-start
   - Copilot: `.copilot-plugin/plugin.json` SessionStart command → session-start
-  - Gemini/Antigravity: `gemini-extension.json` `contextFileName` = `skills/using-praxis/SKILL.md` (hooks file present but not referenced by extension manifest)
+  - Gemini/Antigravity: `gemini-extension.json` `contextFileName` = `skills/using-praxis/SKILL.md`
   - pi: `package.json` `pi.extensions` + `pi.skills`; `extensions/praxis.js` on `before_agent_start`
   - OpenCode: `package.json` `main` = `.opencode/plugins/praxis.js` (config skill paths + message transform bootstrap)
   - Qoder: `.qoder-plugin/plugin.json` skills path / project `skills/` discovery
   - Manual: read `skills/using-praxis/SKILL.md` first
 
 contract:     Public install surfaces and stability set:
+  - CLI commands: `install`, `status`, `update`, `uninstall` with flags `--host`, `--scope`, `--ref`, `--force`, `--dry-run`, `--method`
+  - Supported hosts: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `pi`, `omp`, `qoder`, `agents`, `all`
+  - Supported scopes: `project` (Git-tracked), `local` (workspace), `user` (global home)
   - Skill names and paths: `skills/<name>/SKILL.md` for onboard, design, plan, tdd, debug, review, worktree, subagents, ship, archive, release, using-praxis
   - Shared protocols: `skills/references/{quality,reviewers,multi-module}.md`
   - Triage announcement line: `praxis: scope=<x>, loading=<skills>` and optional `topology=multi-module`
@@ -41,7 +45,7 @@ invariant:
   - `<gate>` markers are mandatory stop points in skill text (enforcement is prompt-level today).
   - Multi-module mode is re-established from on-disk declaration or triage line, not session memory alone.
   - Scope decides the skill chain; topology only adds cross-repo execution mechanics (declaration + commit protocol).
-  - Living documentation is facts-only declarations; plans stay in staging until archive deletes them.
+  - Living documentation is atemporal, truth-dense declarations (zero history/dates/supersessions); past rationale belongs in `docs/decisions/` or `CHANGELOG.md`; bulky details live in `docs/specs/*.md`.
   - Cross-repo commits are non-atomic; revision set is the reproducibility boundary.
   - Semantic indexing may cover only the launch/coordinator repo; file tools still work across paths (documented harness limit).
 
@@ -53,7 +57,10 @@ constraint:
   - Multi-module is an experimental coordination protocol (non-atomic cross-repo commits).
   - Site (`site/`) is documentation publishing only; not required for agent runtime.
   - Prompt-level `<gate>` markers are not enforced by a separate runtime state machine.
-  - SessionStart inject policy: full using-praxis on startup/resume/clear/fork/new; brief reminder on compact; Gemini/Antigravity skip hook body when contextFileName already loads using-praxis (stdin hook_event_name without CLAUDE_PLUGIN_ROOT/PLUGIN_ROOT/COPILOT_CLI).
+  - SessionStart inject policy:
+    - Startup/resume/clear/fork/new: inject full `using-praxis` bootstrap.
+    - Compact: inject brief reminder only.
+    - Gemini/Antigravity: skip hook injection when `contextFileName` already loads `using-praxis`.
 
 convention:
   - Skills: one directory per skill; `SKILL.md` with YAML frontmatter `name` + `description`. Public set excludes retired `discover` (folded into `design`).
@@ -69,4 +76,4 @@ convention:
   - Naming: skill ids lowercase kebab; triage scopes lowercase; change-set ids appear in branch/commit subjects as `[praxis:<id>]` when multi-module.
   - TDD: RED-GREEN when acceptance is automated; manual acceptance is first-class when the plan says so.
 
-milestone:    M4 complete — self-host fixes shipped to living docs (see docs/ROADMAP.md)
+milestone:    see docs/ROADMAP.md

@@ -146,11 +146,13 @@ Praxis enforces a strict documentation structure and keeps code and docs in sync
 
 ### Living Documentation
 
-**Living documentation** — describes the current system state and direction. Always in sync with code.
+**Living documentation** reflects current active ground truth with **zero history, maximum truth density, and instant scannability**:
+- **The Living Doc Razor**: Past rationale belongs in `docs/decisions/` or `CHANGELOG.md`; `docs/tech-spec.md` holds exclusively active ground truth.
 
+Structure:
 - **`README.md`** — for users: what it is, who for, how to use it
-- **`docs/tech-spec.md`** — for developers/agents: current system state ([format](skills/archive/SKILL.md#tech-spec-format))
-- **`docs/specs/*.md`** — details split out of the tech-spec when it grows too bulky; referenced by path
+- **`docs/tech-spec.md`** — for developers/agents: current system backbone (≤300 lines, [format](skills/archive/SKILL.md#tech-spec-format))
+- **`docs/specs/*.md`** — modular subsystem details split out when bulky (>15 lines); referenced by path
 - **`docs/ROADMAP.md`** — direction and milestones (exists when project has ≥3 milestones or long-term direction)
 
 `docs/tech-spec.md` uses a structured declaration format:
@@ -160,7 +162,7 @@ purpose / user / use-case / architecture / stack / entry /
 contract / flow / invariant / constraint / convention / milestone
 ```
 
-Facts only — no interpretation, no plans. If details are bulky — e.g. a complex flow (branching, async, multi-actor) that needs a diagram — split into `docs/specs/` and link; the spec keeps a one-line summary.
+Atomic declarations only (≤25 words per sentence; structured lists/tables). Bulky details (schemas, state machines, deep algorithms) live in `docs/specs/<topic>.md` with a one-line summary in `tech-spec.md`.
 
 **Project artifacts** — records and conventions. Append-only or static.
 
