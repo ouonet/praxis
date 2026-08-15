@@ -10,9 +10,13 @@ export const HOSTS = {
     displayName: 'Claude Code',
     cliBinary: 'claude',
     defaultScope: 'project',
+    localTarget: '.claude/plugins/praxis',
     projectTarget: '.claude/plugins/praxis',
     userTarget: path.join(homeDir, '.claude', 'plugins', 'praxis'),
-    nativeInstallCmd: (ref) => (ref ? `claude plugins install praxis@${ref}` : 'claude plugins install praxis'),
+    nativeInstallCmd: (ref, scope) => {
+      const pkg = ref ? `praxis@${ref}` : 'praxis';
+      return scope === 'user' ? `claude plugins install ${pkg}` : `claude plugins install ${pkg} --scope project`;
+    },
     nativeUninstallCmd: () => 'claude plugins uninstall praxis',
     nativeUpdateCmd: () => 'claude plugins update praxis',
   },
@@ -22,6 +26,7 @@ export const HOSTS = {
     displayName: 'Codex CLI / App',
     cliBinary: 'codex',
     defaultScope: 'project',
+    localTarget: '.codex/plugins/praxis',
     projectTarget: '.codex/plugins/praxis',
     userTarget: path.join(homeDir, '.codex', 'plugins', 'praxis'),
     nativeInstallCmd: () => 'codex plugin marketplace add ouonet/praxis',
@@ -34,7 +39,8 @@ export const HOSTS = {
     displayName: 'OpenCode',
     cliBinary: 'opencode',
     defaultScope: 'project',
-    projectTarget: '.opencode',
+    localTarget: '.opencode',
+    projectTarget: 'opencode.json',
     userTarget: path.join(homeDir, '.config', 'opencode'),
     nativeInstallCmd: null,
     nativeUninstallCmd: null,
@@ -46,6 +52,7 @@ export const HOSTS = {
     displayName: 'GitHub Copilot CLI',
     cliBinary: 'copilot',
     defaultScope: 'project',
+    localTarget: '.copilot/plugins/praxis',
     projectTarget: '.copilot/plugins/praxis',
     userTarget: path.join(homeDir, '.copilot-cli', 'plugins', 'praxis'),
     nativeInstallCmd: () => 'copilot plugin install ouonet/praxis',
@@ -54,27 +61,23 @@ export const HOSTS = {
   },
   antigravity: {
     id: 'antigravity',
-    aliases: ['agy'],
+    aliases: ['agy', 'antigravity-ide'],
     displayName: 'Antigravity CLI / AGY',
     cliBinary: 'agy',
     defaultScope: 'project',
-    projectTarget: '.agents/plugins/praxis',
-    userTarget: path.join(homeDir, '.gemini', 'antigravity-ide', 'plugins', 'praxis'),
-    nativeInstallCmd: (ref) => (ref ? `agy plugin install https://github.com/ouonet/praxis#${ref}` : 'agy plugin install https://github.com/ouonet/praxis'),
+    localTarget: '.agents/plugins/praxis',
+    projectTarget: '.agents',
+    userTarget: path.join(homeDir, '.gemini', 'config', 'plugins', 'praxis'),
+    userAltTargets: [
+      path.join(homeDir, '.gemini', 'antigravity-ide', 'plugins', 'praxis'),
+      path.join(homeDir, '.gemini', 'config', 'skills', 'using-praxis'),
+    ],
+    nativeInstallCmd: (ref, scope) => {
+      const target = ref ? `https://github.com/ouonet/praxis#${ref}` : 'ouonet/praxis';
+      return `agy plugin install ${target}`;
+    },
     nativeUninstallCmd: () => 'agy plugin uninstall praxis',
     nativeUpdateCmd: () => 'agy plugin update praxis',
-  },
-  gemini: {
-    id: 'gemini',
-    aliases: [],
-    displayName: 'Gemini CLI',
-    cliBinary: 'gemini',
-    defaultScope: 'project',
-    projectTarget: '.gemini/extensions/praxis',
-    userTarget: path.join(homeDir, '.gemini', 'extensions', 'praxis'),
-    nativeInstallCmd: (ref) => (ref ? `gemini extensions install https://github.com/ouonet/praxis#${ref}` : 'gemini extensions install https://github.com/ouonet/praxis'),
-    nativeUninstallCmd: () => 'gemini extensions uninstall praxis',
-    nativeUpdateCmd: () => 'gemini extensions update praxis',
   },
   pi: {
     id: 'pi',
@@ -82,23 +85,54 @@ export const HOSTS = {
     displayName: 'pi CLI',
     cliBinary: 'pi',
     defaultScope: 'project',
+    localTarget: '.pi/skills',
     projectTarget: '.pi/skills',
     userTarget: path.join(homeDir, '.pi', 'plugins', 'praxis'),
+    userAltTargets: [
+      path.join(homeDir, '.pi', 'agent', 'skills', 'using-praxis'),
+      path.join(homeDir, '.pi', 'skills', 'using-praxis'),
+    ],
     nativeInstallCmd: (ref, scope) => {
       const pkg = ref ? `git:github.com/ouonet/praxis@${ref}` : 'git:github.com/ouonet/praxis';
-      return scope === 'project' ? `pi install -l ${pkg}` : `pi install ${pkg}`;
+      if (scope === 'local') return `pi install -l ${pkg}`;
+      if (scope === 'project') return `pi install -p ${pkg}`;
+      return `pi install ${pkg}`;
     },
     nativeUninstallCmd: () => 'pi remove git:github.com/ouonet/praxis',
     nativeUpdateCmd: () => 'pi update git:github.com/ouonet/praxis',
   },
+  omp: {
+    id: 'omp',
+    aliases: ['oh-my-pi', 'ohmypi'],
+    displayName: 'Oh My Pi (omp)',
+    cliBinary: 'omp',
+    defaultScope: 'project',
+    localTarget: '.omp/skills',
+    projectTarget: '.omp/skills',
+    userTarget: path.join(homeDir, '.omp', 'plugins', 'node_modules', 'praxis'),
+    userAltTargets: [
+      path.join(homeDir, '.omp', 'plugins'),
+      path.join(homeDir, '.omp', 'skills', 'using-praxis'),
+    ],
+    nativeInstallCmd: (ref, scope) => {
+      const pkg = ref ? `https://github.com/ouonet/praxis#${ref}` : 'https://github.com/ouonet/praxis';
+      if (scope === 'local') return `omp plugin install ${pkg} -l`;
+      if (scope === 'project') return `omp plugin install ${pkg} --scope=project`;
+      return `omp plugin install ${pkg}`;
+    },
+    nativeUninstallCmd: () => 'omp plugin uninstall praxis',
+    nativeUpdateCmd: () => 'omp plugin upgrade praxis',
+  },
   qoder: {
     id: 'qoder',
-    aliases: [],
+    aliases: ['qodercli', 'qoderclicn', 'qodercn'],
     displayName: 'Qoder CLI CN',
-    cliBinary: 'qoder',
+    cliBinary: ['qoderclicn', 'qodercli', 'qoder'],
     defaultScope: 'project',
+    localTarget: '.qoder-plugin',
     projectTarget: '.qoder-plugin',
-    userTarget: path.join(homeDir, '.qoder-cn', 'praxis'),
+    userTarget: path.join(homeDir, '.qoder-cn', 'plugins', 'praxis'),
+    userAltTargets: [path.join(homeDir, '.qoder-cn', 'praxis'), path.join(homeDir, '.qoder', 'plugins', 'praxis')],
     nativeInstallCmd: null,
     nativeUninstallCmd: null,
     nativeUpdateCmd: null,
@@ -109,6 +143,7 @@ export const HOSTS = {
     displayName: 'Generic Agent (.agents)',
     cliBinary: null,
     defaultScope: 'project',
+    localTarget: '.agents',
     projectTarget: '.agents',
     userTarget: path.join(homeDir, '.agents'),
     nativeInstallCmd: null,

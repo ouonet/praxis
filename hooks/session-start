@@ -12,10 +12,17 @@
 #   brief → compact (avoid re-pasting full skill after compaction)
 #   none  → Gemini/Antigravity when contextFileName already loads using-praxis
 #           (detected: stdin has hook_event_name, no CLAUDE_PLUGIN_ROOT/PLUGIN_ROOT/COPILOT_CLI)
-set -euo pipefail
+set -e
+set -u
+set -o pipefail 2>/dev/null || true
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PRAXIS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  PRAXIS_ROOT="${CLAUDE_PLUGIN_ROOT}"
+elif [ -n "${PLUGIN_ROOT:-}" ]; then
+  PRAXIS_ROOT="${PLUGIN_ROOT}"
+fi
 SKILL_PATH="${PRAXIS_ROOT}/skills/using-praxis/SKILL.md"
 
 stdin_json=""
@@ -91,6 +98,17 @@ Follow loaded skills and `<gate>` markers. Full triage table: skills/using-praxi
 </EXTREMELY_IMPORTANT>'
 
 build_full_content() {
+  if [ ! -f "${SKILL_PATH}" ]; then
+    if [[ "${SKILL_PATH}" =~ ^([a-zA-Z]):[/\\](.*) ]]; then
+      local drive="${BASH_REMATCH[1]}"
+      drive="$(printf '%s' "$drive" | tr '[:upper:]' '[:lower:]')"
+      local rest="${BASH_REMATCH[2]//\\//}"
+      SKILL_PATH="/mnt/${drive}/${rest}"
+    fi
+  fi
+  if [ ! -f "${SKILL_PATH}" ] && [ -f "${SCRIPT_DIR}/../skills/using-praxis/SKILL.md" ]; then
+    SKILL_PATH="${SCRIPT_DIR}/../skills/using-praxis/SKILL.md"
+  fi
   if [ ! -f "${SKILL_PATH}" ]; then
     printf '%s' ""
     return

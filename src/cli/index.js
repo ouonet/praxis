@@ -67,8 +67,8 @@ function printHelp() {
 Praxis CLI v${getVersion()} - Multi-host discipline framework installer
 
 USAGE:
+  npx @ouonet/praxis <command> [options]
   praxis <command> [options]
-  npx praxis <command> [options]
 
 COMMANDS:
   install, i       Install Praxis for specified host(s)
@@ -79,21 +79,57 @@ COMMANDS:
   version          Show Praxis CLI version
 
 OPTIONS:
-  --host, -H <name>     Target host: codex, claude, opencode, copilot, antigravity, gemini, pi, qoder, agents, all
-  --scope, -s <scope>   Target scope: project (default) or user
+  --host, -H <name>     Target host: codex, claude, opencode, copilot, antigravity (agy), pi, omp, qoder, agents, all
+  --scope, -s <scope>   Target scope: project (default in project), local, or user/global (default in home)
   --ref, -r <git-ref>   Git branch, tag, or commit to install/pin
   --method, -m <mode>   Installation method: auto (default), native, link, copy
   --dry-run             Simulate actions without writing files or running commands
   --force, -f           Overwrite existing configs or files
 
 EXAMPLES:
-  $ praxis install --host codex --scope project
-  $ praxis install --host claude --scope user
-  $ npx praxis install --host all
-  $ praxis status
-  $ praxis update --host pi
-  $ praxis uninstall --host opencode --scope project
+  $ npx @ouonet/praxis install --host all
+  $ npx @ouonet/praxis install --host claude --scope user
+  $ npx @ouonet/praxis install --host opencode --scope project
+  $ npx @ouonet/praxis install --host codex --scope local
+  $ npx @ouonet/praxis status
+  $ npx @ouonet/praxis update --host pi
+  $ npx @ouonet/praxis uninstall --host opencode --scope project
 `);
+}
+
+export function getStringWidth(str) {
+  if (!str) return 0;
+  const clean = str.replace(/\x1b\[[0-9;]*m/g, '');
+  let width = 0;
+  for (const char of clean) {
+    const code = char.codePointAt(0);
+    if (code === 0xFE0F || code === 0xFE0E || code === 0x200D) continue;
+    if (
+      (code >= 0x1100 && code <= 0x115F) ||
+      (code >= 0x2329 && code <= 0x232A) ||
+      (code >= 0x2E80 && code <= 0x303E) ||
+      (code >= 0x3040 && code <= 0xA4CF) ||
+      (code >= 0xAC00 && code <= 0xD7A3) ||
+      (code >= 0xF900 && code <= 0xFAFF) ||
+      (code >= 0xFE10 && code <= 0xFE19) ||
+      (code >= 0xFE30 && code <= 0xFE6F) ||
+      (code >= 0xFF00 && code <= 0xFF60) ||
+      (code >= 0xFFE0 && code <= 0xFFE6) ||
+      (code >= 0x1F000 && code <= 0x1FFFF) ||
+      (code >= 0x2600 && code <= 0x27BF)
+    ) {
+      width += 2;
+    } else {
+      width += 1;
+    }
+  }
+  return width;
+}
+
+export function padEndVisual(str, targetWidth, padChar = ' ') {
+  const currentWidth = getStringWidth(str);
+  if (currentWidth >= targetWidth) return str;
+  return str + padChar.repeat(targetWidth - currentWidth);
 }
 
 export async function runCli(args = process.argv.slice(2), { rootDir = process.cwd() } = {}) {
@@ -113,17 +149,29 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
 
   if (['status', 'list', 'ls'].includes(cmd)) {
     console.log(`\n🔍 Praxis Host Status Check [v${getVersion()}]\n`);
-    console.log(`${'Host'.padEnd(22)} ${'CLI Available'.padEnd(15)} ${'Project Scope'.padEnd(15)} ${'User Scope'.padEnd(15)}`);
-    console.log('-'.repeat(68));
+    const cols = [
+      ['Host', 24],
+      ['CLI Available', 16],
+      ['Local Scope', 18],
+      ['Project Scope', 18],
+      ['User Scope', 18],
+    ];
+
+    const header = cols.map(([name, w]) => padEndVisual(name, w)).join('');
+    console.log(header);
+    console.log('-'.repeat(cols.reduce((sum, [, w]) => sum + w, 0)));
 
     for (const host of Object.values(HOSTS)) {
       const status = getHostStatus(host, rootDir);
+      const isHome = status.isHome;
       const cliStr = status.binaryAvailable ? '✅ Yes' : '❌ No';
-      const projStr = status.projectInstalled ? '✅ Installed' : '⚪ Not installed';
+      const localStr = isHome ? '⚪ N/A (Home)' : (status.localInstalled ? '✅ Installed' : '⚪ Not installed');
+      const projStr = isHome ? '⚪ N/A (Home)' : (status.projectInstalled ? '✅ Installed' : '⚪ Not installed');
       const userStr = status.userInstalled ? '✅ Installed' : '⚪ Not installed';
-      console.log(`${host.displayName.padEnd(22)} ${cliStr.padEnd(15)} ${projStr.padEnd(15)} ${userStr.padEnd(15)}`);
+      const row = [host.displayName, cliStr, localStr, projStr, userStr];
+      console.log(row.map((val, idx) => padEndVisual(val, cols[idx][1])).join(''));
     }
-    console.log('\nUse "praxis install --host <host>" to install to a specific platform.\n');
+    console.log('\nUse "npx @ouonet/praxis install --host <host>" to install to a specific platform.\n');
     return 0;
   }
 
@@ -185,6 +233,6 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
     return 0;
   }
 
-  console.error(`❌ Unknown command: "${options.command}". Run "praxis help" for usage.`);
+  console.error(`❌ Unknown command: "${options.command}". Run "npx @ouonet/praxis help" for usage.`);
   return 1;
 }

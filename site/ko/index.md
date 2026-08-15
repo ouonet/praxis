@@ -25,7 +25,7 @@ features:
   - title: 고효율 & 극도의 토큰 절약
     details: 진단 기반으로 필요한 스킬만 로드. 스킬당 약 ~150~~1,180 토큰, 표준 기능 사이클은 약 ~3,600 토큰.
   - title: 의도 기반 & 크로스 하네스 지원
-    details: 절차서가 아닌 선언적 계약으로 의도를 전달. pi CLI, Claude Code, Codex, Antigravity, Gemini, Copilot 등 지원.
+    details: 절차서가 아닌 선언적 계약으로 의도를 전달. Claude Code, Codex, OpenCode, Antigravity, pi CLI, Oh My Pi (omp), Qoder CLI CN 등 지원.
 ---
 
 ## 실제 동작

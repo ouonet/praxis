@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 4.1.1 - 2026-08-15
+
+- **Scope Architecture Refinement**: Standardized scope definitions across all AI hosts: `project` (tracked in version control and shared with team), `local` (workspace-local directory without modifying shared repo manifests), and `user` / `global` (user home directory).
+- **Expanded Host Support**:
+  - **Oh My Pi (`omp`)**: Added native integration and detection via `omp` CLI and `~/.omp/plugins`.
+  - **Qoder CLI CN (`qoderclicn`)**: Added support for Qoder China CLI binary `qoderclicn` and `.qoder-plugin`.
+  - **Generic Agent (`.agents`)**: Added full support for the `.agents` open workspace specification.
+- **Accurate Host & Skill Detection**: Fixed false-positive detection where parent folders existed without Praxis skills; deep inspection now strictly checks for Praxis markers (`using-praxis` / `praxis` plugins).
+- **Terminal Display Visual Alignment**: Implemented visual width calculations for CJK and Emoji characters to ensure table columns and headers align across all terminal emulators.
+- **Deprecated Host Cleanup**: Completely removed deprecated Gemini CLI from the host catalog and documentation.
+- **Multilingual Documentation**: Updated full documentation site (`site/`) and `README.md` in English, Chinese, Japanese, and Korean.
+
 ## 4.1.0 - 2026-08-14
 
 - **Praxis CLI tool**: Added `praxis` / `@ouonet/praxis` CLI (`praxis install`, `update`, `uninstall`, `status`) to simplify installation and management across AI agent platforms (Codex, Claude Code, OpenCode, Copilot CLI, Antigravity, Gemini CLI, Pi CLI, Qoder, and `.agents`).

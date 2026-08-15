@@ -10,10 +10,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const hook = path.join(root, 'hooks', 'session-start');
 
+function toPosix(p) {
+  if (!p) return p;
+  if (os.platform() === 'win32') {
+    const match = p.match(/^([a-zA-Z]):[\\/](.*)/);
+    if (match) {
+      return `/mnt/${match[1].toLowerCase()}/${match[2].replace(/\\/g, '/')}`;
+    }
+    return p.replace(/\\/g, '/');
+  }
+  return p;
+}
+
 function run({ env = {}, stdin = '', clear = [] } = {}) {
   const base = { ...process.env, ...env };
   for (const k of clear) delete base[k];
-  return spawnSync('bash', [hook], {
+  if (os.platform() === 'win32') {
+    base.WSLENV = 'CLAUDE_PLUGIN_ROOT/p:PLUGIN_ROOT/p:COPILOT_CLI';
+  }
+  return spawnSync('bash', ['./hooks/session-start'], {
     cwd: root,
     env: base,
     input: stdin,
@@ -104,15 +119,15 @@ test('control characters still JSON-safe', () => {
   fs.mkdirSync(hooksDir, { recursive: true });
   fs.copyFileSync(hook, path.join(hooksDir, 'session-start'));
   fs.chmodSync(path.join(hooksDir, 'session-start'), 0o755);
-  const res = spawnSync('bash', [path.join(hooksDir, 'session-start')], {
+  const res = spawnSync('bash', ['./hooks/session-start'], {
     cwd: tmp,
-    env: { ...process.env, CLAUDE_PLUGIN_ROOT: tmp },
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: toPosix(tmp) },
     input: JSON.stringify({ source: 'startup' }),
     encoding: 'utf8',
   });
   assert.equal(res.status, 0, res.stderr);
   JSON.parse(res.stdout);
-  fs.rmSync(tmp, { recursive: true, force: true });
+  try { fs.rmSync(tmp, { recursive: true, force: true }); } catch {}
 });
 
 test('missing skill file: valid empty/full-safe JSON', () => {
@@ -121,16 +136,16 @@ test('missing skill file: valid empty/full-safe JSON', () => {
   fs.mkdirSync(hooksDir, { recursive: true });
   fs.copyFileSync(hook, path.join(hooksDir, 'session-start'));
   fs.chmodSync(path.join(hooksDir, 'session-start'), 0o755);
-  const res = spawnSync('bash', [path.join(hooksDir, 'session-start')], {
+  const res = spawnSync('bash', ['./hooks/session-start'], {
     cwd: tmp,
-    env: { ...process.env, CLAUDE_PLUGIN_ROOT: tmp },
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: toPosix(tmp) },
     input: JSON.stringify({ source: 'startup' }),
     encoding: 'utf8',
   });
   assert.equal(res.status, 0, res.stderr);
   const j = JSON.parse(res.stdout);
   assert.equal(j.hookSpecificOutput.additionalContext, '');
-  fs.rmSync(tmp, { recursive: true, force: true });
+  try { fs.rmSync(tmp, { recursive: true, force: true }); } catch {}
 });
 
 test('hooks matchers include documented SessionStart sources', () => {

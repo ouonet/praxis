@@ -25,7 +25,7 @@ features:
   - title: 高効率 & 極めて高いトークン節約
     details: トリアージ駆動で必要なスキルのみをロード。1スキルあたり約 ~150〜~1,180 トークン、標準機能サイクルでも約 ~3,600 トークン。
   - title: 意図駆動 & クロスハーネス対応
-    details: 手順書ではなく宣言的契約で意図を伝達。pi CLI、Claude Code、Codex、Antigravity、Gemini、Copilot 等にネイティブ対応。
+    details: 手順書ではなく宣言的契約で意図を伝達。Claude Code、Codex、OpenCode、Antigravity、pi CLI、Oh My Pi (omp)、Qoder CLI CN 等にネイティブ対応。
 ---
 
 ## 動作例

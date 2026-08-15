@@ -25,7 +25,7 @@ features:
   - title: High Efficiency & Token-Lean
     details: Inline triage loads only required skills. Skills range from ~150 to ~1,180 tokens each (~3,600 tokens for a standard feature cycle).
   - title: Intent-Driven & Cross-Harness
-    details: Declarations of intent over verbose instructions. Native support for pi CLI, Claude Code, Codex, Antigravity, Gemini, Copilot, and more.
+    details: Declarations of intent over verbose instructions. Native support for Claude Code, Codex, OpenCode, Antigravity, pi CLI, Oh My Pi (omp), Qoder CLI CN, and more.
 ---
 
 ## See It In Action

@@ -25,7 +25,7 @@ features:
   - title: 高效且极省 Token (Token-Lean)
     details: 诊断驱动仅按需加载技能。单个技能约 ~150 至 ~1,180 token，标准迭代流程仅需 ~3,600 token。
   - title: 目标驱动与跨工具 (Intent-driven)
-    details: 用声明式契约传递意图。原生支持 pi CLI、Claude Code、Codex、Antigravity、Gemini、Copilot 等。
+    details: 用声明式契约传递意图。原生支持 Claude Code、Codex、OpenCode、Antigravity、pi CLI、Oh My Pi (omp)、Qoder CLI CN 等。
 ---
 
 ## 效果展示

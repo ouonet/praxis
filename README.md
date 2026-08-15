@@ -36,12 +36,12 @@ Install Praxis across your agent harnesses in one command with the **Praxis CLI*
 
 ```bash
 # Universal install for all detected AI agent CLIs on your machine
-npx praxis install --host all
+npx @ouonet/praxis install --host all
 
 # Or install for a specific agent host
-npx praxis install --host claude
-npx praxis install --host codex
-npx praxis install --host opencode
+npx @ouonet/praxis install --host claude
+npx @ouonet/praxis install --host codex
+npx @ouonet/praxis install --host opencode
 ```
 
 Then prompt your agent:
@@ -198,35 +198,43 @@ Praxis provides a unified multi-host CLI tool to install, inspect, update, and r
 
 ```bash
 # 1. Universal Install: auto-detects installed agent CLIs and configures them all
-npx praxis install --host all
+npx @ouonet/praxis install --host all
 
-# 2. Host-Specific Install: configure a specific agent in project scope (default) or user home
-npx praxis install --host claude --scope user
-npx praxis install --host codex --scope project
-npx praxis install --host opencode
-npx praxis install --host antigravity
-npx praxis install --host gemini
-npx praxis install --host copilot
-npx praxis install --host pi
-npx praxis install --host qoder
-npx praxis install --host agents  # generic .agents directory
+# 2. Host-Specific Install: configure a specific agent in project, local, or user scope
+npx @ouonet/praxis install --host claude --scope user
+npx @ouonet/praxis install --host codex --scope project
+npx @ouonet/praxis install --host opencode --scope project
+npx @ouonet/praxis install --host antigravity
+npx @ouonet/praxis install --host copilot
+npx @ouonet/praxis install --host pi
+npx @ouonet/praxis install --host omp
+npx @ouonet/praxis install --host qoder
+npx @ouonet/praxis install --host agents  # generic .agents directory
 
 # 3. Status Check: inspect installation state across all agent platforms
-npx praxis status
+npx @ouonet/praxis status
 
 # 4. Update: upgrade Praxis to latest version
-npx praxis update --host all
+npx @ouonet/praxis update --host all
 
 # 5. Uninstall
-npx praxis uninstall --host codex --scope project
+npx @ouonet/praxis uninstall --host codex --scope project
 ```
+
+#### Scopes Definition
+
+| Scope | Description | Typical Use Case |
+| ----- | ----------- | ---------------- |
+| `project` | **Project scope (Git-tracked)**: Configures project manifests (`opencode.json`, `.agents/`, `package.json`, etc.) so that Praxis configurations are committed to version control and shared across all team members cloning the repo. (Default inside a repository). | Team repository shared discipline |
+| `local` | **Local scope**: Installs directly to local workspace directory (`.claude/plugins/`, `.codex/plugins/`, `.opencode/`, `.pi/skills/`, `.omp/skills/`, etc.) without modifying shared repo manifests. | Developer-local workspace testing without committing |
+| `user` (or `global`) | **User scope**: Installs globally in the user's home directory (`~/.claude/`, `~/.codex/`, `~/.gemini/config/`, `~/.config/opencode/`, `~/.pi/`, `~/.omp/`, `~/.agents/`). (Default when run in home directory). | Global availability across all local projects |
 
 #### CLI Options & Flags
 
 | Flag | Description | Default |
 | ---- | ----------- | ------- |
-| `--host, -H <name>` | Target agent: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `gemini`, `pi`, `qoder`, `agents`, `all` | `all` |
-| `--scope, -s <scope>` | Target installation scope: `project` or `user` | `project` |
+| `--host, -H <name>` | Target agent: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `pi`, `omp`, `qoder`, `agents`, `all` | `all` |
+| `--scope, -s <scope>` | Target installation scope: `project`, `local`, or `user` / `global` | `project` (in repo) / `user` (in home) |
 | `--ref, -r <ref>` | Git branch, tag, or commit to install/pin (e.g. `--ref single-module`) | latest `main` |
 | `--dry-run` | Preview actions and file paths without writing files or running commands | `false` |
 | `--force, -f` | Overwrite existing configurations or files | `false` |
@@ -242,7 +250,7 @@ If you prefer native package managers or manual configuration over the CLI insta
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host claude
+npx @ouonet/praxis install --host claude
 
 # Native marketplace install
 claude plugins marketplace add ouonet/praxis
@@ -260,7 +268,7 @@ claude plugins update praxis
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host codex
+npx @ouonet/praxis install --host codex
 
 # Native marketplace install
 codex plugin marketplace add ouonet/praxis
@@ -281,7 +289,7 @@ codex plugin marketplace upgrade praxis-marketplace
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host opencode
+npx @ouonet/praxis install --host opencode --scope project
 ```
 
 See [`.opencode/INSTALL.md`](.opencode/INSTALL.md) for manual plugin configuration details.
@@ -290,7 +298,7 @@ See [`.opencode/INSTALL.md`](.opencode/INSTALL.md) for manual plugin configurati
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host copilot
+npx @ouonet/praxis install --host copilot
 
 # Native plugin install
 copilot plugin install ouonet/praxis
@@ -308,31 +316,19 @@ open customization of copilot -> Plugins -> Install Plugin From Source -> input 
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host antigravity
+npx @ouonet/praxis install --host antigravity
 
 # Native plugin install
 agy plugin install https://github.com/ouonet/praxis
 ```
 
-Antigravity imports Praxis through the Gemini-compatible plugin path, including the session-start hook.
-
-#### Gemini CLI
-
-```bash
-# Using Praxis CLI (Recommended)
-npx praxis install --host gemini
-
-# Native extension install
-gemini extensions install https://github.com/ouonet/praxis
-```
-
-The extension loads `skills/using-praxis/SKILL.md` as session context, so triage runs from the first turn.
+Antigravity imports Praxis through the Gemini-compatible plugin path, including the session-start hook and progressive skill disclosure in `~/.gemini/config/plugins/praxis` or project-level `.agents/`.
 
 #### pi CLI
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host pi
+npx @ouonet/praxis install --host pi
 
 # Native pi package install
 pi install git:github.com/ouonet/praxis
@@ -340,7 +336,7 @@ pi install git:github.com/ouonet/praxis
 
 Praxis is distributed as a native pi package — pi auto-discovers skills from the `package.json` manifest. The `using-praxis` bootstrap is injected at session start automatically.
 
-**Install to project scope** (`.pi/settings.json`, shared with team):
+**Install to project scope** (`.pi/settings.json` or `package.json`, shared with team):
 ```bash
 pi install -l git:github.com/ouonet/praxis
 ```
@@ -357,11 +353,24 @@ pi update --all                              # update pi + packages
 pi remove git:github.com/ouonet/praxis
 ```
 
+#### Oh My Pi (omp)
+
+```bash
+# Using Praxis CLI (Recommended)
+npx @ouonet/praxis install --host omp
+
+# Native omp plugin install (user scope)
+omp plugin install https://github.com/ouonet/praxis
+
+# Native omp plugin install (project scope)
+omp plugin install https://github.com/ouonet/praxis --scope=project
+```
+
 #### Qoder CLI CN
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host qoder
+npx @ouonet/praxis install --host qoder
 
 # Manual discovery
 git clone https://github.com/ouonet/praxis.git ~/.qoder-cn/praxis
@@ -376,7 +385,7 @@ The `using-praxis` skill is auto-discovered and triggered at session start by it
 
 ```bash
 # Using Praxis CLI (Recommended)
-npx praxis install --host agents
+npx @ouonet/praxis install --host agents
 ```
 
 Installs `.agents/skills` and `.agents/hooks` into your workspace for generic agent harnesses (Cursor, Windsurf, Claude Desktop, Antigravity IDE, etc.).
@@ -392,7 +401,7 @@ For harnesses without plugin support, add an instruction that reads `skills/usin
 To pin or test a specific git branch or tag, pass `--ref <branch>` to `praxis install`, or append `#<branch>` / `@<branch>` to native install URLs:
 
 ```bash
-npx praxis install --host claude --ref single-module
+npx @ouonet/praxis install --host claude --ref single-module
 ```
 
 > **Single-module (v2.4.0 legacy):** Append `#single-module` or `@single-module` to install from the legacy single-module branch (e.g. `pi install git:github.com/ouonet/praxis@single-module`).
@@ -497,7 +506,7 @@ Release confirms the version, moves CHANGELOG `Unreleased`, then asks before com
 
 ```
 bin/
-  praxis.js            # Praxis CLI binary entrypoint (npx praxis)
+  praxis.js            # Praxis CLI binary entrypoint (npx @ouonet/praxis)
 src/cli/
   index.js             # CLI command runner & argument parser
   hosts.js             # Multi-host registry & target resolution

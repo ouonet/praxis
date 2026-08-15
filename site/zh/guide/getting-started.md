@@ -1,89 +1,123 @@
 # 开始使用
 
-## 安装
+## 安装方式
 
-### Claude Code
+Praxis 提供了统一的命令行安装工具 `@ouonet/praxis`，同时兼容各大 AI 宿主的原生插件生态。
 
+### 方式一：Praxis CLI（推荐）
+
+无需预先安装任何依赖，通过 `npx` 即可统一管理各宿主环境下的 Praxis 安装、更新与状态检测：
+
+```bash
+# 快速检测当前各宿主环境及安装状态
+npx @ouonet/praxis status
+
+# 一键为所有检测到的已安装环境配置 Praxis
+npx @ouonet/praxis install --host all
+
+# 为指定宿主安装
+npx @ouonet/praxis install --host claude --scope user
+npx @ouonet/praxis install --host opencode --scope project
+npx @ouonet/praxis install --host codex --scope local
+npx @ouonet/praxis install --host antigravity
+npx @ouonet/praxis install --host pi
+npx @ouonet/praxis install --host omp
+npx @ouonet/praxis install --host qoder
+```
+
+#### 支持的宿主（Hosts）
+- `claude`：Claude Code CLI
+- `codex`：Codex CLI / App
+- `opencode`：OpenCode
+- `antigravity`（别名 `agy`）：Antigravity CLI / AGY
+- `pi`：pi CLI
+- `omp`（别名 `oh-my-pi`）：Oh My Pi
+- `qoder`（别名 `qoderclicn`）：Qoder CLI CN
+- `copilot`：GitHub Copilot CLI
+- `agents`（别名 `generic`）：遵循 `.agents` 标准工作区协议的通用 Agent
+- `all`：一键安装至所有支持的主机
+
+#### 作用域（Scopes）
+- `project`（默认在项目目录）：项目范围，配置会落入版本控制（如 `opencode.json`、`.agents/skills/`、`.claude/settings.json`），与团队共享。
+- `local`：当前工作区本地范围，仅在当前目录生效但尽量不污染团队提交的共享配置文件。
+- `user` / `global`（默认在用户主目录）：全局/用户范围（如 `~/.claude`、`~/.codex`、`~/.gemini/config`、`~/.omp`、`~/.qoder-cn`），所有工作区均可加载。
+
+#### 常用命令
+```bash
+# 更新 Praxis
+npx @ouonet/praxis update --host all
+
+# 卸载 Praxis
+npx @ouonet/praxis uninstall --host opencode --scope project
+```
+
+---
+
+### 方式二：各宿主原生安装
+
+你也可以直接使用各宿主的原生命令或配置文件安装：
+
+#### Claude Code
 ```bash
 claude plugins marketplace add ouonet/praxis
 claude plugins install praxis
 ```
 
-### Codex
+#### Codex
+在 `.codex/config.toml` 中配置：
+```toml
+[plugins."praxis@git+https://github.com/ouonet/praxis.git"]
+enabled = true
+```
 
+#### OpenCode
+在 `opencode.json` 中配置：
 ```json
 {
   "plugin": ["praxis@git+https://github.com/ouonet/praxis.git"]
 }
 ```
 
-### OpenCode
-
-```json
-{
-  "plugin": ["praxis@git+https://github.com/ouonet/praxis.git"]
-}
-```
-
-### Antigravity CLI
-
+#### Antigravity CLI (AGY)
 ```bash
 agy plugin install https://github.com/ouonet/praxis
 ```
 
-### Gemini CLI
-
+#### pi CLI
 ```bash
-gemini extensions install https://github.com/ouonet/praxis
-```
-
-### pi CLI
-
-```bash
+# 全局安装
 pi install git:github.com/ouonet/praxis
-```
 
-**安装到项目范围**（写入 `.pi/settings.json`，与团队共享）：
-
-```bash
+# 项目范围安装（写入 .pi/settings.json）
 pi install -l git:github.com/ouonet/praxis
 ```
 
-**更新**：
-
+#### Oh My Pi (omp)
 ```bash
-pi update git:github.com/ouonet/praxis      # 更新单个包
-pi update --extensions                       # 更新所有包
-pi update --all                              # 更新 pi + 所有包
+omp plugin add https://github.com/ouonet/praxis
 ```
 
-**卸载**：
+#### Qoder CLI CN
+在项目根目录创建 `.qoder-plugin` 目录并添加 `plugin.json`，或在全局 `~/.qoder-cn/plugins/` 下配置。
 
-```bash
-pi remove git:github.com/ouonet/praxis
-```
+---
 
 ## 从分支安装
 
-尝试未发布的版本：
+尝试未发布或测试中的分支版本：
 
-**Claude Code**
 ```bash
-claude plugins marketplace add ouonet/praxis#<branch>
-claude plugins install praxis
+# 通过 CLI 从分支安装
+npx @ouonet/praxis install --host claude --ref <branch>
+npx @ouonet/praxis install --host opencode --ref <branch>
 ```
 
-**Codex / OpenCode**
-```json
-{
-  "plugin": ["praxis@git+https://github.com/ouonet/praxis.git#<branch>"]
-}
-```
+原生方式：
+- **Claude Code**：`claude plugins marketplace add ouonet/praxis#<branch>` 并 `claude plugins install praxis`
+- **pi CLI**：`pi install git:github.com/ouonet/praxis@<branch>`
+- **OpenCode**：`"plugin": ["praxis@git+https://github.com/ouonet/praxis.git#<branch>"]`
 
-**pi CLI**
-```bash
-pi install git:github.com/ouonet/praxis@<branch>
-```
+---
 
 ## 验证
 
@@ -93,7 +127,7 @@ pi install git:github.com/ouonet/praxis@<branch>
 fix the typo "teh" in README
 ```
 
-预期输出：`praxis: scope=trivial, loading=` —— 智能体直接修复，没有设计文档、计划或其他仪式。
+预期输出：`praxis: scope=trivial, loading=` —— 智能体直接修复，没有多余的仪式。
 
 再发送：
 
@@ -101,7 +135,9 @@ fix the typo "teh" in README
 add OAuth login with GitHub
 ```
 
-预期：`praxis: scope=standard, loading=design,plan,tdd,review` —— 智能体在接触代码前先问澄清问题。
+预期：`praxis: scope=standard, loading=design,plan,tdd,review` —— 智能体在接触代码前先问澄清问题并建立契约规范。
+
+---
 
 ## 模型分级配置（可选）
 
@@ -116,4 +152,3 @@ strongest: claude-3-7-sonnet
 ```
 
 若未配置文件，所有子智能体默认使用宿主环境的默认模型。
-

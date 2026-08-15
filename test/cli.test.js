@@ -13,6 +13,8 @@ test('resolveHost resolves host names and aliases', () => {
   assert.equal(resolveHost('claudecode')?.id, 'claude');
   assert.equal(resolveHost('agy')?.id, 'antigravity');
   assert.equal(resolveHost('generic')?.id, 'agents');
+  assert.equal(resolveHost('omp')?.id, 'omp');
+  assert.equal(resolveHost('oh-my-pi')?.id, 'omp');
   assert.equal(resolveHost('nonexistent'), null);
 });
 
@@ -94,7 +96,7 @@ test('installHost, status, update, and uninstall in temp directory', () => {
 test('installHost for codex and opencode in temp directory', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-test-'));
   try {
-    // Install codex
+    // Install codex (local/project)
     installHost(HOSTS.codex, {
       scope: 'project',
       dryRun: false,
@@ -103,7 +105,7 @@ test('installHost for codex and opencode in temp directory', () => {
     });
     assert.equal(fs.existsSync(path.join(tmpDir, '.codex', 'plugins', 'praxis', 'skills')), true);
 
-    // Install opencode
+    // Install opencode (project)
     installHost(HOSTS.opencode, {
       scope: 'project',
       dryRun: false,
@@ -113,7 +115,42 @@ test('installHost for codex and opencode in temp directory', () => {
     assert.equal(fs.existsSync(path.join(tmpDir, 'opencode.json')), true);
     const opencodeCfg = JSON.parse(fs.readFileSync(path.join(tmpDir, 'opencode.json'), 'utf8'));
     assert.ok(opencodeCfg.plugin.includes('praxis@git+https://github.com/ouonet/praxis.git'));
+
+    // Status check in project directory
+    const opencodeStatus = getHostStatus(HOSTS.opencode, tmpDir);
+    assert.equal(opencodeStatus.projectInstalled, true);
+    assert.equal(opencodeStatus.localInstalled, true);
+    assert.equal(opencodeStatus.isHome, false);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 });
+
+test('local scope does not modify project manifest for opencode', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-local-test-'));
+  try {
+    installHost(HOSTS.opencode, {
+      scope: 'local',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+    assert.equal(fs.existsSync(path.join(tmpDir, '.opencode', 'plugins', 'praxis.js')), true);
+    assert.equal(fs.existsSync(path.join(tmpDir, 'opencode.json')), false);
+
+    const status = getHostStatus(HOSTS.opencode, tmpDir);
+    assert.equal(status.localInstalled, true);
+    assert.equal(status.projectInstalled, false);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('home directory status marks project/local as false / not in project', () => {
+  const home = os.homedir();
+  const status = getHostStatus(HOSTS.agents, home);
+  assert.equal(status.isHome, true);
+  assert.equal(status.projectInstalled, false);
+  assert.equal(status.localInstalled, false);
+});
+
