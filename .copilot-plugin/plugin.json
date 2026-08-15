@@ -1,6 +1,6 @@
 {
   "name": "praxis",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "Praxis triage, living docs, and disciplined workflows for AI coding agents",
   "icon": "https://raw.githubusercontent.com/ouonet/praxis/main/assets/logo-mark.svg",
   "hooks": {

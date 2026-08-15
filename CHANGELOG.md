@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 4.2.2 - 2026-08-16
+
+- **Non-Destructive Selective Uninstallation**:
+  - Fixed `uninstallHost` across all hosts (`agents`, `antigravity`, `opencode`, `pi`, `omp`, `qoder`) to selectively remove only Praxis-owned skill directories (the 13 Praxis skills), hook files, and plugin files.
+  - Eliminated dangerous blanket deletions of workspace folders (`.agents/`, `skills/`, `.opencode/`, `.pi/`, `.omp/`); user rules, `AGENTS.md`, and custom skills are preserved 100% intact.
+  - Added sub-item copying in `installHost` so installing Praxis into an existing `.agents/skills` or `skills/` directory does not overwrite or skip user-created skills.
+- **Smart Scope Auto-Resolution**:
+  - When uninstalling or updating without an explicit `--scope` flag, the CLI now queries active installation status: if project/local scope is not installed but global (user) scope is installed, it automatically targets `user` scope instead of executing destructive operations on the project directory.
+  - Added graceful skips when Praxis is not installed in any scope.
+
 ## 4.2.1 - 2026-08-15
 
 - **Codex CLI Deep Cleanup & Marketplace Synchronization**:

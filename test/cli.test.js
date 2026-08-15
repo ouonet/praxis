@@ -154,3 +154,62 @@ test('home directory status marks project/local as false / not in project', () =
   assert.equal(status.localInstalled, false);
 });
 
+test('uninstallHost is non-destructive to user files in .agents', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-nondestructive-'));
+  try {
+    // 1. User has custom rules, custom skills, and AGENTS.md in .agents
+    const agentsDir = path.join(tmpDir, '.agents');
+    fs.mkdirSync(path.join(agentsDir, 'rules'), { recursive: true });
+    fs.writeFileSync(path.join(agentsDir, 'rules', 'my-rule.md'), '# My Custom Rule');
+    fs.mkdirSync(path.join(agentsDir, 'skills', 'my-custom-skill'), { recursive: true });
+    fs.writeFileSync(path.join(agentsDir, 'skills', 'my-custom-skill', 'SKILL.md'), '# My Skill');
+    fs.writeFileSync(path.join(agentsDir, 'AGENTS.md'), '# Agents config');
+
+    // 2. Install Praxis in project scope
+    installHost(HOSTS.agents, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+
+    // Verify both Praxis and user files exist
+    assert.equal(fs.existsSync(path.join(agentsDir, 'skills', 'using-praxis', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(agentsDir, 'rules', 'my-rule.md')), true);
+    assert.equal(fs.existsSync(path.join(agentsDir, 'skills', 'my-custom-skill', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(agentsDir, 'AGENTS.md')), true);
+
+    // 3. Uninstall Praxis from agents
+    uninstallHost(HOSTS.agents, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+
+    // 4. Assert Praxis skills are removed, BUT user files remain 100% intact!
+    assert.equal(fs.existsSync(path.join(agentsDir, 'skills', 'using-praxis')), false);
+    assert.equal(fs.existsSync(path.join(agentsDir, 'rules', 'my-rule.md')), true);
+    assert.equal(fs.existsSync(path.join(agentsDir, 'skills', 'my-custom-skill', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(agentsDir, 'AGENTS.md')), true);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('uninstallHost gracefully skips when no scope is installed', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-skip-test-'));
+  try {
+    const ok = uninstallHost(HOSTS.copilot, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+    assert.equal(ok, true);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+

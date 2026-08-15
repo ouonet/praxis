@@ -85,6 +85,133 @@ export function copyOrLink(src, dest, { method = 'copy', force = false, dryRun =
   console.log(`  [success] Copied ${src} -> ${dest}`);
 }
 
+export function copyPraxisSkillsToDir(praxisSrc, destSkillsDir, { method = 'copy', force = false, dryRun = false } = {}) {
+  const srcSkills = path.join(praxisSrc, 'skills');
+  if (!fs.existsSync(srcSkills)) return;
+  const entries = fs.readdirSync(srcSkills, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const src = path.join(srcSkills, entry.name);
+      const dest = path.join(destSkillsDir, entry.name);
+      copyOrLink(src, dest, { method, force, dryRun });
+    }
+  }
+}
+
+export function copyPraxisHooksToDir(praxisSrc, destHooksDir, { method = 'copy', force = false, dryRun = false } = {}) {
+  const srcHooks = path.join(praxisSrc, 'hooks');
+  if (!fs.existsSync(srcHooks)) return;
+  const entries = fs.readdirSync(srcHooks, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isFile()) {
+      const src = path.join(srcHooks, entry.name);
+      const dest = path.join(destHooksDir, entry.name);
+      copyOrLink(src, dest, { method, force, dryRun });
+    }
+  }
+}
+
+export function copyPluginFiles(src, dest, { method = 'copy', force = false, dryRun = false } = {}) {
+  const itemsToCopy = [
+    'skills',
+    'hooks',
+    'extensions',
+    '.claude-plugin',
+    '.codex-plugin',
+    '.copilot-plugin',
+    '.qoder-plugin',
+    '.opencode',
+    'gemini-extension.json',
+    'package.json',
+    'README.md',
+    'LICENSE',
+  ];
+
+  for (const item of itemsToCopy) {
+    const itemSrc = path.join(src, item);
+    if (fs.existsSync(itemSrc)) {
+      const itemDest = path.join(dest, item);
+      copyOrLink(itemSrc, itemDest, { method, force, dryRun });
+    }
+  }
+}
+
+export const PRAXIS_SKILL_NAMES = [
+  'using-praxis',
+  'archive',
+  'debug',
+  'design',
+  'onboard',
+  'plan',
+  'references',
+  'release',
+  'review',
+  'ship',
+  'subagents',
+  'tdd',
+  'worktree',
+];
+
+export const PRAXIS_HOOK_FILES = [
+  'session-start',
+  'SessionStart.js',
+  'run-hook.cmd',
+  'hooks.json',
+  'codex-hooks.json',
+  'gemini-hooks.json',
+];
+
+export function removePraxisSkillsFromDir(skillsDir, dryRun = false) {
+  if (!fs.existsSync(skillsDir)) return;
+  for (const skill of PRAXIS_SKILL_NAMES) {
+    const skillPath = path.join(skillsDir, skill);
+    if (fs.existsSync(skillPath)) {
+      if (dryRun) {
+        console.log(`  [dry-run] Remove skill: ${skillPath}`);
+      } else {
+        try {
+          fs.rmSync(skillPath, { recursive: true, force: true });
+          console.log(`  [success] Removed skill: ${skillPath}`);
+        } catch {}
+      }
+    }
+  }
+  if (!dryRun) {
+    cleanEmptyDirectory(skillsDir);
+  }
+}
+
+export function removePraxisHooksFromDir(hooksDir, dryRun = false) {
+  if (!fs.existsSync(hooksDir)) return;
+  for (const hook of PRAXIS_HOOK_FILES) {
+    const hookPath = path.join(hooksDir, hook);
+    if (fs.existsSync(hookPath)) {
+      if (dryRun) {
+        console.log(`  [dry-run] Remove hook: ${hookPath}`);
+      } else {
+        try {
+          fs.rmSync(hookPath, { force: true });
+          console.log(`  [success] Removed hook: ${hookPath}`);
+        } catch {}
+      }
+    }
+  }
+  if (!dryRun) {
+    cleanEmptyDirectory(hooksDir);
+  }
+}
+
+export function cleanEmptyDirectory(dir) {
+  try {
+    if (fs.existsSync(dir)) {
+      const entries = fs.readdirSync(dir);
+      if (entries.length === 0) {
+        fs.rmdirSync(dir);
+      }
+    }
+  } catch {}
+}
+
 export function installHost(host, options = {}) {
   const rootDir = options.rootDir || process.cwd();
   const scope = normalizeScope(options.scope || host.defaultScope, rootDir);
@@ -177,7 +304,7 @@ export function installHost(host, options = {}) {
     const pluginDest = path.join(opencodeDir, 'plugins', 'praxis.js');
     copyOrLink(path.join(praxisSrc, '.opencode', 'plugins', 'praxis.js'), pluginDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     const skillsDest = path.join(opencodeDir, 'skills');
-    copyOrLink(path.join(praxisSrc, 'skills'), skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    copyPraxisSkillsToDir(praxisSrc, skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     return true;
   }
 
@@ -190,7 +317,7 @@ export function installHost(host, options = {}) {
     } else {
       const agentsDest = path.join(rootDir, '.agents');
       const skillsDest = path.join(agentsDest, 'skills');
-      copyOrLink(path.join(praxisSrc, 'skills'), skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+      copyPraxisSkillsToDir(praxisSrc, skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
       const pluginDest = path.join(agentsDest, 'plugins', 'praxis');
       copyPluginFiles(praxisSrc, pluginDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     }
@@ -199,7 +326,7 @@ export function installHost(host, options = {}) {
 
   if (host.id === 'qoder') {
     const skillsDest = scope === 'user' ? path.join(destPath, 'skills') : path.join(rootDir, 'skills');
-    copyOrLink(path.join(praxisSrc, 'skills'), skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    copyPraxisSkillsToDir(praxisSrc, skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     const manifestDest = scope === 'user' ? path.join(destPath, 'plugin.json') : path.join(rootDir, '.qoder-plugin', 'plugin.json');
     copyOrLink(path.join(praxisSrc, '.qoder-plugin', 'plugin.json'), manifestDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     return true;
@@ -207,9 +334,9 @@ export function installHost(host, options = {}) {
 
   if (host.id === 'agents') {
     const skillsDest = path.join(destPath, 'skills');
-    copyOrLink(path.join(praxisSrc, 'skills'), skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    copyPraxisSkillsToDir(praxisSrc, skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     const hooksDest = path.join(destPath, 'hooks');
-    copyOrLink(path.join(praxisSrc, 'hooks'), hooksDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    copyPraxisHooksToDir(praxisSrc, hooksDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     return true;
   }
 
@@ -218,38 +345,34 @@ export function installHost(host, options = {}) {
   return true;
 }
 
-export function copyPluginFiles(src, dest, { method = 'copy', force = false, dryRun = false } = {}) {
-  const itemsToCopy = [
-    'skills',
-    'hooks',
-    'extensions',
-    '.claude-plugin',
-    '.codex-plugin',
-    '.copilot-plugin',
-    '.qoder-plugin',
-    '.opencode',
-    'gemini-extension.json',
-    'package.json',
-    'README.md',
-    'LICENSE',
-  ];
-
-  for (const item of itemsToCopy) {
-    const itemSrc = path.join(src, item);
-    if (fs.existsSync(itemSrc)) {
-      const itemDest = path.join(dest, item);
-      copyOrLink(itemSrc, itemDest, { method, force, dryRun });
-    }
-  }
-}
-
 export function uninstallHost(host, options = {}) {
   const rootDir = options.rootDir || process.cwd();
-  const scope = normalizeScope(options.scope || host.defaultScope, rootDir);
+  const isHome = isHomeDirectory(rootDir);
+  const home = os.homedir();
   const {
     method = 'auto',
     dryRun = false,
   } = options;
+
+  let scope = options.scope;
+  if (!scope) {
+    if (isHome) {
+      scope = 'user';
+    } else {
+      const status = getHostStatus(host, rootDir);
+      if (status.projectInstalled || status.localInstalled) {
+        scope = status.projectInstalled ? 'project' : 'local';
+      } else if (status.userInstalled) {
+        scope = 'user';
+        console.log(`  ℹ️  Project/local scope not installed. Auto-targeting User (global) scope.`);
+      } else {
+        console.log(`\n🗑️  Uninstalling Praxis from ${host.displayName}...`);
+        console.log(`  [skip] Praxis is not installed for ${host.displayName} in any scope.`);
+        return true;
+      }
+    }
+  }
+  scope = normalizeScope(scope, rootDir);
 
   console.log(`\n🗑️  Uninstalling Praxis from ${host.displayName} [scope: ${scope}]...`);
 
@@ -292,23 +415,154 @@ export function uninstallHost(host, options = {}) {
     }
   }
 
-  // File-level cleanup
+  // File-level non-destructive cleanup
   const destPath = resolveTargetPath(host, scope, rootDir);
-  if (dryRun) {
-    console.log(`  [dry-run] Remove directory/file: ${destPath}`);
+
+  if (host.id === 'agents' || host.id === 'antigravity') {
+    if (scope === 'user' && host.id === 'antigravity') {
+      const globalPlugin = path.join(home, '.gemini', 'config', 'plugins', 'praxis');
+      const idePlugin = path.join(home, '.gemini', 'antigravity-ide', 'plugins', 'praxis');
+      for (const p of [globalPlugin, idePlugin]) {
+        if (fs.existsSync(p)) {
+          if (!dryRun) {
+            fs.rmSync(p, { recursive: true, force: true });
+            console.log(`  [success] Removed ${p}`);
+          } else {
+            console.log(`  [dry-run] Remove ${p}`);
+          }
+        }
+      }
+      removePraxisSkillsFromDir(path.join(home, '.gemini', 'config', 'skills'), dryRun);
+    } else {
+      const targetBase = scope === 'user' ? path.join(home, '.agents') : path.join(rootDir, '.agents');
+      const pluginDir = path.join(targetBase, 'plugins', 'praxis');
+      if (fs.existsSync(pluginDir)) {
+        if (!dryRun) {
+          fs.rmSync(pluginDir, { recursive: true, force: true });
+          console.log(`  [success] Removed ${pluginDir}`);
+          cleanEmptyDirectory(path.join(targetBase, 'plugins'));
+        } else {
+          console.log(`  [dry-run] Remove ${pluginDir}`);
+        }
+      }
+      removePraxisSkillsFromDir(path.join(targetBase, 'skills'), dryRun);
+      removePraxisHooksFromDir(path.join(targetBase, 'hooks'), dryRun);
+      cleanEmptyDirectory(targetBase);
+    }
     return true;
   }
 
+  if (host.id === 'opencode') {
+    const opencodeDir = scope === 'user'
+      ? path.join(home, '.config', 'opencode')
+      : path.join(rootDir, '.opencode');
+    const pluginFile = path.join(opencodeDir, 'plugins', 'praxis.js');
+    if (fs.existsSync(pluginFile)) {
+      if (!dryRun) {
+        fs.rmSync(pluginFile, { force: true });
+        console.log(`  [success] Removed ${pluginFile}`);
+        cleanEmptyDirectory(path.join(opencodeDir, 'plugins'));
+      } else {
+        console.log(`  [dry-run] Remove ${pluginFile}`);
+      }
+    }
+    removePraxisSkillsFromDir(path.join(opencodeDir, 'skills'), dryRun);
+    cleanEmptyDirectory(opencodeDir);
+
+    // Clean up opencode.json config
+    const configFile = scope === 'user'
+      ? path.join(home, '.config', 'opencode', 'opencode.json')
+      : path.join(rootDir, 'opencode.json');
+    if (fs.existsSync(configFile)) {
+      if (!dryRun) {
+        try {
+          const cfg = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+          if (Array.isArray(cfg.plugin)) {
+            const prevLen = cfg.plugin.length;
+            cfg.plugin = cfg.plugin.filter((p) => !p.includes('praxis'));
+            if (cfg.plugin.length !== prevLen) {
+              fs.writeFileSync(configFile, JSON.stringify(cfg, null, 2), 'utf8');
+              console.log(`  [success] Removed praxis entry from ${configFile}`);
+            }
+          }
+        } catch {}
+      }
+    }
+    return true;
+  }
+
+  if (host.id === 'qoder') {
+    if (scope === 'user') {
+      for (const p of [path.join(home, '.qoder-cn', 'plugins', 'praxis'), path.join(home, '.qoder', 'plugins', 'praxis')]) {
+        if (fs.existsSync(p)) {
+          if (!dryRun) {
+            fs.rmSync(p, { recursive: true, force: true });
+            console.log(`  [success] Removed ${p}`);
+          }
+        }
+      }
+    } else {
+      const qoderPluginFile = path.join(rootDir, '.qoder-plugin', 'plugin.json');
+      if (fs.existsSync(qoderPluginFile)) {
+        if (!dryRun) {
+          fs.rmSync(path.join(rootDir, '.qoder-plugin'), { recursive: true, force: true });
+          console.log(`  [success] Removed ${path.join(rootDir, '.qoder-plugin')}`);
+        }
+      }
+      removePraxisSkillsFromDir(path.join(rootDir, 'skills'), dryRun);
+    }
+    return true;
+  }
+
+  if (host.id === 'pi') {
+    if (scope === 'user') {
+      const pluginDir = path.join(home, '.pi', 'plugins', 'praxis');
+      if (fs.existsSync(pluginDir)) {
+        if (!dryRun) fs.rmSync(pluginDir, { recursive: true, force: true });
+      }
+      removePraxisSkillsFromDir(path.join(home, '.pi', 'skills'), dryRun);
+      removePraxisSkillsFromDir(path.join(home, '.pi', 'agent', 'skills'), dryRun);
+    } else {
+      removePraxisSkillsFromDir(path.join(rootDir, '.pi', 'skills'), dryRun);
+      cleanEmptyDirectory(path.join(rootDir, '.pi'));
+    }
+    return true;
+  }
+
+  if (host.id === 'omp') {
+    if (scope === 'user') {
+      for (const p of [path.join(home, '.omp', 'plugins', 'node_modules', 'praxis'), path.join(home, '.omp', 'plugins', 'praxis')]) {
+        if (fs.existsSync(p)) {
+          if (!dryRun) fs.rmSync(p, { recursive: true, force: true });
+        }
+      }
+      removePraxisSkillsFromDir(path.join(home, '.omp', 'skills'), dryRun);
+    } else {
+      removePraxisSkillsFromDir(path.join(rootDir, '.omp', 'skills'), dryRun);
+      const ompPluginDir = path.join(rootDir, '.omp', 'plugins', 'praxis');
+      if (fs.existsSync(ompPluginDir)) {
+        if (!dryRun) fs.rmSync(ompPluginDir, { recursive: true, force: true });
+      }
+      cleanEmptyDirectory(path.join(rootDir, '.omp'));
+    }
+    return true;
+  }
+
+  // Generic praxis plugin directory cleanup (Claude, Codex, Copilot, etc.)
   if (fs.existsSync(destPath)) {
-    fs.rmSync(destPath, { recursive: true, force: true });
-    console.log(`  [success] Removed ${destPath}`);
+    if (dryRun) {
+      console.log(`  [dry-run] Remove directory/file: ${destPath}`);
+    } else {
+      fs.rmSync(destPath, { recursive: true, force: true });
+      console.log(`  [success] Removed ${destPath}`);
+    }
   } else {
     console.log(`  [skip] Path does not exist: ${destPath}`);
   }
 
   // Deep cleanup for Codex
   if (host.id === 'codex') {
-    const codexHome = path.join(os.homedir(), '.codex');
+    const codexHome = path.join(home, '.codex');
     const extraPaths = [
       path.join(codexHome, '.tmp', 'marketplaces', 'praxis-marketplace'),
       path.join(codexHome, 'plugins', 'cache', 'praxis-marketplace'),
@@ -337,6 +591,8 @@ export function uninstallHost(host, options = {}) {
         } catch {}
       }
     }
+    cleanEmptyDirectory(path.join(rootDir, '.codex', 'plugins'));
+    cleanEmptyDirectory(path.join(rootDir, '.codex'));
   }
 
   return true;
@@ -344,11 +600,29 @@ export function uninstallHost(host, options = {}) {
 
 export function updateHost(host, options = {}) {
   const rootDir = options.rootDir || process.cwd();
-  const scope = normalizeScope(options.scope || host.defaultScope, rootDir);
+  const isHome = isHomeDirectory(rootDir);
   const {
     method = 'auto',
     dryRun = false,
   } = options;
+
+  let scope = options.scope;
+  if (!scope) {
+    if (isHome) {
+      scope = 'user';
+    } else {
+      const status = getHostStatus(host, rootDir);
+      if (status.projectInstalled || status.localInstalled) {
+        scope = status.projectInstalled ? 'project' : 'local';
+      } else if (status.userInstalled) {
+        scope = 'user';
+        console.log(`  ℹ️  Project/local scope not installed. Auto-targeting User (global) scope.`);
+      } else {
+        scope = host.defaultScope;
+      }
+    }
+  }
+  scope = normalizeScope(scope, rootDir);
 
   console.log(`\n🔄 Updating Praxis for ${host.displayName} [scope: ${scope}]...`);
 
