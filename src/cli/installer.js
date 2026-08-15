@@ -214,7 +214,7 @@ export function cleanEmptyDirectory(dir) {
 
 export function installHost(host, options = {}) {
   const rootDir = options.rootDir || process.cwd();
-  const scope = normalizeScope(options.scope || host.defaultScope, rootDir);
+  const scope = normalizeScope(options.scope, rootDir);
   const {
     ref = null,
     method = 'auto',
@@ -664,7 +664,7 @@ export function updateHost(host, options = {}) {
     }
   }
 
-  return installHost(host, { ...options, force: true });
+  return installHost(host, { ...options, scope, force: true });
 }
 
 export function getHostStatus(host, rootDir = process.cwd()) {

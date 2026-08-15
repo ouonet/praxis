@@ -212,4 +212,17 @@ test('uninstallHost gracefully skips when no scope is installed', () => {
   }
 });
 
+test('installHost and updateHost in home directory default to user scope', () => {
+  const home = os.homedir();
+  const host = HOSTS.antigravity;
+
+  const ok = updateHost(host, {
+    dryRun: true,
+    rootDir: home,
+  });
+  assert.equal(ok, true);
+});
+
+
+
 

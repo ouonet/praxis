@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 4.2.3 - 2026-08-16
+
+- **Update Scope Preservation & Antigravity Native Command Fix**:
+  - Fixed `updateHost` fallback to explicitly propagate resolved `scope`, preventing home-directory updates from inadvertently defaulting to project scope (`.agents/`).
+  - Fixed `installHost` scope resolution so that executing commands without `--scope` in the user's home directory always defaults to `user` scope.
+  - Disabled non-existent native CLI commands (`agy plugin update`) on Antigravity host, directly leveraging the robust file-level installation mechanism to `~/.gemini/config/plugins/praxis` and `~/.gemini/antigravity-ide/plugins/praxis`.
+
 ## 4.2.2 - 2026-08-16
 
 - **Non-Destructive Selective Uninstallation**:

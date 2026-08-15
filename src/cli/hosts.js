@@ -76,12 +76,9 @@ export const HOSTS = {
       path.join(homeDir, '.gemini', 'antigravity-ide', 'plugins', 'praxis'),
       path.join(homeDir, '.gemini', 'config', 'skills', 'using-praxis'),
     ],
-    nativeInstallCmd: (ref, scope) => {
-      const target = ref ? `https://github.com/ouonet/praxis#${ref}` : 'ouonet/praxis';
-      return `agy plugin install ${target}`;
-    },
-    nativeUninstallCmd: () => 'agy plugin uninstall praxis',
-    nativeUpdateCmd: () => 'agy plugin update praxis',
+    nativeInstallCmd: null,
+    nativeUninstallCmd: null,
+    nativeUpdateCmd: null,
   },
   pi: {
     id: 'pi',
