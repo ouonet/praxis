@@ -29,9 +29,13 @@ export const HOSTS = {
     localTarget: '.codex/plugins/praxis',
     projectTarget: '.codex/plugins/praxis',
     userTarget: path.join(homeDir, '.codex', 'plugins', 'praxis'),
-    nativeInstallCmd: () => 'codex plugin marketplace add ouonet/praxis',
-    nativeUninstallCmd: () => 'codex plugin marketplace remove praxis',
-    nativeUpdateCmd: () => 'codex plugin marketplace upgrade praxis-marketplace',
+    userAltTargets: [
+      path.join(homeDir, '.codex', '.tmp', 'marketplaces', 'praxis-marketplace'),
+      path.join(homeDir, '.codex', 'plugins', 'cache', 'praxis-marketplace'),
+    ],
+    nativeInstallCmd: () => 'codex plugin marketplace add ouonet/praxis && codex plugin add praxis@praxis-marketplace',
+    nativeUninstallCmd: () => 'codex plugin remove praxis@praxis-marketplace && codex plugin marketplace remove praxis-marketplace',
+    nativeUpdateCmd: () => 'codex plugin marketplace upgrade praxis-marketplace && codex plugin add praxis@praxis-marketplace',
   },
   opencode: {
     id: 'opencode',

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 4.2.1 - 2026-08-15
+
+- **Codex CLI Deep Cleanup & Marketplace Synchronization**:
+  - Fixed `uninstallHost` for Codex to invoke `codex plugin remove praxis@praxis-marketplace` and `codex plugin marketplace remove praxis-marketplace` (resolved marketplace name mismatch from `praxis` to `praxis-marketplace`).
+  - Added thorough cleanup of cached marketplace repositories (`~/.codex/.tmp/marketplaces/praxis-marketplace`), plugin caches (`~/.codex/plugins/cache/praxis-marketplace`), and configuration sections in `~/.codex/config.toml`.
+  - Upgraded `installHost` and `updateHost` for Codex to automatically trigger `codex plugin marketplace upgrade praxis-marketplace` and `codex plugin add praxis@praxis-marketplace`, ensuring fresh installations never reuse stale snapshots.
+
 ## 4.2.0 - 2026-08-15
 
 - **Living Doc North Star & Axioms**:

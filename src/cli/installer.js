@@ -102,6 +102,28 @@ export function installHost(host, options = {}) {
   const useNative = (method === 'native' || (method === 'auto' && binaryAvailable)) && Boolean(host.nativeInstallCmd);
 
   if (useNative) {
+    if (host.id === 'codex') {
+      const cmds = [
+        'codex plugin marketplace add ouonet/praxis',
+        'codex plugin marketplace upgrade praxis-marketplace',
+        'codex plugin add praxis@praxis-marketplace',
+      ];
+      if (dryRun) {
+        cmds.forEach((c) => console.log(`  [dry-run] Executing CLI command: ${c}`));
+        return true;
+      }
+      for (const c of cmds) {
+        console.log(`  Executing: ${c}`);
+        try {
+          execSync(c, { stdio: 'inherit', cwd: rootDir });
+        } catch {
+          // ignore expected non-fatal errors (e.g. marketplace already added)
+        }
+      }
+      console.log(`  [success] Successfully installed via codex CLI.`);
+      return true;
+    }
+
     const cmd = host.nativeInstallCmd(ref, scope);
     if (dryRun) {
       console.log(`  [dry-run] Executing CLI command: ${cmd}`);
@@ -235,21 +257,42 @@ export function uninstallHost(host, options = {}) {
   const useNative = (method === 'native' || (method === 'auto' && binaryAvailable)) && Boolean(host.nativeUninstallCmd);
 
   if (useNative) {
-    const cmd = host.nativeUninstallCmd();
-    if (dryRun) {
-      console.log(`  [dry-run] Executing CLI command: ${cmd}`);
-      return true;
-    }
-    console.log(`  Executing: ${cmd}`);
-    try {
-      execSync(cmd, { stdio: 'inherit', cwd: rootDir });
-      console.log(`  [success] Successfully uninstalled via ${host.cliBinary} CLI.`);
-      return true;
-    } catch (err) {
-      console.warn(`  [warning] CLI command failed: ${err.message}. Removing files manually.`);
+    if (host.id === 'codex') {
+      const cmds = [
+        'codex plugin remove praxis@praxis-marketplace',
+        'codex plugin marketplace remove praxis-marketplace',
+      ];
+      if (dryRun) {
+        cmds.forEach((c) => console.log(`  [dry-run] Executing CLI command: ${c}`));
+      } else {
+        for (const c of cmds) {
+          console.log(`  Executing: ${c}`);
+          try {
+            execSync(c, { stdio: 'inherit', cwd: rootDir });
+          } catch {
+            // ignore if not configured or already removed
+          }
+        }
+        console.log(`  [success] Successfully uninstalled via codex CLI.`);
+      }
+    } else {
+      const cmd = host.nativeUninstallCmd();
+      if (dryRun) {
+        console.log(`  [dry-run] Executing CLI command: ${cmd}`);
+        return true;
+      }
+      console.log(`  Executing: ${cmd}`);
+      try {
+        execSync(cmd, { stdio: 'inherit', cwd: rootDir });
+        console.log(`  [success] Successfully uninstalled via ${host.cliBinary} CLI.`);
+        return true;
+      } catch (err) {
+        console.warn(`  [warning] CLI command failed: ${err.message}. Removing files manually.`);
+      }
     }
   }
 
+  // File-level cleanup
   const destPath = resolveTargetPath(host, scope, rootDir);
   if (dryRun) {
     console.log(`  [dry-run] Remove directory/file: ${destPath}`);
@@ -262,6 +305,40 @@ export function uninstallHost(host, options = {}) {
   } else {
     console.log(`  [skip] Path does not exist: ${destPath}`);
   }
+
+  // Deep cleanup for Codex
+  if (host.id === 'codex') {
+    const codexHome = path.join(os.homedir(), '.codex');
+    const extraPaths = [
+      path.join(codexHome, '.tmp', 'marketplaces', 'praxis-marketplace'),
+      path.join(codexHome, 'plugins', 'cache', 'praxis-marketplace'),
+      path.join(codexHome, 'plugins', 'praxis'),
+      path.join(rootDir, '.codex', 'plugins', 'praxis'),
+    ];
+    for (const p of extraPaths) {
+      if (fs.existsSync(p)) {
+        try {
+          fs.rmSync(p, { recursive: true, force: true });
+          console.log(`  [success] Cleaned cache: ${p}`);
+        } catch {}
+      }
+    }
+    const configFiles = [
+      path.join(codexHome, 'config.toml'),
+      path.join(rootDir, '.codex', 'config.toml'),
+    ];
+    for (const cfg of configFiles) {
+      if (fs.existsSync(cfg)) {
+        try {
+          let content = fs.readFileSync(cfg, 'utf8');
+          content = content.replace(/\[marketplaces\.praxis-marketplace\][^\[]*/g, '');
+          content = content.replace(/\[plugins\."praxis@praxis-marketplace"\][^\[]*/g, '');
+          fs.writeFileSync(cfg, content.trim() + '\n', 'utf8');
+        } catch {}
+      }
+    }
+  }
+
   return true;
 }
 
@@ -279,6 +356,25 @@ export function updateHost(host, options = {}) {
   const useNative = (method === 'native' || (method === 'auto' && binaryAvailable)) && Boolean(host.nativeUpdateCmd);
 
   if (useNative) {
+    if (host.id === 'codex') {
+      const cmds = [
+        'codex plugin marketplace upgrade praxis-marketplace',
+        'codex plugin add praxis@praxis-marketplace',
+      ];
+      if (dryRun) {
+        cmds.forEach((c) => console.log(`  [dry-run] Executing CLI command: ${c}`));
+        return true;
+      }
+      for (const c of cmds) {
+        console.log(`  Executing: ${c}`);
+        try {
+          execSync(c, { stdio: 'inherit', cwd: rootDir });
+        } catch {}
+      }
+      console.log(`  [success] Successfully updated via codex CLI.`);
+      return true;
+    }
+
     const cmd = host.nativeUpdateCmd();
     if (dryRun) {
       console.log(`  [dry-run] Executing CLI command: ${cmd}`);

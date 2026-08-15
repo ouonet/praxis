@@ -1,6 +1,6 @@
 {
   "name": "praxis",
-  "version": "4.2.0",
-  "description": "Token-lean discipline skills for coding agents.",
+  "version": "4.2.1",
+  "description": "Praxis triage, living docs, and disciplined workflows for AI coding agents",
   "contextFileName": "skills/using-praxis/SKILL.md"
 }

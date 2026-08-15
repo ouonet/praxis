@@ -1,6 +1,6 @@
 {
-  "name": "@ouonet/praxis-site",
-  "version": "4.2.0",
+  "name": "praxis-site",
+  "version": "4.2.1",
   "private": true,
   "type": "module",
   "scripts": {
