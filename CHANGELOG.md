@@ -2,7 +2,21 @@
 
 ## Unreleased
 
-## 4.1.1 - 2026-08-15
+## 4.2.0 - 2026-08-15
+
+- **Living Doc North Star & Axioms**:
+  - Established the Living Doc North Star: *Zero history, maximum truth density, instant scannability*.
+  - Enforced **The Living Doc Razor**: past rationale belongs in `docs/decisions/` or `CHANGELOG.md`; `docs/tech-spec.md` holds exclusively active, current ground truth.
+  - Enforced **Atemporal Invariant**: zero temporal/versioned headers (`## M8...`, dates), migration narratives, or supersession diffs.
+- **Strict Anti-Bloat & Modular Splitting**:
+  - `docs/tech-spec.md` acts as the system backbone (≤300 lines); bulky subsystem details (>15 lines of schemas, state machines, or protocols) must split into modular `docs/specs/<topic>.md`.
+  - Adopted STE100 principles: atomic declarations (≤25 words per sentence) and structured bullet points/tables for multi-parameter contracts; zero unbroken text walls.
+- **Quality Standard Severity Upgrade**:
+  - Upgraded Living Doc integrity violations (historical clutter, text walls, unsplit schemas) to **`BLOCK`** severity in `skills/references/quality.md`.
+  - Added self-reflection verification `<gate>` in `skills/archive/SKILL.md`, `skills/review/SKILL.md`, and `skills/ship/SKILL.md`.
+- **Self-Host Living Doc Realignment**:
+  - Refactored Praxis's own `docs/tech-spec.md` to declare the full `bin/praxis.js` CLI contract, removed legacy milestone status text, and streamlined constraint declarations.
+
 
 - **Scope Architecture Refinement**: Standardized scope definitions across all AI hosts: `project` (tracked in version control and shared with team), `local` (workspace-local directory without modifying shared repo manifests), and `user` / `global` (user home directory).
 - **Expanded Host Support**:
