@@ -11,7 +11,7 @@ If `topology=multi-module` (triage announcement or coordinator spec/plan declara
 - Tests pass — or, for tasks with no automated test, their manual acceptance was performed.
 - No `- [ ]` remains in any relevant plan.
 - Staging spec reflects actual code behavior.
-- README commands runnable; tech-spec `contract`/`convention` match code (see `../references/quality.md`).
+- README commands runnable; living docs honor North Star (atemporal ground truth, modular specs; see `../references/quality.md`).
 - No incomplete tracked tasks in the harness task tracker (whatever the host calls it).
 - For multi-module work: module plans and local acceptance are complete, and coordinator integration passes (or the change is reported as `partial-commit`).
 

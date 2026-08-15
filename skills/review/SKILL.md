@@ -10,7 +10,7 @@ Check in order:
 1. **Spec match** (if spec exists) - diff does what the spec/plan said? List drift.
 2. **Standards** — lint/format/typecheck green? Code matches `convention`, idiomatic for the stack? (see `../references/quality.md`)
 3. **Tests** - new behavior covered, all green?
-4. **Doc-coverage** — `contract` covers full public surface? Env vars/config/error modes documented? README commands runnable? tech-spec `contract`/`convention` match code? (see `../references/quality.md`)
+4. **Doc-coverage & Living docs** — `contract` covers full public surface? Env vars/config/error modes documented? README commands runnable? Living docs honor North Star (atemporal ground truth, modular specs; see `../references/quality.md`)?
 5. **Edges** - null, empty, large, concurrent, malformed, unicode, timezone.
 6. **Security** - input validation, secrets, authz, injection, path traversal.
 7. **Scope** - unrelated changes? Revert. Implementation >2x necessary? Flag as FIX.
