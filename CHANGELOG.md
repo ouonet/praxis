@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-## 4.2.3 - 2026-08-16
+## 4.2.4 - 2026-08-17
+
+- **Antigravity CLI & IDE Plugin Support**:
+  - Added standard `rules/praxis.md` and root `plugin.json` for Antigravity plugin auto-rule discovery and active rule set merging.
+  - Enhanced `copyPluginFiles` to include `rules/` and `plugin.json`.
+  - Added `copyPraxisRulesToDir` and `removePraxisRulesFromDir` for non-destructive install and uninstall of rules in `.agents/rules/` and global config.
+  - Added comprehensive multi-scope unit tests for `antigravity`.
 
 - **Update Scope Preservation & Antigravity Native Command Fix**:
   - Fixed `updateHost` fallback to explicitly propagate resolved `scope`, preventing home-directory updates from inadvertently defaulting to project scope (`.agents/`).

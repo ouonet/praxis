@@ -21,6 +21,7 @@ test('discover skill directory is absent', () => {
 test('manifest versions match package.json', () => {
   const version = JSON.parse(read('package.json')).version;
   const files = [
+    'plugin.json',
     'gemini-extension.json',
     '.claude-plugin/plugin.json',
     '.codex-plugin/plugin.json',

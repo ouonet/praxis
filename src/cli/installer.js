@@ -111,10 +111,25 @@ export function copyPraxisHooksToDir(praxisSrc, destHooksDir, { method = 'copy',
   }
 }
 
+export function copyPraxisRulesToDir(praxisSrc, destRulesDir, { method = 'copy', force = false, dryRun = false } = {}) {
+  const srcRules = path.join(praxisSrc, 'rules');
+  if (!fs.existsSync(srcRules)) return;
+  const entries = fs.readdirSync(srcRules, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isFile()) {
+      const src = path.join(srcRules, entry.name);
+      const dest = path.join(destRulesDir, entry.name);
+      copyOrLink(src, dest, { method, force, dryRun });
+    }
+  }
+}
+
 export function copyPluginFiles(src, dest, { method = 'copy', force = false, dryRun = false } = {}) {
   const itemsToCopy = [
     'skills',
+    'rules',
     'hooks',
+    'plugin.json',
     'extensions',
     '.claude-plugin',
     '.codex-plugin',
@@ -161,6 +176,10 @@ export const PRAXIS_HOOK_FILES = [
   'gemini-hooks.json',
 ];
 
+export const PRAXIS_RULE_FILES = [
+  'praxis.md',
+];
+
 export function removePraxisSkillsFromDir(skillsDir, dryRun = false) {
   if (!fs.existsSync(skillsDir)) return;
   for (const skill of PRAXIS_SKILL_NAMES) {
@@ -198,6 +217,26 @@ export function removePraxisHooksFromDir(hooksDir, dryRun = false) {
   }
   if (!dryRun) {
     cleanEmptyDirectory(hooksDir);
+  }
+}
+
+export function removePraxisRulesFromDir(rulesDir, dryRun = false) {
+  if (!fs.existsSync(rulesDir)) return;
+  for (const rule of PRAXIS_RULE_FILES) {
+    const rulePath = path.join(rulesDir, rule);
+    if (fs.existsSync(rulePath)) {
+      if (dryRun) {
+        console.log(`  [dry-run] Remove rule: ${rulePath}`);
+      } else {
+        try {
+          fs.rmSync(rulePath, { force: true });
+          console.log(`  [success] Removed rule: ${rulePath}`);
+        } catch {}
+      }
+    }
+  }
+  if (!dryRun) {
+    cleanEmptyDirectory(rulesDir);
   }
 }
 
@@ -318,6 +357,8 @@ export function installHost(host, options = {}) {
       const agentsDest = path.join(rootDir, '.agents');
       const skillsDest = path.join(agentsDest, 'skills');
       copyPraxisSkillsToDir(praxisSrc, skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+      const rulesDest = path.join(agentsDest, 'rules');
+      copyPraxisRulesToDir(praxisSrc, rulesDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
       const pluginDest = path.join(agentsDest, 'plugins', 'praxis');
       copyPluginFiles(praxisSrc, pluginDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     }
@@ -335,6 +376,8 @@ export function installHost(host, options = {}) {
   if (host.id === 'agents') {
     const skillsDest = path.join(destPath, 'skills');
     copyPraxisSkillsToDir(praxisSrc, skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    const rulesDest = path.join(destPath, 'rules');
+    copyPraxisRulesToDir(praxisSrc, rulesDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     const hooksDest = path.join(destPath, 'hooks');
     copyPraxisHooksToDir(praxisSrc, hooksDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     return true;
@@ -433,6 +476,7 @@ export function uninstallHost(host, options = {}) {
         }
       }
       removePraxisSkillsFromDir(path.join(home, '.gemini', 'config', 'skills'), dryRun);
+      removePraxisRulesFromDir(path.join(home, '.gemini', 'config', 'rules'), dryRun);
     } else {
       const targetBase = scope === 'user' ? path.join(home, '.agents') : path.join(rootDir, '.agents');
       const pluginDir = path.join(targetBase, 'plugins', 'praxis');
@@ -446,6 +490,7 @@ export function uninstallHost(host, options = {}) {
         }
       }
       removePraxisSkillsFromDir(path.join(targetBase, 'skills'), dryRun);
+      removePraxisRulesFromDir(path.join(targetBase, 'rules'), dryRun);
       removePraxisHooksFromDir(path.join(targetBase, 'hooks'), dryRun);
       cleanEmptyDirectory(targetBase);
     }

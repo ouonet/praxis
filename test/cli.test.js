@@ -223,6 +223,55 @@ test('installHost and updateHost in home directory default to user scope', () =>
   assert.equal(ok, true);
 });
 
+test('installHost and uninstallHost for antigravity across project and local scopes', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-antigravity-'));
+  try {
+    const host = HOSTS.antigravity;
+
+    // 1. Install project scope
+    installHost(host, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+
+    const pluginDir = path.join(tmpDir, '.agents', 'plugins', 'praxis');
+    assert.equal(fs.existsSync(path.join(pluginDir, 'skills', 'using-praxis', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(pluginDir, 'rules', 'praxis.md')), true);
+    assert.equal(fs.existsSync(path.join(pluginDir, 'plugin.json')), true);
+
+    const status = getHostStatus(host, tmpDir);
+    assert.equal(status.projectInstalled, true);
+    assert.equal(status.localInstalled, true);
+
+    // 2. Update project scope
+    updateHost(host, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+    assert.equal(fs.existsSync(path.join(pluginDir, 'rules', 'praxis.md')), true);
+
+    // 3. Uninstall
+    uninstallHost(host, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+
+    const afterStatus = getHostStatus(host, tmpDir);
+    assert.equal(afterStatus.projectInstalled, false);
+    assert.equal(afterStatus.localInstalled, false);
+    assert.equal(fs.existsSync(pluginDir), false);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+
 
 
 
