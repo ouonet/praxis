@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 4.2.5 - 2026-08-17
+
+- **CLI `version` Positional Subcommand Support**:
+  - Added support for running `npx @ouonet/praxis version` (and `praxis v`) as a positional subcommand, matching documented usage in `help` alongside `--version` / `-v`.
+
 ## 4.2.4 - 2026-08-17
 
 - **Antigravity CLI & IDE Plugin Support**:

@@ -135,7 +135,7 @@ export function padEndVisual(str, targetWidth, padChar = ' ') {
 export async function runCli(args = process.argv.slice(2), { rootDir = process.cwd() } = {}) {
   const options = parseArgs(args);
 
-  if (options.version) {
+  if (options.version || (options.command && ['version', 'v'].includes(options.command.toLowerCase()))) {
     console.log(`praxis v${getVersion()}`);
     return 0;
   }

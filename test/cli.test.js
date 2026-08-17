@@ -22,6 +22,15 @@ test('runCli prints version and help', async () => {
   let code = await runCli(['--version']);
   assert.equal(code, 0);
 
+  code = await runCli(['-v']);
+  assert.equal(code, 0);
+
+  code = await runCli(['version']);
+  assert.equal(code, 0);
+
+  code = await runCli(['v']);
+  assert.equal(code, 0);
+
   code = await runCli(['help']);
   assert.equal(code, 0);
 });
