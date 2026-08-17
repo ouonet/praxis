@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { resolveHost, HOSTS } from '../src/cli/hosts.js';
 import { runCli } from '../src/cli/index.js';
-import { installHost, uninstallHost, updateHost, getHostStatus } from '../src/cli/installer.js';
+import { installHost, uninstallHost, updateHost, getHostStatus, normalizeScope } from '../src/cli/installer.js';
 
 test('resolveHost resolves host names and aliases', () => {
   assert.equal(resolveHost('codex')?.id, 'codex');
@@ -221,15 +221,54 @@ test('uninstallHost gracefully skips when no scope is installed', () => {
   }
 });
 
-test('installHost and updateHost in home directory default to user scope', () => {
+test('normalizeScope always defaults to user regardless of directory', () => {
   const home = os.homedir();
-  const host = HOSTS.antigravity;
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-scope-test-'));
+  try {
+    assert.equal(normalizeScope(undefined, home), 'user');
+    assert.equal(normalizeScope(null, home), 'user');
+    assert.equal(normalizeScope('', home), 'user');
 
-  const ok = updateHost(host, {
-    dryRun: true,
-    rootDir: home,
-  });
-  assert.equal(ok, true);
+    assert.equal(normalizeScope(undefined, tmpDir), 'user');
+    assert.equal(normalizeScope(null, tmpDir), 'user');
+    assert.equal(normalizeScope('', tmpDir), 'user');
+
+    assert.equal(normalizeScope('user', tmpDir), 'user');
+    assert.equal(normalizeScope('global', tmpDir), 'user');
+    assert.equal(normalizeScope('project', tmpDir), 'project');
+    assert.equal(normalizeScope('local', tmpDir), 'local');
+    assert.equal(normalizeScope('workspace', tmpDir), 'project');
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('installHost, uninstallHost, and updateHost in non-home directory default to user scope', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-scope-default-'));
+  try {
+    const host = HOSTS.antigravity;
+
+    // When scope is not provided, dryRun should show User target path
+    const installOk = installHost(host, {
+      dryRun: true,
+      rootDir: tmpDir,
+    });
+    assert.equal(installOk, true);
+
+    const updateOk = updateHost(host, {
+      dryRun: true,
+      rootDir: tmpDir,
+    });
+    assert.equal(updateOk, true);
+
+    const uninstallOk = uninstallHost(host, {
+      dryRun: true,
+      rootDir: tmpDir,
+    });
+    assert.equal(uninstallOk, true);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 });
 
 test('installHost and uninstallHost for antigravity across project and local scopes', () => {

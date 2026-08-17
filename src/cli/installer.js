@@ -28,13 +28,13 @@ export function isHomeDirectory(dir = process.cwd()) {
 
 export function normalizeScope(scope, rootDir = process.cwd()) {
   if (!scope) {
-    return isHomeDirectory(rootDir) ? 'user' : 'project';
+    return 'user';
   }
   const s = scope.toLowerCase().trim();
   if (s === 'global' || s === 'user') return 'user';
   if (s === 'local') return 'local';
   if (s === 'project' || s === 'workspace') return 'project';
-  return 'project';
+  return 'user';
 }
 
 export function resolveTargetPath(host, scope, rootDir = process.cwd()) {
@@ -390,32 +390,13 @@ export function installHost(host, options = {}) {
 
 export function uninstallHost(host, options = {}) {
   const rootDir = options.rootDir || process.cwd();
-  const isHome = isHomeDirectory(rootDir);
   const home = os.homedir();
   const {
     method = 'auto',
     dryRun = false,
   } = options;
 
-  let scope = options.scope;
-  if (!scope) {
-    if (isHome) {
-      scope = 'user';
-    } else {
-      const status = getHostStatus(host, rootDir);
-      if (status.projectInstalled || status.localInstalled) {
-        scope = status.projectInstalled ? 'project' : 'local';
-      } else if (status.userInstalled) {
-        scope = 'user';
-        console.log(`  ℹ️  Project/local scope not installed. Auto-targeting User (global) scope.`);
-      } else {
-        console.log(`\n🗑️  Uninstalling Praxis from ${host.displayName}...`);
-        console.log(`  [skip] Praxis is not installed for ${host.displayName} in any scope.`);
-        return true;
-      }
-    }
-  }
-  scope = normalizeScope(scope, rootDir);
+  const scope = normalizeScope(options.scope, rootDir);
 
   console.log(`\n🗑️  Uninstalling Praxis from ${host.displayName} [scope: ${scope}]...`);
 
@@ -645,29 +626,12 @@ export function uninstallHost(host, options = {}) {
 
 export function updateHost(host, options = {}) {
   const rootDir = options.rootDir || process.cwd();
-  const isHome = isHomeDirectory(rootDir);
   const {
     method = 'auto',
     dryRun = false,
   } = options;
 
-  let scope = options.scope;
-  if (!scope) {
-    if (isHome) {
-      scope = 'user';
-    } else {
-      const status = getHostStatus(host, rootDir);
-      if (status.projectInstalled || status.localInstalled) {
-        scope = status.projectInstalled ? 'project' : 'local';
-      } else if (status.userInstalled) {
-        scope = 'user';
-        console.log(`  ℹ️  Project/local scope not installed. Auto-targeting User (global) scope.`);
-      } else {
-        scope = host.defaultScope;
-      }
-    }
-  }
-  scope = normalizeScope(scope, rootDir);
+  const scope = normalizeScope(options.scope, rootDir);
 
   console.log(`\n🔄 Updating Praxis for ${host.displayName} [scope: ${scope}]...`);
 

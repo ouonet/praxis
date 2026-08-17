@@ -80,7 +80,7 @@ COMMANDS:
 
 OPTIONS:
   --host, -H <name>     Target host: codex, claude, opencode, copilot, antigravity (agy), pi, omp, qoder, agents, all
-  --scope, -s <scope>   Target scope: project (default in project), local, or user/global (default in home)
+  --scope, -s <scope>   Target scope: user/global (default), project, or local
   --ref, -r <git-ref>   Git branch, tag, or commit to install/pin
   --method, -m <mode>   Installation method: auto (default), native, link, copy
   --dry-run             Simulate actions without writing files or running commands

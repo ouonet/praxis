@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-## 4.2.5 - 2026-08-17
+## 4.2.6 - 2026-08-17
+
+- **CLI Default Scope Standardization**:
+  - Standardized CLI default scope to `user` (global) across all hosts and commands (`install`, `uninstall`, `update`), ensuring consistent behavior whether invoked within a project workspace or home directory.
+  - Simplified scope normalization logic and aligned CLI options documentation.
+  - Expanded unit test coverage validating user-scope default behaviors across directories.
+
 
 - **CLI `version` Positional Subcommand Support**:
   - Added support for running `npx @ouonet/praxis version` (and `praxis v`) as a positional subcommand, matching documented usage in `help` alongside `--version` / `-v`.
