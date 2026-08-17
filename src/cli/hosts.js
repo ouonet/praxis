@@ -75,6 +75,7 @@ export const HOSTS = {
     userAltTargets: [
       path.join(homeDir, '.gemini', 'antigravity-ide', 'plugins', 'praxis'),
       path.join(homeDir, '.gemini', 'config', 'skills', 'using-praxis'),
+      path.join(homeDir, '.gemini', 'config', 'rules', 'praxis.md'),
     ],
     nativeInstallCmd: null,
     nativeUninstallCmd: null,

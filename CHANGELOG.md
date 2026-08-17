@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 4.2.7 - 2026-08-17
+
+- **Antigravity Global Rules & Skills Installation Fix**:
+  - Fixed `installHost` for Antigravity under `user` (global) scope to copy `rules/praxis.md` to `~/.gemini/config/rules/` and skills to `~/.gemini/config/skills/`, ensuring automatic triage injection and always-on rule discovery.
+  - Added `~/.gemini/config/rules/praxis.md` to `HOSTS.antigravity.userAltTargets` for accurate status checking.
+  - Added test coverage verifying rules and skills presence and clean uninstallation for Antigravity across scopes.
+
 ## 4.2.6 - 2026-08-17
 
 - **CLI Default Scope Standardization**:

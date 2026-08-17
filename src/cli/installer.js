@@ -353,6 +353,10 @@ export function installHost(host, options = {}) {
       copyPluginFiles(praxisSrc, globalConfigDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
       const ideDest = path.join(os.homedir(), '.gemini', 'antigravity-ide', 'plugins', 'praxis');
       copyPluginFiles(praxisSrc, ideDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+      const globalRulesDest = path.join(os.homedir(), '.gemini', 'config', 'rules');
+      copyPraxisRulesToDir(praxisSrc, globalRulesDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+      const globalSkillsDest = path.join(os.homedir(), '.gemini', 'config', 'skills');
+      copyPraxisSkillsToDir(praxisSrc, globalSkillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
     } else {
       const agentsDest = path.join(rootDir, '.agents');
       const skillsDest = path.join(agentsDest, 'skills');
