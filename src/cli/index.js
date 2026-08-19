@@ -79,7 +79,7 @@ COMMANDS:
   version          Show Praxis CLI version
 
 OPTIONS:
-  --host, -H <name>     Target host: codex, claude, opencode, copilot, antigravity (agy), pi, omp, qoder, agents, all
+  --host, -H <name>     Target host: grok, codex, claude, opencode, copilot, antigravity (agy), pi, omp, qoder, agents, all
   --scope, -s <scope>   Target scope: user/global (default), project, or local
   --ref, -r <git-ref>   Git branch, tag, or commit to install/pin
   --method, -m <mode>   Installation method: auto (default), native, link, copy

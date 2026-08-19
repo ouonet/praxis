@@ -139,6 +139,23 @@ export const HOSTS = {
     nativeUninstallCmd: null,
     nativeUpdateCmd: null,
   },
+  grok: {
+    id: 'grok',
+    aliases: ['grok-cli', 'xai-grok'],
+    displayName: 'Grok CLI',
+    cliBinary: 'grok',
+    defaultScope: 'user',
+    localTarget: '.grok/plugins/praxis',
+    projectTarget: '.grok/plugins/praxis',
+    userTarget: path.join(homeDir, '.grok', 'plugins', 'praxis'),
+    userAltTargets: [
+      path.join(homeDir, '.grok', 'rules', 'praxis.md'),
+      path.join(homeDir, '.grok', 'skills', 'using-praxis'),
+    ],
+    nativeInstallCmd: null,
+    nativeUninstallCmd: null,
+    nativeUpdateCmd: null,
+  },
   agents: {
     id: 'agents',
     aliases: ['generic'],

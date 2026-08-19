@@ -1,6 +1,6 @@
 purpose:      Give AI coding agents a token-lean, triage-driven discipline workflow for design → plan → implement → review → ship across single- and multi-module work.
 
-user:         Developers and teams running AI coding agents (Claude Code, pi, Codex, Copilot, OpenCode, Gemini/Antigravity, Qoder) who want structured delivery without hand-holding every step.
+user:         Developers and teams running AI coding agents (Claude Code, pi, Codex, Copilot, OpenCode, Gemini/Antigravity, Qoder, Grok) who want structured delivery without hand-holding every step.
 
 use-case:     Install as a harness plugin/package; session-start injects triage; agent loads only the skills required by scope; produce staging specs/plans, implement with TDD/review gates, archive into living docs, optionally release.
 
@@ -17,11 +17,12 @@ entry:        Session bootstrap and installation entrypoints:
   - pi: `package.json` `pi.extensions` + `pi.skills`; `extensions/praxis.js` on `before_agent_start`
   - OpenCode: `package.json` `main` = `.opencode/plugins/praxis.js` (config skill paths + message transform bootstrap)
   - Qoder: `.qoder-plugin/plugin.json` skills path / project `skills/` discovery
+  - Grok: file install copies plugin to `.grok/plugins/praxis` (or `~/.grok/plugins/praxis`), skills to `.grok/skills` / `~/.grok/skills`, and `rules/praxis.md` to `.grok/rules` / `~/.grok/rules` (session auto-load; Grok ignores SessionStart stdout)
   - Manual: read `skills/using-praxis/SKILL.md` first
 
 contract:     Public install surfaces and stability set:
   - CLI commands: `install`, `status`, `update`, `uninstall` with flags `--host`, `--scope`, `--ref`, `--force`, `--dry-run`, `--method`
-  - Supported hosts: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `pi`, `omp`, `qoder`, `agents`, `all`
+  - Supported hosts: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `pi`, `omp`, `qoder`, `grok`, `agents`, `all`
   - Supported scopes: `project` (Git-tracked), `local` (workspace), `user` (global home)
   - Skill names and paths: `skills/<name>/SKILL.md` for onboard, design, plan, tdd, debug, review, worktree, subagents, ship, archive, release, using-praxis
   - Shared protocols: `skills/references/{quality,reviewers,multi-module}.md`
@@ -31,7 +32,7 @@ contract:     Public install surfaces and stability set:
   - Living docs: `README.md`, `docs/tech-spec.md`, `docs/specs/*.md`, optional `docs/ROADMAP.md`, `docs/decisions/`
   - Model tier ids: `fast` | `balanced` | `strongest` via optional `.praxis/model-tiers.yaml` (template `model-tiers.example.yaml`)
   - Multi-module declaration block fields: `topology`, `change-set`, `coordinator`, `repos`
-  - Harness manifests: `package.json` (npm + pi), `gemini-extension.json`, `.claude-plugin/*`, `.codex-plugin/plugin.json`, `.copilot-plugin/plugin.json`, `.qoder-plugin/plugin.json`, `.opencode/plugins/praxis.js`, `extensions/praxis.js`
+  - Harness manifests: `package.json` (npm + pi; `license` MIT, `homepage`, `repository`, `bugs`), `gemini-extension.json`, `.claude-plugin/*`, `.grok-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `.copilot-plugin/plugin.json`, `.qoder-plugin/plugin.json`, `.opencode/plugins/praxis.js`, `extensions/praxis.js`
   - Session-start hook must emit valid JSON context for the detected harness
 
 flow:
@@ -61,6 +62,7 @@ constraint:
     - Startup/resume/clear/fork/new: inject full `using-praxis` bootstrap.
     - Compact: inject brief reminder only.
     - Gemini/Antigravity: skip hook injection when `contextFileName` already loads `using-praxis`.
+    - Grok: do not rely on SessionStart stdout; copy `rules/praxis.md` into Grok rules dirs (auto-loaded into session context).
 
 convention:
   - Skills: one directory per skill; `SKILL.md` with YAML frontmatter `name` + `description`. Public set excludes retired `discover` (folded into `design`).

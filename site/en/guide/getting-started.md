@@ -23,6 +23,7 @@ npx @ouonet/praxis install --host antigravity
 npx @ouonet/praxis install --host pi
 npx @ouonet/praxis install --host omp
 npx @ouonet/praxis install --host qoder
+npx @ouonet/praxis install --host grok
 ```
 
 #### Supported Hosts
@@ -34,6 +35,7 @@ npx @ouonet/praxis install --host qoder
 - `omp` (alias `oh-my-pi`): Oh My Pi
 - `qoder` (alias `qoderclicn`): Qoder CLI CN
 - `copilot`: GitHub Copilot CLI
+- `grok` (aliases `grok-cli`, `xai-grok`): Grok CLI — rules copy injects using-praxis (SessionStart stdout is ignored)
 - `agents` (alias `generic`): Generic Agent workspace following the `.agents` specification
 - `all`: Install to all supported AI hosts
 
@@ -99,6 +101,14 @@ omp plugin add https://github.com/ouonet/praxis
 
 #### Qoder CLI CN
 Add `plugin.json` under `.qoder-plugin` in the project root, or configure globally under `~/.qoder-cn/plugins/`.
+
+#### Grok CLI
+Native plugin install does not inject using-praxis (SessionStart stdout is ignored). Prefer the Praxis CLI so `rules/praxis.md` is copied.
+
+```bash
+grok plugin marketplace add ouonet/praxis
+grok plugin install praxis --trust
+```
 
 ---
 

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 4.2.8 - 2026-08-20
+
+- **Grok CLI host**: File-install copies the plugin, skills, and `rules/praxis.md` so Grok auto-injects using-praxis triage (Grok ignores SessionStart hook stdout). CLI `--host grok`; marketplace index `.grok-plugin/marketplace.json`.
+- **package.json identity**: `description`, SPDX `license` MIT, `author` ouonet, `homepage` https://ouonet.github.io/praxis/, `repository`, and `bugs`. Copyright remains `LICENSE` (MIT, 2026 Praxis contributors).
+
 ## 4.2.7 - 2026-08-17
 
 - **Antigravity Global Rules & Skills Installation Fix**:

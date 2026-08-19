@@ -15,6 +15,9 @@ test('resolveHost resolves host names and aliases', () => {
   assert.equal(resolveHost('generic')?.id, 'agents');
   assert.equal(resolveHost('omp')?.id, 'omp');
   assert.equal(resolveHost('oh-my-pi')?.id, 'omp');
+  assert.equal(resolveHost('grok')?.id, 'grok');
+  assert.equal(resolveHost('grok-cli')?.id, 'grok');
+  assert.equal(resolveHost('xai-grok')?.id, 'grok');
   assert.equal(resolveHost('nonexistent'), null);
 });
 
@@ -319,6 +322,57 @@ test('installHost and uninstallHost for antigravity across project and local sco
     assert.equal(fs.existsSync(pluginDir), false);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'praxis.md')), false);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'skills', 'using-praxis')), false);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('installHost and uninstallHost for grok copies plugin skills and rules', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-grok-'));
+  try {
+    const host = HOSTS.grok;
+    const grokDir = path.join(tmpDir, '.grok');
+    fs.mkdirSync(path.join(grokDir, 'rules'), { recursive: true });
+    fs.writeFileSync(path.join(grokDir, 'rules', 'custom.md'), '# keep me');
+
+    installHost(host, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+
+    assert.equal(fs.existsSync(path.join(grokDir, 'plugins', 'praxis', 'skills', 'using-praxis', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(grokDir, 'skills', 'using-praxis', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'praxis.md')), true);
+    assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'custom.md')), true);
+
+    const status = getHostStatus(host, tmpDir);
+    assert.equal(status.projectInstalled, true);
+    assert.equal(status.localInstalled, true);
+
+    updateHost(host, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+    assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'praxis.md')), true);
+
+    uninstallHost(host, {
+      scope: 'project',
+      dryRun: false,
+      rootDir: tmpDir,
+      method: 'file',
+    });
+
+    const after = getHostStatus(host, tmpDir);
+    assert.equal(after.projectInstalled, false);
+    assert.equal(after.localInstalled, false);
+    assert.equal(fs.existsSync(path.join(grokDir, 'plugins', 'praxis')), false);
+    assert.equal(fs.existsSync(path.join(grokDir, 'skills', 'using-praxis')), false);
+    assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'praxis.md')), false);
+    assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'custom.md')), true);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }

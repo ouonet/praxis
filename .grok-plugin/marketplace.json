@@ -24,9 +24,8 @@
       ],
       "category": "coding",
       "source": {
-        "source": "github",
-        "repo": "ouonet/praxis",
-        "ref": "main"
+        "type": "local",
+        "path": "."
       }
     }
   ]

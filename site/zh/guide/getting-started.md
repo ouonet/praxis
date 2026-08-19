@@ -23,6 +23,7 @@ npx @ouonet/praxis install --host antigravity
 npx @ouonet/praxis install --host pi
 npx @ouonet/praxis install --host omp
 npx @ouonet/praxis install --host qoder
+npx @ouonet/praxis install --host grok
 ```
 
 #### 支持的宿主（Hosts）
@@ -34,6 +35,7 @@ npx @ouonet/praxis install --host qoder
 - `omp`（别名 `oh-my-pi`）：Oh My Pi
 - `qoder`（别名 `qoderclicn`）：Qoder CLI CN
 - `copilot`：GitHub Copilot CLI
+- `grok`（别名 `grok-cli`、`xai-grok`）：Grok CLI — 通过拷贝 `rules/praxis.md` 自动引入 using-praxis（Grok 不注入 SessionStart stdout）
 - `agents`（别名 `generic`）：遵循 `.agents` 标准工作区协议的通用 Agent
 - `all`：一键安装至所有支持的主机
 
@@ -99,6 +101,14 @@ omp plugin add https://github.com/ouonet/praxis
 
 #### Qoder CLI CN
 在项目根目录创建 `.qoder-plugin` 目录并添加 `plugin.json`，或在全局 `~/.qoder-cn/plugins/` 下配置。
+
+#### Grok CLI
+原生插件安装不会注入 using-praxis（Grok 丢弃 SessionStart stdout）。请用 Praxis CLI 拷贝 `rules/praxis.md`。
+
+```bash
+grok plugin marketplace add ouonet/praxis
+grok plugin install praxis --trust
+```
 
 ---
 

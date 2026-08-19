@@ -34,6 +34,18 @@ test('manifest versions match package.json', () => {
   }
   const market = JSON.parse(read('.claude-plugin/marketplace.json'));
   assert.equal(market.plugins[0].version, version, 'marketplace plugin version');
+  const grokMarket = JSON.parse(read('.grok-plugin/marketplace.json'));
+  assert.equal(grokMarket.plugins[0].version, version, 'grok marketplace plugin version');
+});
+
+test('package.json declares license homepage repository and bugs', () => {
+  const pkg = JSON.parse(read('package.json'));
+  assert.equal(pkg.license, 'MIT');
+  assert.equal(pkg.author, 'ouonet');
+  assert.equal(pkg.homepage, 'https://ouonet.github.io/praxis/');
+  assert.match(pkg.repository?.url || '', /github\.com\/ouonet\/praxis/);
+  assert.match(pkg.bugs?.url || '', /github\.com\/ouonet\/praxis\/issues/);
+  assert.equal(pkg.description, JSON.parse(read('plugin.json')).description);
 });
 
 test('skills do not hard-require TodoWrite as sole tracker name', () => {

@@ -135,6 +135,7 @@ export function copyPluginFiles(src, dest, { method = 'copy', force = false, dry
     '.codex-plugin',
     '.copilot-plugin',
     '.qoder-plugin',
+    '.grok-plugin',
     '.opencode',
     'gemini-extension.json',
     'package.json',
@@ -377,6 +378,14 @@ export function installHost(host, options = {}) {
     return true;
   }
 
+  if (host.id === 'grok') {
+    const grokRoot = scope === 'user' ? path.join(os.homedir(), '.grok') : path.join(rootDir, '.grok');
+    copyPluginFiles(praxisSrc, destPath, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    copyPraxisSkillsToDir(praxisSrc, path.join(grokRoot, 'skills'), { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    copyPraxisRulesToDir(praxisSrc, path.join(grokRoot, 'rules'), { method: method === 'link' ? 'link' : 'copy', force, dryRun });
+    return true;
+  }
+
   if (host.id === 'agents') {
     const skillsDest = path.join(destPath, 'skills');
     copyPraxisSkillsToDir(praxisSrc, skillsDest, { method: method === 'link' ? 'link' : 'copy', force, dryRun });
@@ -445,6 +454,23 @@ export function uninstallHost(host, options = {}) {
 
   // File-level non-destructive cleanup
   const destPath = resolveTargetPath(host, scope, rootDir);
+
+  if (host.id === 'grok') {
+    const grokRoot = scope === 'user' ? path.join(home, '.grok') : path.join(rootDir, '.grok');
+    const pluginDir = path.join(grokRoot, 'plugins', 'praxis');
+    if (fs.existsSync(pluginDir)) {
+      if (dryRun) {
+        console.log(`  [dry-run] Remove ${pluginDir}`);
+      } else {
+        fs.rmSync(pluginDir, { recursive: true, force: true });
+        console.log(`  [success] Removed ${pluginDir}`);
+        cleanEmptyDirectory(path.join(grokRoot, 'plugins'));
+      }
+    }
+    removePraxisSkillsFromDir(path.join(grokRoot, 'skills'), dryRun);
+    removePraxisRulesFromDir(path.join(grokRoot, 'rules'), dryRun);
+    return true;
+  }
 
   if (host.id === 'agents' || host.id === 'antigravity') {
     if (scope === 'user' && host.id === 'antigravity') {
@@ -755,6 +781,16 @@ export function getHostStatus(host, rootDir = process.cwd()) {
           if (text.includes('praxis')) userInstalled = true;
         } catch {}
       }
+    } else if (host.id === 'grok') {
+      const registry = path.join(home, '.grok', 'installed-plugins', 'registry.json');
+      if (fs.existsSync(registry)) {
+        try {
+          const j = JSON.parse(fs.readFileSync(registry, 'utf8'));
+          if (j.repos && Object.values(j.repos).some((repo) => repo.plugins && Object.keys(repo.plugins).includes('praxis'))) {
+            userInstalled = true;
+          }
+        } catch {}
+      }
     } else if (host.id === 'omp') {
       const pkgFile = path.join(home, '.omp', 'plugins', 'package.json');
       if (fs.existsSync(pkgFile)) {
@@ -830,6 +866,11 @@ export function getHostStatus(host, rootDir = process.cwd()) {
       const qoderPlugin = path.join(rootDir, '.qoder-plugin', 'plugin.json');
       const qoderSkill = path.join(rootDir, 'skills', 'using-praxis');
       projectInstalled = fs.existsSync(qoderPlugin) || fs.existsSync(qoderSkill);
+    } else if (host.id === 'grok') {
+      const grok = path.join(rootDir, '.grok');
+      projectInstalled = fs.existsSync(path.join(grok, 'plugins', 'praxis'))
+        || fs.existsSync(path.join(grok, 'rules', 'praxis.md'))
+        || fs.existsSync(path.join(grok, 'skills', 'using-praxis'));
     } else {
       const projectPath = resolveTargetPath(host, 'project', rootDir);
       projectInstalled = fs.existsSync(projectPath);
@@ -854,6 +895,11 @@ export function getHostStatus(host, rootDir = process.cwd()) {
       const localPlugin = path.join(rootDir, '.qoder-plugin', 'plugin.json');
       const localSkill = path.join(rootDir, 'skills', 'using-praxis');
       localInstalled = fs.existsSync(localPlugin) || fs.existsSync(localSkill);
+    } else if (host.id === 'grok') {
+      const grok = path.join(rootDir, '.grok');
+      localInstalled = fs.existsSync(path.join(grok, 'plugins', 'praxis'))
+        || fs.existsSync(path.join(grok, 'rules', 'praxis.md'))
+        || fs.existsSync(path.join(grok, 'skills', 'using-praxis'));
     } else {
       const localPath = resolveTargetPath(host, 'local', rootDir);
       localInstalled = fs.existsSync(localPath);
