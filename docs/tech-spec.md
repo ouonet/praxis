@@ -13,7 +13,7 @@ entry:        Session bootstrap and installation entrypoints:
   - Claude Code: marketplace/plugin; auto-loads `hooks/hooks.json` → `hooks/run-hook.cmd session-start`
   - Codex: `.codex-plugin/plugin.json` → `hooks/codex-hooks.json` → session-start
   - Copilot: `.copilot-plugin/plugin.json` SessionStart command → session-start
-  - Gemini/Antigravity: `gemini-extension.json` `contextFileName` = `skills/using-praxis/SKILL.md`
+  - Gemini/Antigravity: `rules/AGENTS.md` (and `plugins/praxis/rules/AGENTS.md`) auto-injects triage rules into active session rules
   - pi: `package.json` `pi.extensions` + `pi.skills`; `extensions/praxis.js` on `before_agent_start`
   - OpenCode: `package.json` `main` = `.opencode/plugins/praxis.js` (config skill paths + message transform bootstrap)
   - Qoder: `.qoder-plugin/plugin.json` skills path / project `skills/` discovery
@@ -52,7 +52,7 @@ invariant:
 
 constraint:
   - Quality/lint/format tools are not declared for skill Markdown; adapter checks use `npm test` / `npm run check` (Node built-in test runner).
-  - `hooks/gemini-hooks.json` is not wired from `gemini-extension.json` (Gemini uses `contextFileName` bootstrap).
+  - `hooks/gemini-hooks.json` is not wired (Antigravity uses `rules/AGENTS.md` bootstrap).
   - Windows hook wrapper exits 0 if bash is missing (bootstrap injection skipped silently).
   - Model tiers without config silently use harness default.
   - Multi-module is an experimental coordination protocol (non-atomic cross-repo commits).
@@ -61,7 +61,7 @@ constraint:
   - SessionStart inject policy:
     - Startup/resume/clear/fork/new: inject full `using-praxis` bootstrap.
     - Compact: inject brief reminder only.
-    - Gemini/Antigravity: skip hook injection when `contextFileName` already loads `using-praxis`.
+    - Gemini/Antigravity: skip hook injection when `rules/AGENTS.md` already loads `using-praxis`.
     - Grok: do not rely on SessionStart stdout; copy `rules/praxis.md` into Grok rules dirs (auto-loaded into session context).
 
 convention:

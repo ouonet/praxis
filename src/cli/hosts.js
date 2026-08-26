@@ -76,6 +76,7 @@ export const HOSTS = {
       path.join(homeDir, '.gemini', 'antigravity-ide', 'plugins', 'praxis'),
       path.join(homeDir, '.gemini', 'config', 'skills', 'using-praxis'),
       path.join(homeDir, '.gemini', 'config', 'rules', 'praxis.md'),
+      path.join(homeDir, '.gemini', 'config', 'rules', 'AGENTS.md'),
     ],
     nativeInstallCmd: null,
     nativeUninstallCmd: null,

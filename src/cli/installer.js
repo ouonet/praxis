@@ -179,6 +179,7 @@ export const PRAXIS_HOOK_FILES = [
 
 export const PRAXIS_RULE_FILES = [
   'praxis.md',
+  'AGENTS.md',
 ];
 
 export function removePraxisSkillsFromDir(skillsDir, dryRun = false) {
@@ -714,7 +715,10 @@ export function getHostStatus(host, rootDir = process.cwd()) {
   // Check user scope
   let userInstalled = false;
   if (host.id === 'agents') {
-    userInstalled = fs.existsSync(path.join(home, '.agents', 'skills', 'using-praxis')) || fs.existsSync(path.join(home, '.agents', 'plugins', 'praxis'));
+    userInstalled = fs.existsSync(path.join(home, '.agents', 'skills', 'using-praxis'))
+      || fs.existsSync(path.join(home, '.agents', 'plugins', 'praxis'))
+      || fs.existsSync(path.join(home, '.agents', 'rules', 'AGENTS.md'))
+      || fs.existsSync(path.join(home, '.agents', 'rules', 'praxis.md'));
   } else {
     userInstalled = fs.existsSync(host.userTarget);
     if (!userInstalled && host.userAltTargets) {
@@ -833,7 +837,9 @@ export function getHostStatus(host, rootDir = process.cwd()) {
     } else if (host.id === 'agents' || host.id === 'antigravity') {
       const agentsSkill = path.join(rootDir, '.agents', 'skills', 'using-praxis');
       const agentsPlugins = path.join(rootDir, '.agents', 'plugins', 'praxis');
-      projectInstalled = fs.existsSync(agentsSkill) || fs.existsSync(agentsPlugins);
+      const agentsRule = path.join(rootDir, '.agents', 'rules', 'AGENTS.md');
+      const agentsRulePraxis = path.join(rootDir, '.agents', 'rules', 'praxis.md');
+      projectInstalled = fs.existsSync(agentsSkill) || fs.existsSync(agentsPlugins) || fs.existsSync(agentsRule) || fs.existsSync(agentsRulePraxis);
     } else if (host.id === 'claude') {
       const projSettings = path.join(rootDir, '.claude', 'settings.json');
       if (fs.existsSync(projSettings)) {
@@ -886,7 +892,9 @@ export function getHostStatus(host, rootDir = process.cwd()) {
     } else if (host.id === 'antigravity' || host.id === 'agents') {
       const localPlugin = path.join(rootDir, '.agents', 'plugins', 'praxis');
       const localSkill = path.join(rootDir, '.agents', 'skills', 'using-praxis');
-      localInstalled = fs.existsSync(localPlugin) || fs.existsSync(localSkill);
+      const localRule = path.join(rootDir, '.agents', 'rules', 'AGENTS.md');
+      const localRulePraxis = path.join(rootDir, '.agents', 'rules', 'praxis.md');
+      localInstalled = fs.existsSync(localPlugin) || fs.existsSync(localSkill) || fs.existsSync(localRule) || fs.existsSync(localRulePraxis);
     } else if (host.id === 'omp') {
       const localSkill = path.join(rootDir, '.omp', 'skills', 'using-praxis');
       const localPlugin = path.join(rootDir, '.omp', 'plugins');

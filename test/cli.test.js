@@ -290,8 +290,10 @@ test('installHost and uninstallHost for antigravity across project and local sco
     const pluginDir = path.join(tmpDir, '.agents', 'plugins', 'praxis');
     assert.equal(fs.existsSync(path.join(pluginDir, 'skills', 'using-praxis', 'SKILL.md')), true);
     assert.equal(fs.existsSync(path.join(pluginDir, 'rules', 'praxis.md')), true);
+    assert.equal(fs.existsSync(path.join(pluginDir, 'rules', 'AGENTS.md')), true);
     assert.equal(fs.existsSync(path.join(pluginDir, 'plugin.json')), true);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'praxis.md')), true);
+    assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'AGENTS.md')), true);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'skills', 'using-praxis', 'SKILL.md')), true);
 
     const status = getHostStatus(host, tmpDir);
@@ -306,7 +308,9 @@ test('installHost and uninstallHost for antigravity across project and local sco
       method: 'file',
     });
     assert.equal(fs.existsSync(path.join(pluginDir, 'rules', 'praxis.md')), true);
+    assert.equal(fs.existsSync(path.join(pluginDir, 'rules', 'AGENTS.md')), true);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'praxis.md')), true);
+    assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'AGENTS.md')), true);
 
     // 3. Uninstall
     uninstallHost(host, {
@@ -321,6 +325,7 @@ test('installHost and uninstallHost for antigravity across project and local sco
     assert.equal(afterStatus.localInstalled, false);
     assert.equal(fs.existsSync(pluginDir), false);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'praxis.md')), false);
+    assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'AGENTS.md')), false);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'skills', 'using-praxis')), false);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 4.2.9 - 2026-08-26
+
+- **Antigravity Active Rules & Auto-Activation Fix**:
+  - Added standard `rules/AGENTS.md` adhering to Antigravity plugin and Agent specifications, enabling automatic ingestion of Praxis Triage rules into active conversation prompts without requiring manual skill loading.
+  - Extended `PRAXIS_RULE_FILES` to `['praxis.md', 'AGENTS.md']` in `src/cli/installer.js` to ensure clean installation, status detection, and non-destructive uninstallation across scopes.
+  - Updated `HOSTS.antigravity.userAltTargets` and status detection logic.
+  - Updated `docs/tech-spec.md` with accurate Antigravity rule loading architecture.
+
 ## 4.2.8 - 2026-08-20
 
 - **Grok CLI host**: File-install copies the plugin, skills, and `rules/praxis.md` so Grok auto-injects using-praxis triage (Grok ignores SessionStart hook stdout). CLI `--host grok`; marketplace index `.grok-plugin/marketplace.json`.
