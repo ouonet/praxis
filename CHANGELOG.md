@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Quality & Boundary Review Standards**:
+  - Enhanced `skills/references/quality.md` design checks with core architectural boundary criteria: inward dependencies (core logic independent of volatile I/O/UI/DB), isolated side-effects (pure computations separated from I/O mutations), and cohesion/simplicity (single responsibility without leaky abstractions).
+  - Synchronized across English, Chinese, Japanese, and Korean documentation sites.
+
 ## 4.2.9 - 2026-08-26
 
 - **Antigravity Active Rules & Auto-Activation Fix**:

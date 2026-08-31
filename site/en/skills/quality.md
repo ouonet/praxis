@@ -15,9 +15,10 @@ Every implementation and refactor cycle must be verified across four key dimensi
 - Adheres to project-specific and stack best practices declared in the spec (`convention:`).
 - Evaluates idiomatic structure, error handling patterns, and naming standards.
 
-### 3. Design Assessment
-- **Coupling & Cohesion**: Functions and classes have high cohesion and minimal coupling.
-- **Abstraction Level**: Prevents premature or unnecessary abstractions; implementation is as simple as possible while fulfilling the contract.
+### 3. Design & Boundaries Assessment
+- **Inward Dependencies**: Core business logic never imports volatile I/O, UI, or DB adapters.
+- **Isolated Side-Effects**: Pure computations and decision logic are separated from I/O and state mutations.
+- **Cohesion & Simplicity**: Single responsibility per function/module; avoids bloated functions or leaky abstractions.
 
 ### 4. Documentation Coverage
 - All public functions, API endpoints, exported interfaces, environment variables, and failure modes are accurately documented.
