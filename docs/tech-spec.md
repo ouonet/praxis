@@ -21,9 +21,9 @@ entry:        Session bootstrap and installation entrypoints:
   - Manual: read `skills/using-praxis/SKILL.md` first
 
 contract:     Public install surfaces and stability set:
-  - CLI commands: `install`, `status`, `update`, `uninstall` with flags `--host`, `--scope`, `--ref`, `--force`, `--dry-run`, `--method`
+  - CLI commands: `install`, `status`, `update`, `uninstall`, `version`, `help` with flags `--host` (`-H`), `--scope` (`-s`), `--ref` (`-r`), `--method` (`-m`), `--force` (`-f`), `--dry-run`, `--help` (`-h`), `--version` (`-v`)
   - Supported hosts: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `pi`, `omp`, `qoder`, `grok`, `agents`, `all`
-  - Supported scopes: `project` (Git-tracked), `local` (workspace), `user` (global home)
+  - Supported scopes: `user` (global home, default), `project` (Git-tracked), `local` (workspace)
   - Skill names and paths: `skills/<name>/SKILL.md` for onboard, design, plan, tdd, debug, review, worktree, subagents, ship, archive, release, using-praxis
   - Shared protocols: `skills/references/{quality,reviewers,multi-module}.md`
   - Triage announcement line: `praxis: scope=<x>, loading=<skills>` and optional `topology=multi-module`

@@ -40,9 +40,9 @@ npx @ouonet/praxis install --host grok
 - `all`：一键安装至所有支持的主机
 
 #### 作用域（Scopes）
-- `project`（默认在项目目录）：项目范围，配置会落入版本控制（如 `opencode.json`、`.agents/skills/`、`.claude/settings.json`），与团队共享。
+- `user` / `global`（全局默认）：全局/用户范围（如 `~/.claude`、`~/.codex`、`~/.gemini/config`、`~/.omp`、`~/.qoder-cn`），所有工作区均可加载。
+- `project`：项目范围，配置会落入版本控制（如 `opencode.json`、`.agents/skills/`、`.claude/settings.json`），与团队共享。
 - `local`：当前工作区本地范围，仅在当前目录生效但尽量不污染团队提交的共享配置文件。
-- `user` / `global`（默认在用户主目录）：全局/用户范围（如 `~/.claude`、`~/.codex`、`~/.gemini/config`、`~/.omp`、`~/.qoder-cn`），所有工作区均可加载。
 
 #### 常用命令
 ```bash

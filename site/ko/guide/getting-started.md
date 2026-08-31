@@ -38,9 +38,9 @@ npx @ouonet/praxis install --host qoder
 - `all`: 지원되는 모든 호스트에 설치
 
 #### 설치 범위 (Scopes)
-- `project` (프로젝트 디렉토리 기본값): Git 등으로 추적되는 프로젝트 범위 (`opencode.json`, `.agents/skills/`, `.claude/settings.json` 등), 팀과 공유.
+- `user` / `global` (전역 기본값): 전역 사용자 홈 범위 (`~/.claude`, `~/.codex`, `~/.gemini/config`, `~/.omp`, `~/.qoder-cn` 등), 모든 작업 공간에서 사용 가능.
+- `project`: Git 등으로 추적되는 프로젝트 범위 (`opencode.json`, `.agents/skills/`, `.claude/settings.json` 등), 팀과 공유.
 - `local`: 현재 작업 디렉토리 전용 로컬 범위. 공유 설정 파일을 수정하지 않고 활성화.
-- `user` / `global` (홈 디렉토리 기본값): 전역 사용자 홈 범위 (`~/.claude`, `~/.codex`, `~/.gemini/config`, `~/.omp`, `~/.qoder-cn` 등), 모든 작업 공간에서 사용 가능.
 
 #### 관리 명령어
 ```bash

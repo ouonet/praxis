@@ -38,9 +38,9 @@ npx @ouonet/praxis install --host qoder
 - `all`: サポートされているすべてのホストにインストール
 
 #### スコープ (Scopes)
-- `project`（プロジェクトディレクトリ内でのデフォルト）: Git 等で管理されるプロジェクト共有スコープ（`opencode.json`、`.agents/skills/`、`.claude/settings.json` など）。
+- `user` / `global`（デフォルト）: ユーザーホームスコープ（`~/.claude`、`~/.codex`、`~/.gemini/config`、`~/.omp`、`~/.qoder-cn` など）。すべてのワークスペースで有効。
+- `project`: Git 等で管理されるプロジェクト共有スコープ（`opencode.json`、`.agents/skills/`、`.claude/settings.json` など）。
 - `local`: 現在のワークスペース限定のローカルスコープ。リポジトリ共有設定を汚さずに有効化。
-- `user` / `global`（ホームディレクトリでのデフォルト）: ユーザーホームスコープ（`~/.claude`、`~/.codex`、`~/.gemini/config`、`~/.omp`、`~/.qoder-cn` など）。すべてのワークスペースで有効。
 
 #### 管理コマンド
 ```bash

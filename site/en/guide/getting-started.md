@@ -40,9 +40,9 @@ npx @ouonet/praxis install --host grok
 - `all`: Install to all supported AI hosts
 
 #### Installation Scopes
-- `project` (default in project directories): Project-level scope tracked in git (e.g. `opencode.json`, `.agents/skills/`, `.claude/settings.json`), shared with the team.
+- `user` / `global` (default across all commands and directories): Global user home scope (e.g. `~/.claude`, `~/.codex`, `~/.gemini/config`, `~/.omp`, `~/.qoder-cn`), available across all workspaces.
+- `project`: Project-level scope tracked in git (e.g. `opencode.json`, `.agents/skills/`, `.claude/settings.json`), shared with the team.
 - `local`: Workspace-local scope, active in the current directory without modifying shared repo manifests.
-- `user` / `global` (default in home directory): Global user home scope (e.g. `~/.claude`, `~/.codex`, `~/.gemini/config`, `~/.omp`, `~/.qoder-cn`), available across all workspaces.
 
 #### Management Commands
 ```bash
