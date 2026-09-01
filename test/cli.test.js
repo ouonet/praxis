@@ -383,7 +383,29 @@ test('installHost and uninstallHost for grok copies plugin skills and rules', ()
   }
 });
 
+test('native commands for claude, pi, and omp', () => {
+  // Claude Code
+  assert.equal(HOSTS.claude.nativeInstallCmd(null, 'user'), 'claude plugins install praxis');
+  assert.equal(HOSTS.claude.nativeInstallCmd(null, 'project'), 'claude plugins install praxis --scope project');
+  assert.equal(HOSTS.claude.nativeInstallCmd('4.2.10', 'user'), 'claude plugins install praxis@4.2.10');
+  assert.equal(HOSTS.claude.nativeUpdateCmd(), 'claude plugins update praxis@praxis');
+  assert.equal(HOSTS.claude.nativeUninstallCmd(), 'claude plugins uninstall praxis@praxis');
 
+  // pi CLI
+  assert.equal(HOSTS.pi.nativeInstallCmd(null, 'user'), 'pi install git:github.com/ouonet/praxis');
+  assert.equal(HOSTS.pi.nativeInstallCmd(null, 'local'), 'pi install -l git:github.com/ouonet/praxis');
+  assert.equal(HOSTS.pi.nativeInstallCmd(null, 'project'), 'pi install -p git:github.com/ouonet/praxis');
+  assert.equal(HOSTS.pi.nativeInstallCmd('main', 'user'), 'pi install git:github.com/ouonet/praxis@main');
+  assert.equal(HOSTS.pi.nativeUpdateCmd(null, 'user'), 'pi install git:github.com/ouonet/praxis');
+  assert.equal(HOSTS.pi.nativeUpdateCmd('v4.2.10', 'project'), 'pi install -p git:github.com/ouonet/praxis@v4.2.10');
+  assert.equal(HOSTS.pi.nativeUninstallCmd(), 'pi remove git:github.com/ouonet/praxis');
 
-
-
+  // Oh My Pi (omp)
+  assert.equal(HOSTS.omp.nativeInstallCmd(null, 'user'), 'omp plugin install https://github.com/ouonet/praxis');
+  assert.equal(HOSTS.omp.nativeInstallCmd(null, 'local'), 'omp plugin install https://github.com/ouonet/praxis -l');
+  assert.equal(HOSTS.omp.nativeInstallCmd(null, 'project'), 'omp plugin install https://github.com/ouonet/praxis --scope=project');
+  assert.equal(HOSTS.omp.nativeInstallCmd('v4.2.10', 'user'), 'omp plugin install https://github.com/ouonet/praxis#v4.2.10');
+  assert.equal(HOSTS.omp.nativeUpdateCmd(null, 'user'), 'omp plugin install https://github.com/ouonet/praxis');
+  assert.equal(HOSTS.omp.nativeUpdateCmd('v4.2.10', 'project'), 'omp plugin install https://github.com/ouonet/praxis#v4.2.10 --scope=project');
+  assert.equal(HOSTS.omp.nativeUninstallCmd(), 'omp plugin uninstall @ouonet/praxis');
+});

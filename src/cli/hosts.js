@@ -17,8 +17,8 @@ export const HOSTS = {
       const pkg = ref ? `praxis@${ref}` : 'praxis';
       return scope === 'user' ? `claude plugins install ${pkg}` : `claude plugins install ${pkg} --scope project`;
     },
-    nativeUninstallCmd: () => 'claude plugins uninstall praxis',
-    nativeUpdateCmd: () => 'claude plugins update praxis',
+    nativeUninstallCmd: () => 'claude plugins uninstall praxis@praxis',
+    nativeUpdateCmd: () => 'claude plugins update praxis@praxis',
   },
   codex: {
     id: 'codex',
@@ -102,7 +102,12 @@ export const HOSTS = {
       return `pi install ${pkg}`;
     },
     nativeUninstallCmd: () => 'pi remove git:github.com/ouonet/praxis',
-    nativeUpdateCmd: () => 'pi update git:github.com/ouonet/praxis',
+    nativeUpdateCmd: (ref, scope) => {
+      const pkg = ref ? `git:github.com/ouonet/praxis@${ref}` : 'git:github.com/ouonet/praxis';
+      if (scope === 'local') return `pi install -l ${pkg}`;
+      if (scope === 'project') return `pi install -p ${pkg}`;
+      return `pi install ${pkg}`;
+    },
   },
   omp: {
     id: 'omp',
@@ -123,8 +128,13 @@ export const HOSTS = {
       if (scope === 'project') return `omp plugin install ${pkg} --scope=project`;
       return `omp plugin install ${pkg}`;
     },
-    nativeUninstallCmd: () => 'omp plugin uninstall praxis',
-    nativeUpdateCmd: () => 'omp plugin upgrade praxis',
+    nativeUninstallCmd: () => 'omp plugin uninstall @ouonet/praxis',
+    nativeUpdateCmd: (ref, scope) => {
+      const pkg = ref ? `https://github.com/ouonet/praxis#${ref}` : 'https://github.com/ouonet/praxis';
+      if (scope === 'local') return `omp plugin install ${pkg} -l`;
+      if (scope === 'project') return `omp plugin install ${pkg} --scope=project`;
+      return `omp plugin install ${pkg}`;
+    },
   },
   qoder: {
     id: 'qoder',

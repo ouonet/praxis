@@ -437,7 +437,7 @@ export function uninstallHost(host, options = {}) {
         console.log(`  [success] Successfully uninstalled via codex CLI.`);
       }
     } else {
-      const cmd = host.nativeUninstallCmd();
+      const cmd = typeof host.nativeUninstallCmd === 'function' ? host.nativeUninstallCmd(scope) : host.nativeUninstallCmd;
       if (dryRun) {
         console.log(`  [dry-run] Executing CLI command: ${cmd}`);
         return true;
@@ -689,7 +689,7 @@ export function updateHost(host, options = {}) {
       return true;
     }
 
-    const cmd = host.nativeUpdateCmd();
+    const cmd = typeof host.nativeUpdateCmd === 'function' ? host.nativeUpdateCmd(options.ref, scope) : host.nativeUpdateCmd;
     if (dryRun) {
       console.log(`  [dry-run] Executing CLI command: ${cmd}`);
       return true;
