@@ -83,3 +83,11 @@ test('package.json defines test script', () => {
   assert.ok(pkg.scripts?.test);
   assert.ok(pkg.scripts?.check);
 });
+
+test('shared rule files start with ownership marker and have identical normalized content', () => {
+  const agentsRule = read('rules/AGENTS.md').replace(/\r\n/g, '\n');
+  const praxisRule = read('rules/praxis.md').replace(/\r\n/g, '\n');
+  assert.ok(agentsRule.startsWith('<!-- praxis:managed-rule -->\n'), 'rules/AGENTS.md must start with ownership marker');
+  assert.ok(praxisRule.startsWith('<!-- praxis:managed-rule -->\n'), 'rules/praxis.md must start with ownership marker');
+  assert.equal(agentsRule, praxisRule, 'rules/AGENTS.md and rules/praxis.md must have identical normalized content');
+});

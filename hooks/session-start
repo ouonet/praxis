@@ -38,8 +38,8 @@ detect_source() {
     printf '%s' ""
     return
   fi
-  if command -v python3 >/dev/null 2>&1; then
-    printf '%s' "$raw" | PYTHONIOENCODING=utf-8 python3 -c '
+  local out=""
+  if command -v python3 >/dev/null 2>&1 && out=$(printf '%s' "$raw" | PYTHONIOENCODING=utf-8 python3 -c '
 import json,sys
 try:
     d=json.load(sys.stdin)
@@ -47,7 +47,8 @@ except Exception:
     sys.exit(0)
 src=d.get("source") or d.get("Source") or ""
 print(src if isinstance(src,str) else "")
-' 2>/dev/null || true
+' 2>/dev/null); then
+    printf '%s' "$out"
     return
   fi
   printf '%s' "$raw" | tr -d '\n' | sed -n 's/.*"source"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1
@@ -58,22 +59,27 @@ has_hook_event_name() {
 }
 
 json_escape() {
-  if command -v python3 >/dev/null 2>&1; then
-    PYTHONIOENCODING=utf-8 python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])'
-    return
-  fi
-  if command -v python >/dev/null 2>&1; then
-    PYTHONIOENCODING=utf-8 python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])'
-    return
-  fi
   local s
   s=$(cat)
+  local out=""
+  if command -v python3 >/dev/null 2>&1 && out=$(printf '%s' "$s" | PYTHONIOENCODING=utf-8 python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])' 2>/dev/null); then
+    printf '%s' "$out"
+    return
+  fi
+  if command -v python >/dev/null 2>&1 && out=$(printf '%s' "$s" | PYTHONIOENCODING=utf-8 python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])' 2>/dev/null); then
+    printf '%s' "$out"
+    return
+  fi
+  if command -v node >/dev/null 2>&1 && out=$(printf '%s' "$s" | node -e "const fs=require('fs');process.stdout.write(JSON.stringify(fs.readFileSync(0,'utf8')).slice(1,-1))" 2>/dev/null); then
+    printf '%s' "$out"
+    return
+  fi
   s="${s//\\/\\\\}"
   s="${s//\"/\\\"}"
   s="${s//$'\n'/\\n}"
   s="${s//$'\r'/\\r}"
   s="${s//$'\t'/\\t}"
-  printf '%s' "$s"
+  printf '%s' "$s" | LC_ALL=C tr -d '\000-\037'
 }
 
 strip_frontmatter() {
@@ -103,7 +109,11 @@ build_full_content() {
       local drive="${BASH_REMATCH[1]}"
       drive="$(printf '%s' "$drive" | tr '[:upper:]' '[:lower:]')"
       local rest="${BASH_REMATCH[2]//\\//}"
-      SKILL_PATH="/mnt/${drive}/${rest}"
+      if [ -f "/${drive}/${rest}" ]; then
+        SKILL_PATH="/${drive}/${rest}"
+      elif [ -f "/mnt/${drive}/${rest}" ]; then
+        SKILL_PATH="/mnt/${drive}/${rest}"
+      fi
     fi
   fi
   if [ ! -f "${SKILL_PATH}" ] && [ -f "${SCRIPT_DIR}/../skills/using-praxis/SKILL.md" ]; then

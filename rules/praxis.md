@@ -1,3 +1,4 @@
+<!-- praxis:managed-rule -->
 # Praxis Triage Rules
 
 You have Praxis.

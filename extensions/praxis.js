@@ -9,15 +9,14 @@ const BOOTSTRAP_MARKER = 'praxis.using-praxis.injected.v1';
 let cachedBootstrap;
 
 const stripFrontmatter = (content) => {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
   return match ? match[2] : content;
 };
 
 const loadBootstrap = () => {
   if (cachedBootstrap !== undefined) return cachedBootstrap;
   if (!fs.existsSync(SKILL_PATH)) {
-    cachedBootstrap = null;
-    return cachedBootstrap;
+    return null;
   }
 
   const content = stripFrontmatter(fs.readFileSync(SKILL_PATH, 'utf8')).trim();

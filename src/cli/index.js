@@ -1,7 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { HOSTS, resolveHost } from './hosts.js';
-import { installHost, uninstallHost, updateHost, getHostStatus } from './installer.js';
+import {
+  installHost,
+  uninstallHost,
+  updateHost,
+  getHostStatus,
+  normalizeScope,
+  normalizeMethod,
+  validateRef,
+  supportsRef,
+  checkBinaryAvailable,
+} from './installer.js';
 
 function getVersion() {
   try {
@@ -13,53 +23,78 @@ function getVersion() {
   }
 }
 
-function parseArgs(args) {
-  const parsed = {
+export function parseArgs(args = []) {
+  const options = {
     command: null,
     host: null,
     scope: null,
     ref: null,
-    method: 'auto',
+    method: null,
     dryRun: false,
     force: false,
     help: false,
     version: false,
   };
+  const errors = [];
+
+  const valueFlags = new Map([
+    ['--host', 'host'],
+    ['-H', 'host'],
+    ['--scope', 'scope'],
+    ['-s', 'scope'],
+    ['--ref', 'ref'],
+    ['-r', 'ref'],
+    ['--method', 'method'],
+    ['-m', 'method'],
+  ]);
+
+  const longValueFlags = new Map([
+    ['--host=', 'host'],
+    ['--scope=', 'scope'],
+    ['--ref=', 'ref'],
+    ['--method=', 'method'],
+  ]);
 
   let i = 0;
   while (i < args.length) {
-    const arg = args[i];
+    const arg = String(args[i]);
     if (arg === '--help' || arg === '-h') {
-      parsed.help = true;
+      options.help = true;
     } else if (arg === '--version' || arg === '-v') {
-      parsed.version = true;
+      options.version = true;
     } else if (arg === '--dry-run') {
-      parsed.dryRun = true;
+      options.dryRun = true;
     } else if (arg === '--force' || arg === '-f') {
-      parsed.force = true;
-    } else if (arg === '--host' || arg === '-H') {
-      parsed.host = args[++i];
-    } else if (arg.startsWith('--host=')) {
-      parsed.host = arg.split('=')[1];
-    } else if (arg === '--scope' || arg === '-s') {
-      parsed.scope = args[++i];
-    } else if (arg.startsWith('--scope=')) {
-      parsed.scope = arg.split('=')[1];
-    } else if (arg === '--ref' || arg === '-r') {
-      parsed.ref = args[++i];
-    } else if (arg.startsWith('--ref=')) {
-      parsed.ref = arg.split('=')[1];
-    } else if (arg === '--method' || arg === '-m') {
-      parsed.method = args[++i];
-    } else if (arg.startsWith('--method=')) {
-      parsed.method = arg.split('=')[1];
-    } else if (!parsed.command && !arg.startsWith('-')) {
-      parsed.command = arg;
+      options.force = true;
+    } else if (valueFlags.has(arg)) {
+      const key = valueFlags.get(arg);
+      const next = i + 1 < args.length ? String(args[i + 1]) : undefined;
+      if (next === undefined || next === '' || next.startsWith('-')) {
+        errors.push(`Missing value for ${arg}`);
+      } else {
+        options[key] = next;
+        i++;
+      }
+    } else if ([...longValueFlags.keys()].some((prefix) => arg.startsWith(prefix))) {
+      const prefix = [...longValueFlags.keys()].find((p) => arg.startsWith(p));
+      const key = longValueFlags.get(prefix);
+      const val = arg.slice(arg.indexOf('=') + 1);
+      if (!val) {
+        errors.push(`Missing value for ${prefix.slice(0, -1)}`);
+      } else {
+        options[key] = val;
+      }
+    } else if (arg.startsWith('-')) {
+      errors.push(`Unknown option: ${arg}`);
+    } else if (!options.command) {
+      options.command = arg;
+    } else {
+      errors.push(`Unexpected argument: ${arg}`);
     }
     i++;
   }
 
-  return parsed;
+  return { options, errors };
 }
 
 function printHelp() {
@@ -103,20 +138,20 @@ export function getStringWidth(str) {
   let width = 0;
   for (const char of clean) {
     const code = char.codePointAt(0);
-    if (code === 0xFE0F || code === 0xFE0E || code === 0x200D) continue;
+    if (code === 0xfe0f || code === 0xfe0e || code === 0x200d) continue;
     if (
-      (code >= 0x1100 && code <= 0x115F) ||
-      (code >= 0x2329 && code <= 0x232A) ||
-      (code >= 0x2E80 && code <= 0x303E) ||
-      (code >= 0x3040 && code <= 0xA4CF) ||
-      (code >= 0xAC00 && code <= 0xD7A3) ||
-      (code >= 0xF900 && code <= 0xFAFF) ||
-      (code >= 0xFE10 && code <= 0xFE19) ||
-      (code >= 0xFE30 && code <= 0xFE6F) ||
-      (code >= 0xFF00 && code <= 0xFF60) ||
-      (code >= 0xFFE0 && code <= 0xFFE6) ||
-      (code >= 0x1F000 && code <= 0x1FFFF) ||
-      (code >= 0x2600 && code <= 0x27BF)
+      (code >= 0x1100 && code <= 0x115f) ||
+      (code >= 0x2329 && code <= 0x232a) ||
+      (code >= 0x2e80 && code <= 0x303e) ||
+      (code >= 0x3040 && code <= 0xa4cf) ||
+      (code >= 0xac00 && code <= 0xd7a3) ||
+      (code >= 0xf900 && code <= 0xfaff) ||
+      (code >= 0xfe10 && code <= 0xfe19) ||
+      (code >= 0xfe30 && code <= 0xfe6f) ||
+      (code >= 0xff00 && code <= 0xff60) ||
+      (code >= 0xffe0 && code <= 0xffe6) ||
+      (code >= 0x1f000 && code <= 0x1ffff) ||
+      (code >= 0x2600 && code <= 0x27bf)
     ) {
       width += 2;
     } else {
@@ -132,8 +167,27 @@ export function padEndVisual(str, targetWidth, padChar = ' ') {
   return str + padChar.repeat(targetWidth - currentWidth);
 }
 
-export async function runCli(args = process.argv.slice(2), { rootDir = process.cwd() } = {}) {
-  const options = parseArgs(args);
+export async function runCli(args = process.argv.slice(2), { rootDir = process.cwd(), homeDir } = {}) {
+  const { options, errors } = parseArgs(args);
+
+  if (errors.length > 0) {
+    for (const err of errors) {
+      console.error(`❌ ${err}`);
+    }
+    return 1;
+  }
+
+  let normScope;
+  let normMethod;
+  let normRef;
+  try {
+    normScope = normalizeScope(options.scope, rootDir);
+    normMethod = normalizeMethod(options.method);
+    normRef = validateRef(options.ref);
+  } catch (err) {
+    console.error(`❌ ${err.message}`);
+    return 1;
+  }
 
   if (options.version || (options.command && ['version', 'v'].includes(options.command.toLowerCase()))) {
     console.log(`praxis v${getVersion()}`);
@@ -162,7 +216,7 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
     console.log('-'.repeat(cols.reduce((sum, [, w]) => sum + w, 0)));
 
     for (const host of Object.values(HOSTS)) {
-      const status = getHostStatus(host, rootDir);
+      const status = getHostStatus(host, rootDir, { homeDir });
       const isHome = status.isHome;
       const cliStr = status.binaryAvailable ? '✅ Yes' : '❌ No';
       const localStr = isHome ? '⚪ N/A (Home)' : (status.localInstalled ? '✅ Installed' : '⚪ Not installed');
@@ -175,15 +229,22 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
     return 0;
   }
 
+  const isInstall = ['install', 'i'].includes(cmd);
+  const isUninstall = ['uninstall', 'remove', 'rm'].includes(cmd);
+  const isUpdate = ['update', 'upgrade'].includes(cmd);
+
+  if (!isInstall && !isUninstall && !isUpdate) {
+    console.error(`❌ Unknown command: "${options.command}". Run "npx @ouonet/praxis help" for usage.`);
+    return 1;
+  }
+
   // Resolve target hosts
   let targetHosts = [];
   if (!options.host || options.host.toLowerCase() === 'all') {
-    if (cmd === 'install') {
-      // Find hosts with available CLIs or include agents
+    if (isInstall) {
       targetHosts = Object.values(HOSTS).filter((h) => {
         if (h.id === 'agents') return true;
-        const status = getHostStatus(h, rootDir);
-        return status.binaryAvailable;
+        return checkBinaryAvailable(h.cliBinary);
       });
       if (targetHosts.length === 0) {
         targetHosts = [HOSTS.agents];
@@ -200,39 +261,45 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
     targetHosts = [resolved];
   }
 
+  const action = isInstall ? 'install' : isUninstall ? 'uninstall' : 'update';
+
+  // Upfront --ref compatibility preflight across all target hosts before mutating any host
+  if (normRef !== null) {
+    for (const host of targetHosts) {
+      const binaryAvailable = checkBinaryAvailable(host.cliBinary);
+      if (!supportsRef(host, action, normScope, normMethod, { binaryAvailable })) {
+        console.error(
+          `❌ --ref is not supported for host "${host.id}" (action: ${action}, scope: ${normScope}, method: ${normMethod}).`,
+        );
+        return 1;
+      }
+    }
+  }
+
   const execOptions = {
-    scope: options.scope,
-    ref: options.ref,
-    method: options.method,
+    scope: normScope,
+    ref: normRef,
+    method: normMethod,
     dryRun: options.dryRun,
     force: options.force,
     rootDir,
+    homeDir,
   };
 
-  if (['install', 'i'].includes(cmd)) {
-    for (const host of targetHosts) {
-      installHost(host, execOptions);
-    }
-    console.log('\n✨ Done!');
-    return 0;
+  let allOk = true;
+  for (const host of targetHosts) {
+    const ok = isInstall
+      ? installHost(host, execOptions)
+      : isUninstall
+        ? uninstallHost(host, execOptions)
+        : updateHost(host, execOptions);
+    if (!ok) allOk = false;
   }
 
-  if (['uninstall', 'remove', 'rm'].includes(cmd)) {
-    for (const host of targetHosts) {
-      uninstallHost(host, execOptions);
-    }
-    console.log('\n✨ Done!');
-    return 0;
+  if (!allOk) {
+    return 1;
   }
 
-  if (['update', 'upgrade'].includes(cmd)) {
-    for (const host of targetHosts) {
-      updateHost(host, execOptions);
-    }
-    console.log('\n✨ Done!');
-    return 0;
-  }
-
-  console.error(`❌ Unknown command: "${options.command}". Run "npx @ouonet/praxis help" for usage.`);
-  return 1;
+  console.log('\n✨ Done!');
+  return 0;
 }

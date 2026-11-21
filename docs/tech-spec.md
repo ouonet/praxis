@@ -21,7 +21,16 @@ entry:        Session bootstrap and installation entrypoints:
   - Manual: read `skills/using-praxis/SKILL.md` first
 
 contract:     Public install surfaces and stability set:
-  - CLI commands: `install`, `status`, `update`, `uninstall`, `version`, `help` with flags `--host` (`-H`), `--scope` (`-s`), `--ref` (`-r`), `--method` (`-m`), `--force` (`-f`), `--dry-run`, `--help` (`-h`), `--version` (`-v`)
+  - CLI commands: `install` (`i`), `status` (`list`, `ls`), `update` (`upgrade`), `uninstall` (`rm`), `version` (`v`), `help` with flags `--host` (`-H`), `--scope` (`-s`), `--ref` (`-r`), `--method` (`-m`), `--force` (`-f`), `--dry-run`, `--help` (`-h`), `--version` (`-v`); invalid arguments or execution failures exit with status 1
+  - CLI builders: structured `CommandStep[]` (`{ bin, args, allowFailure }`), formatted with `formatCommandStep`; upfront multi-host `--ref` preflight validation
+  - File atomicity & safety: `writeFileAtomic` (tmp write + rename), `copyOrLink` (atomic backup-swap on overwrite), `pathExistsLstat` (detects dangling symlinks)
+  - Plugin file copy: `copyPluginFiles` includes `assets/` and supports `exclude: [...]`
+  - Codex lifecycle: `--dry-run` performs zero filesystem mutations; scope isolation (`user` vs `project`/`local`); `stripPraxisCodexToml` table scanner
+  - OpenCode lifecycle: `project` scope writes `opencode.json` without file copies; `local` scope manages `.opencode/` without touching `opencode.json`; `isPraxisPluginEntry` matching; `readValidatedOpencodeJson` aborts cleanly on invalid JSON before mutations
+  - Rule ownership & deduplication: `rules/AGENTS.md` and `rules/praxis.md` start with `<!-- praxis:managed-rule -->`; `isPraxisManagedRuleFile` checks marker + legacy fingerprint; `copyManagedRuleFile` preserves user-owned rule files even under `--force`; Antigravity installs only `rules/AGENTS.md`, Grok installs only `rules/praxis.md`; Agents skips `rules/praxis.md` when Praxis-managed `rules/AGENTS.md` exists; sibling-safe `.agents/` uninstallation
+  - Accurate host status: pure text parsers `hasPraxisCodexToml`, `hasPraxisOpencodeConfigText`, `hasPraxisPiSettingsText`; `getHostStatus` parameterized by `homeDir`; zero directory-existence false positives
+  - JS Adapters: `.opencode/plugins/praxis.js` dual-layout (`../skills` then `../../skills`), CRLF frontmatter stripping, no null-cache poisoning, session injection deduplication via `<!-- praxis:using-praxis:v1 -->`
+  - Session hook: `hooks/session-start` `json_escape` falls back to `node` and pure-Bash on missing/failing python; Windows drive path resolution (`/<drive>/...`, `/mnt/<drive>/...`, and script-relative fallback)
   - Supported hosts: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `pi`, `omp`, `qoder`, `grok`, `agents`, `all`
   - Supported scopes: `user` (global home, default), `project` (Git-tracked), `local` (workspace)
   - Skill names and paths: `skills/<name>/SKILL.md` for onboard, design, plan, tdd, debug, review, worktree, subagents, ship, archive, release, using-praxis
@@ -42,6 +51,10 @@ flow:
   - onboard-flow: explore repo → write living docs only → user confirm → later design/plan/tdd
 
 invariant:
+  - CLI argument parsing or runtime command failures exit with non-zero status code 1.
+  - `--dry-run` performs zero filesystem mutations across all hosts and scopes.
+  - Installing, updating (`--force`), or uninstalling Praxis NEVER overwrites or deletes a user-authored or dangling-symlink `AGENTS.md` or `praxis.md`.
+  - Every `rules/` directory receives at most ONE Praxis-managed rule file even when `install --host all` co-installs multiple hosts.
   - Triage chooses the smaller matching scope; trivial loads no workflow skills.
   - `<gate>` markers are mandatory stop points in skill text (enforcement is prompt-level today).
   - Multi-module mode is re-established from on-disk declaration or triage line, not session memory alone.

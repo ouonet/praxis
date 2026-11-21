@@ -3,6 +3,22 @@ import os from 'node:os';
 
 const homeDir = os.homedir();
 
+function normBuilderScope(scope) {
+  if (!scope) return 'user';
+  const s = String(scope).toLowerCase().trim();
+  if (s === 'global' || s === 'user') return 'user';
+  if (s === 'local') return 'local';
+  if (s === 'project' || s === 'workspace') return 'project';
+  return s;
+}
+
+export function formatCommandStep(step) {
+  return [
+    step.bin,
+    ...step.args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)),
+  ].join(' ');
+}
+
 export const HOSTS = {
   claude: {
     id: 'claude',
@@ -14,11 +30,31 @@ export const HOSTS = {
     projectTarget: '.claude/plugins/praxis',
     userTarget: path.join(homeDir, '.claude', 'plugins', 'praxis'),
     nativeInstallCmd: (ref, scope) => {
-      const pkg = ref ? `praxis@${ref}` : 'praxis';
-      return scope === 'user' ? `claude plugins install ${pkg}` : `claude plugins install ${pkg} --scope project`;
+      const s = normBuilderScope(scope);
+      const mkt = ref ? `ouonet/praxis#${ref}` : 'ouonet/praxis';
+      const installArgs = s === 'user'
+        ? ['plugins', 'install', 'praxis@praxis']
+        : ['plugins', 'install', 'praxis@praxis', '--scope', s];
+      return [
+        { bin: 'claude', args: ['plugins', 'marketplace', 'add', mkt], allowFailure: true },
+        { bin: 'claude', args: installArgs },
+      ];
     },
-    nativeUninstallCmd: () => 'claude plugins uninstall praxis@praxis',
-    nativeUpdateCmd: () => 'claude plugins update praxis@praxis',
+    nativeUninstallCmd: (scope) => {
+      const s = normBuilderScope(scope);
+      const args = s === 'user'
+        ? ['plugins', 'uninstall', 'praxis@praxis']
+        : ['plugins', 'uninstall', 'praxis@praxis', '--scope', s];
+      return [{ bin: 'claude', args }];
+    },
+    nativeUpdateCmd: (ref, scope) => {
+      if (ref) return null;
+      const s = normBuilderScope(scope);
+      const args = s === 'user'
+        ? ['plugins', 'update', 'praxis@praxis']
+        : ['plugins', 'update', 'praxis@praxis', '--scope', s];
+      return [{ bin: 'claude', args }];
+    },
   },
   codex: {
     id: 'codex',
@@ -33,9 +69,28 @@ export const HOSTS = {
       path.join(homeDir, '.codex', '.tmp', 'marketplaces', 'praxis-marketplace'),
       path.join(homeDir, '.codex', 'plugins', 'cache', 'praxis-marketplace'),
     ],
-    nativeInstallCmd: () => 'codex plugin marketplace add ouonet/praxis && codex plugin add praxis@praxis-marketplace',
-    nativeUninstallCmd: () => 'codex plugin remove praxis@praxis-marketplace && codex plugin marketplace remove praxis-marketplace',
-    nativeUpdateCmd: () => 'codex plugin marketplace upgrade praxis-marketplace && codex plugin add praxis@praxis-marketplace',
+    nativeInstallCmd: (ref, scope) => {
+      if (ref || normBuilderScope(scope) !== 'user') return null;
+      return [
+        { bin: 'codex', args: ['plugin', 'marketplace', 'add', 'ouonet/praxis'], allowFailure: true },
+        { bin: 'codex', args: ['plugin', 'marketplace', 'upgrade', 'praxis-marketplace'], allowFailure: true },
+        { bin: 'codex', args: ['plugin', 'add', 'praxis@praxis-marketplace'] },
+      ];
+    },
+    nativeUninstallCmd: (scope) => {
+      if (normBuilderScope(scope) !== 'user') return null;
+      return [
+        { bin: 'codex', args: ['plugin', 'remove', 'praxis@praxis-marketplace'], allowFailure: true },
+        { bin: 'codex', args: ['plugin', 'marketplace', 'remove', 'praxis-marketplace'], allowFailure: true },
+      ];
+    },
+    nativeUpdateCmd: (ref, scope) => {
+      if (ref || normBuilderScope(scope) !== 'user') return null;
+      return [
+        { bin: 'codex', args: ['plugin', 'marketplace', 'upgrade', 'praxis-marketplace'], allowFailure: true },
+        { bin: 'codex', args: ['plugin', 'add', 'praxis@praxis-marketplace'] },
+      ];
+    },
   },
   opencode: {
     id: 'opencode',
@@ -59,9 +114,18 @@ export const HOSTS = {
     localTarget: '.copilot/plugins/praxis',
     projectTarget: '.copilot/plugins/praxis',
     userTarget: path.join(homeDir, '.copilot-cli', 'plugins', 'praxis'),
-    nativeInstallCmd: () => 'copilot plugin install ouonet/praxis',
-    nativeUninstallCmd: () => 'copilot plugin remove praxis',
-    nativeUpdateCmd: () => 'copilot plugin update praxis',
+    nativeInstallCmd: (ref, scope) => {
+      if (ref || normBuilderScope(scope) !== 'user') return null;
+      return [{ bin: 'copilot', args: ['plugin', 'install', 'ouonet/praxis'] }];
+    },
+    nativeUninstallCmd: (scope) => {
+      if (normBuilderScope(scope) !== 'user') return null;
+      return [{ bin: 'copilot', args: ['plugin', 'remove', 'praxis'] }];
+    },
+    nativeUpdateCmd: (ref, scope) => {
+      if (ref || normBuilderScope(scope) !== 'user') return null;
+      return [{ bin: 'copilot', args: ['plugin', 'update', 'praxis'] }];
+    },
   },
   antigravity: {
     id: 'antigravity',
@@ -75,8 +139,6 @@ export const HOSTS = {
     userAltTargets: [
       path.join(homeDir, '.gemini', 'antigravity-ide', 'plugins', 'praxis'),
       path.join(homeDir, '.gemini', 'config', 'skills', 'using-praxis'),
-      path.join(homeDir, '.gemini', 'config', 'rules', 'praxis.md'),
-      path.join(homeDir, '.gemini', 'config', 'rules', 'AGENTS.md'),
     ],
     nativeInstallCmd: null,
     nativeUninstallCmd: null,
@@ -96,17 +158,20 @@ export const HOSTS = {
       path.join(homeDir, '.pi', 'skills', 'using-praxis'),
     ],
     nativeInstallCmd: (ref, scope) => {
+      const s = normBuilderScope(scope);
       const pkg = ref ? `git:github.com/ouonet/praxis@${ref}` : 'git:github.com/ouonet/praxis';
-      if (scope === 'local') return `pi install -l ${pkg}`;
-      if (scope === 'project') return `pi install -p ${pkg}`;
-      return `pi install ${pkg}`;
+      const scopeFlags = s === 'local' ? ['-l'] : s === 'project' ? ['-p'] : [];
+      return [{ bin: 'pi', args: ['install', ...scopeFlags, pkg] }];
     },
-    nativeUninstallCmd: () => 'pi remove git:github.com/ouonet/praxis',
+    nativeUninstallCmd: (scope) => {
+      if (normBuilderScope(scope) !== 'user') return null;
+      return [{ bin: 'pi', args: ['remove', 'git:github.com/ouonet/praxis'] }];
+    },
     nativeUpdateCmd: (ref, scope) => {
+      const s = normBuilderScope(scope);
       const pkg = ref ? `git:github.com/ouonet/praxis@${ref}` : 'git:github.com/ouonet/praxis';
-      if (scope === 'local') return `pi install -l ${pkg}`;
-      if (scope === 'project') return `pi install -p ${pkg}`;
-      return `pi install ${pkg}`;
+      const scopeFlags = s === 'local' ? ['-l'] : s === 'project' ? ['-p'] : [];
+      return [{ bin: 'pi', args: ['install', ...scopeFlags, pkg] }];
     },
   },
   omp: {
@@ -119,21 +184,25 @@ export const HOSTS = {
     projectTarget: '.omp/skills',
     userTarget: path.join(homeDir, '.omp', 'plugins', 'node_modules', 'praxis'),
     userAltTargets: [
-      path.join(homeDir, '.omp', 'plugins'),
+      path.join(homeDir, '.omp', 'plugins', 'node_modules', '@ouonet', 'praxis'),
+      path.join(homeDir, '.omp', 'plugins', 'praxis'),
       path.join(homeDir, '.omp', 'skills', 'using-praxis'),
     ],
     nativeInstallCmd: (ref, scope) => {
+      const s = normBuilderScope(scope);
       const pkg = ref ? `https://github.com/ouonet/praxis#${ref}` : 'https://github.com/ouonet/praxis';
-      if (scope === 'local') return `omp plugin install ${pkg} -l`;
-      if (scope === 'project') return `omp plugin install ${pkg} --scope=project`;
-      return `omp plugin install ${pkg}`;
+      const scopeFlags = s === 'local' ? ['-l'] : s === 'project' ? ['--scope=project'] : [];
+      return [{ bin: 'omp', args: ['plugin', 'install', pkg, ...scopeFlags] }];
     },
-    nativeUninstallCmd: () => 'omp plugin uninstall @ouonet/praxis',
+    nativeUninstallCmd: (scope) => {
+      if (normBuilderScope(scope) !== 'user') return null;
+      return [{ bin: 'omp', args: ['plugin', 'uninstall', '@ouonet/praxis'] }];
+    },
     nativeUpdateCmd: (ref, scope) => {
+      const s = normBuilderScope(scope);
       const pkg = ref ? `https://github.com/ouonet/praxis#${ref}` : 'https://github.com/ouonet/praxis';
-      if (scope === 'local') return `omp plugin install ${pkg} -l`;
-      if (scope === 'project') return `omp plugin install ${pkg} --scope=project`;
-      return `omp plugin install ${pkg}`;
+      const scopeFlags = s === 'local' ? ['-l'] : s === 'project' ? ['--scope=project'] : [];
+      return [{ bin: 'omp', args: ['plugin', 'install', pkg, ...scopeFlags] }];
     },
   },
   qoder: {

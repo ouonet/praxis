@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 4.3.0 - 2026-11-21
+
+- **P0 Safety & Runtime Fixes (M5)**:
+  - **Strict CLI Argument Validation & Exit Codes**: Added strict CLI option parsing via `node:util parseArgs`, standard normalization for scopes (`user`, `project`, `local`) and methods (`auto`, `native`, `link`, `copy`), git ref validation against shell injection, upfront multi-host `--ref` preflight checks, structured `CommandStep[]` builders with `formatCommandStep`, `i` alias parity with `install`, and non-zero exit code propagation (`process.exitCode = 1`) on parsing and runtime command failures.
+  - **Atomic File Operations & Codex Scope Isolation**: Added `writeFileAtomic` (atomic temp write and rename) and `copyOrLink` with atomic backup-swap staging on `--force` overwrite. Replaced `fs.existsSync` with `pathExistsLstat` (`fs.lstatSync`) to safely detect and clean dangling symlinks. Enforced zero filesystem mutations under `--dry-run`. Isolated Codex operations between `user` (`~/.codex`) and `project`/`local` (`.codex`) scopes, and replaced substring removals with a comment-aware TOML section scanner `stripPraxisCodexToml`. Included `assets/` in plugin file installations.
+  - **OpenCode Single-Source Lifecycle**: Enforced single-source installation avoiding dual-loading: `project` scope manages `opencode.json` without file copies; `local` scope manages `.opencode/` without touching `opencode.json`. Added `isPraxisPluginEntry` matcher and `readValidatedOpencodeJson` to cleanly abort before modifying files if JSON is malformed.
+  - **Ownership-Guarded Rules & Host Deduplication**: Prepended `<!-- praxis:managed-rule -->` to `rules/AGENTS.md` and `rules/praxis.md`. Added `isPraxisManagedRuleFile` and `copyManagedRuleFile` ensuring user-authored or dangling-symlink rules are never overwritten or deleted, even with `--force`. Deduplicated rules across hosts (Antigravity installs `rules/AGENTS.md`, Grok installs `rules/praxis.md`, Agents avoids duplicate `praxis.md` when Praxis-managed `AGENTS.md` exists), and implemented sibling-safe `.agents/` uninstallation.
+  - **Accurate Host Status Detection**: Replaced bare-directory existence checks with pure parsers (`hasPraxisCodexToml`, `hasPraxisOpencodeConfigText`, `hasPraxisPiSettingsText`) and `isPraxisManagedRuleFile`. Parameterized `getHostStatus` with `homeDir` for zero false positives.
+  - **Adapter CRLF, Dual-Layout & Cache Hardening**: OpenCode plugin resolves `../skills` before falling back to repo `../../skills`. Stripped CRLF YAML frontmatter safely, prevented `null` caching on transient missing files, and deduplicated turn injections via `<!-- praxis:using-praxis:v1 -->`.
+  - **Session-Start Windows Path & Escaping Hardening**: Added `node` and pure-Bash control-character fallbacks in `json_escape` when python is missing or misbehaving. Extended `build_full_content` to resolve Windows Git Bash (`/c/...`), WSL (`/mnt/c/...`), and script-relative `SKILL.md` paths.
+
 - **Quality & Boundary Review Standards**:
   - Enhanced `skills/references/quality.md` design checks with core architectural boundary criteria: inward dependencies (core logic independent of volatile I/O/UI/DB), isolated side-effects (pure computations separated from I/O mutations), and cohesion/simplicity (single responsibility without leaky abstractions).
   - Synchronized across English, Chinese, Japanese, and Korean documentation sites.

@@ -160,3 +160,105 @@ test('hooks matchers include documented SessionStart sources', () => {
   assert.match(cm, /compact/);
   assert.equal(cm.includes('.*'), false);
 });
+
+test('json_escape falls back to node and pure-Bash when python3/python fail with control chars', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-hook-fallback-'));
+  try {
+    const skills = path.join(tmp, 'skills', 'using-praxis');
+    fs.mkdirSync(skills, { recursive: true });
+    fs.writeFileSync(path.join(skills, 'SKILL.md'), '---\nname: x\n---\n# X\n"quote"\t\u0007bell\u001b[31mred\n');
+    const hooksDir = path.join(tmp, 'hooks');
+    fs.mkdirSync(hooksDir, { recursive: true });
+    fs.copyFileSync(hook, path.join(hooksDir, 'session-start'));
+    fs.chmodSync(path.join(hooksDir, 'session-start'), 0o755);
+
+    // 1. Test node fallback tier: python3 & python fail (exit 49), fake node succeeds via json_escape marker
+    const fakeNodeBin = path.join(tmp, 'fake-node-bin');
+    fs.mkdirSync(fakeNodeBin, { recursive: true });
+    for (const bin of ['python3', 'python']) {
+      const stub = path.join(fakeNodeBin, bin);
+      fs.writeFileSync(stub, '#!/usr/bin/env bash\nexit 49\n');
+      fs.chmodSync(stub, 0o755);
+    }
+    const nodeStub = path.join(fakeNodeBin, 'node');
+    fs.writeFileSync(
+      nodeStub,
+      '#!/usr/bin/env bash\nprintf "%s" "NODE_TIER_ESCAPED"\n',
+    );
+    fs.chmodSync(nodeStub, 0o755);
+
+    const resNode = spawnSync(
+      'bash',
+      ['-c', `PATH="${toPosix(fakeNodeBin)}:$PATH" ./hooks/session-start`],
+      {
+        cwd: tmp,
+        env: { ...process.env, CLAUDE_PLUGIN_ROOT: toPosix(tmp) },
+        input: JSON.stringify({ source: 'startup' }),
+        encoding: 'utf8',
+      },
+    );
+    assert.equal(resNode.status, 0, resNode.stderr);
+    const parsedNode = JSON.parse(resNode.stdout);
+    assert.equal(parsedNode.hookSpecificOutput.additionalContext, 'NODE_TIER_ESCAPED');
+
+    // 2. Test pure-Bash fallback tier: python3, python, and node all fail (exit 49)
+    const fakeBin = path.join(tmp, 'fake-bin');
+    fs.mkdirSync(fakeBin, { recursive: true });
+    for (const bin of ['python3', 'python', 'node']) {
+      const stub = path.join(fakeBin, bin);
+      fs.writeFileSync(stub, '#!/usr/bin/env bash\nexit 49\n');
+      fs.chmodSync(stub, 0o755);
+    }
+
+    const res = spawnSync(
+      'bash',
+      ['-c', `PATH="${toPosix(fakeBin)}:$PATH" ./hooks/session-start`],
+      {
+        cwd: tmp,
+        env: { ...process.env, CLAUDE_PLUGIN_ROOT: toPosix(tmp) },
+        input: JSON.stringify({ source: 'startup' }),
+        encoding: 'utf8',
+      },
+    );
+    assert.equal(res.status, 0, res.stderr);
+    const parsed = JSON.parse(res.stdout);
+    assert.match(parsed.hookSpecificOutput.additionalContext, /"quote"/);
+    assert.match(parsed.hookSpecificOutput.additionalContext, /bell/);
+    assert.equal(parsed.hookSpecificOutput.additionalContext.includes('\u0007'), false);
+  } finally {
+    try { fs.rmSync(tmp, { recursive: true, force: true }); } catch {}
+  }
+});
+
+test('build_full_content resolves Windows drive paths and falls back to script-relative SKILL.md', () => {
+  // 1. Raw Windows drive path passed via WSLENV without /p so bash sees C:\... directly
+  const winDriveRoot = root.replace(/\//g, '\\');
+  const resDrive = spawnSync('bash', ['./hooks/session-start'], {
+    cwd: root,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: winDriveRoot, WSLENV: 'CLAUDE_PLUGIN_ROOT' },
+    input: JSON.stringify({ source: 'startup' }),
+    encoding: 'utf8',
+  });
+  assert.equal(resDrive.status, 0, resDrive.stderr);
+  const jDrive = JSON.parse(resDrive.stdout);
+  assert.match(jDrive.hookSpecificOutput.additionalContext, /You have Praxis/);
+
+  // 2. Non-drive missing CLAUDE_PLUGIN_ROOT falls back to script-relative ../skills/using-praxis/SKILL.md
+  const resFallback = run({
+    env: { CLAUDE_PLUGIN_ROOT: '/nonexistent/praxis-root-path' },
+    stdin: JSON.stringify({ source: 'startup' }),
+    clear: ['COPILOT_CLI', 'PLUGIN_ROOT'],
+  });
+  assert.equal(resFallback.status, 0, resFallback.stderr);
+  const jFallback = JSON.parse(resFallback.stdout);
+  assert.match(jFallback.hookSpecificOutput.additionalContext, /You have Praxis/);
+});
+
+test('bin/praxis.js exits with non-zero status code 1 on invalid CLI args', () => {
+  const res = spawnSync(process.execPath, [path.join(root, 'bin/praxis.js'), 'install', '--bogus'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  assert.equal(res.status, 1);
+  assert.match(res.stderr, /Unknown option: --bogus/);
+});
