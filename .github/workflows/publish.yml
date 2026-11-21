@@ -24,9 +24,6 @@ jobs:
         with:
           node-version: 22.14.0
 
-      - name: Upgrade npm
-        run: npm install -g npm@latest && npm -v   # 确保 ≥ 11.5.1
-
       - name: Run automated tests
         run: node --test test/cli.test.js test/invariants.test.js test/adapters.test.js
 
