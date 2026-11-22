@@ -23,6 +23,12 @@ import {
   hasPraxisCodexToml,
   hasPraxisOpencodeConfigText,
   hasPraxisPiSettingsText,
+  PLUGIN_ITEMS_TO_COPY,
+  HOST_ADAPTERS,
+  getHostAdapter,
+  derivePraxisSkillNames,
+  DEFAULT_PRAXIS_SKILL_NAMES,
+  resolveBinaryAvailable,
 } from '../src/cli/installer.js';
 
 test('resolveHost resolves host names and aliases', () => {
@@ -57,34 +63,47 @@ test('runCli prints version and help', async () => {
 });
 
 test('runCli status lists hosts', async () => {
-  const code = await runCli(['status']);
-  assert.equal(code, 0);
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-status-root-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-status-home-'));
+  try {
+    const code = await runCli(['status'], { rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false });
+    assert.equal(code, 0);
+  } finally {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+  }
 });
 
 test('installHost dry-run does not write files', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-test-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     const host = HOSTS.agents;
     const ok = installHost(host, {
       scope: 'project',
       dryRun: true,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
     assert.equal(ok, true);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents')), false);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
 test('installHost, status, update, and uninstall in temp directory', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-test-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
+  const statusOpts = { homeDir: tmpHome, checkBinary: () => false };
   try {
     const host = HOSTS.agents;
 
     // Initial status check
-    let status = getHostStatus(host, tmpDir);
+    let status = getHostStatus(host, tmpDir, statusOpts);
     assert.equal(status.projectInstalled, false);
 
     // Install
@@ -92,10 +111,12 @@ test('installHost, status, update, and uninstall in temp directory', () => {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
-    status = getHostStatus(host, tmpDir);
+    status = getHostStatus(host, tmpDir, statusOpts);
     assert.equal(status.projectInstalled, true);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'skills', 'using-praxis', 'SKILL.md')), true);
 
@@ -104,7 +125,9 @@ test('installHost, status, update, and uninstall in temp directory', () => {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'skills', 'using-praxis', 'SKILL.md')), true);
 
@@ -113,25 +136,31 @@ test('installHost, status, update, and uninstall in temp directory', () => {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
-    status = getHostStatus(host, tmpDir);
+    status = getHostStatus(host, tmpDir, statusOpts);
     assert.equal(status.projectInstalled, false);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
 test('installHost for codex and opencode in temp directory', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-test-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     // Install codex (local/project)
     installHost(HOSTS.codex, {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
     assert.equal(fs.existsSync(path.join(tmpDir, '.codex', 'plugins', 'praxis', 'skills')), true);
 
@@ -140,7 +169,9 @@ test('installHost for codex and opencode in temp directory', () => {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'auto',
+      checkBinary: () => false,
     });
     assert.equal(fs.existsSync(path.join(tmpDir, 'opencode.json')), true);
     assert.equal(fs.existsSync(path.join(tmpDir, '.opencode', 'plugins', 'praxis.js')), false);
@@ -148,45 +179,55 @@ test('installHost for codex and opencode in temp directory', () => {
     assert.ok(opencodeCfg.plugin.includes('praxis@git+https://github.com/ouonet/praxis.git'));
 
     // Status check in project directory
-    const opencodeStatus = getHostStatus(HOSTS.opencode, tmpDir);
+    const opencodeStatus = getHostStatus(HOSTS.opencode, tmpDir, { homeDir: tmpHome, checkBinary: () => false });
     assert.equal(opencodeStatus.projectInstalled, true);
     assert.equal(opencodeStatus.localInstalled, false);
     assert.equal(opencodeStatus.isHome, false);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
 test('local scope does not modify project manifest for opencode', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-local-test-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     installHost(HOSTS.opencode, {
       scope: 'local',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
     assert.equal(fs.existsSync(path.join(tmpDir, '.opencode', 'plugins', 'praxis.js')), true);
     assert.equal(fs.existsSync(path.join(tmpDir, 'opencode.json')), false);
 
-    const status = getHostStatus(HOSTS.opencode, tmpDir);
+    const status = getHostStatus(HOSTS.opencode, tmpDir, { homeDir: tmpHome, checkBinary: () => false });
     assert.equal(status.localInstalled, true);
     assert.equal(status.projectInstalled, false);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
 test('home directory status marks project/local as false / not in project', () => {
-  const home = os.homedir();
-  const status = getHostStatus(HOSTS.agents, home);
-  assert.equal(status.isHome, true);
-  assert.equal(status.projectInstalled, false);
-  assert.equal(status.localInstalled, false);
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-check-'));
+  try {
+    const status = getHostStatus(HOSTS.agents, tmpHome, { homeDir: tmpHome, checkBinary: () => false });
+    assert.equal(status.isHome, true);
+    assert.equal(status.projectInstalled, false);
+    assert.equal(status.localInstalled, false);
+  } finally {
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+  }
 });
 
 test('uninstallHost is non-destructive to user files in .agents', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-nondestructive-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     // 1. User has custom rules, custom skills, and AGENTS.md in .agents
     const agentsDir = path.join(tmpDir, '.agents');
@@ -201,7 +242,9 @@ test('uninstallHost is non-destructive to user files in .agents', () => {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
     // Verify both Praxis and user files exist
@@ -215,7 +258,9 @@ test('uninstallHost is non-destructive to user files in .agents', () => {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
     // 4. Assert Praxis skills are removed, BUT user files remain 100% intact!
@@ -225,21 +270,26 @@ test('uninstallHost is non-destructive to user files in .agents', () => {
     assert.equal(fs.existsSync(path.join(agentsDir, 'AGENTS.md')), true);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
 test('uninstallHost gracefully skips when no scope is installed', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-skip-test-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     const ok = uninstallHost(HOSTS.copilot, {
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
     assert.equal(ok, true);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
@@ -326,25 +376,34 @@ test('parseArgs, normalizeMethod, validateRef, supportsRef, and runCli validatio
   assert.equal(supportsRef(HOSTS.pi, 'uninstall', 'user', 'native', { binaryAvailable: true }), false);
 
   // runCli returns 1 on parse/validation errors even when --help or --version is passed
-  assert.equal(await runCli(['--help', '--bogus']), 1);
-  assert.equal(await runCli(['--version', '--scope=invalid']), 1);
-  assert.equal(await runCli(['status', '--scope', 'porject']), 1);
-  assert.equal(await runCli(['install', '--ref', 'main;id', '--dry-run']), 1);
-  // Upfront multi-host --ref preflight fails before mutating any host
-  assert.equal(await runCli(['install', '--host', 'all', '--ref', 'main', '--dry-run']), 1);
-  // --method native fails (returns 1) when host has no native commands
-  assert.equal(await runCli(['install', '--host', 'agents', '--method', 'native', '--dry-run']), 1);
-  // 'i' alias succeeds with auto-detection in dry-run
-  assert.equal(await runCli(['i', '--dry-run']), 0);
+  const tmpCliRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-runcli-root-'));
+  const tmpCliHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-runcli-home-'));
+  const cliOpts = { rootDir: tmpCliRoot, homeDir: tmpCliHome, checkBinary: () => false };
+  try {
+    assert.equal(await runCli(['--help', '--bogus'], cliOpts), 1);
+    assert.equal(await runCli(['--version', '--scope=invalid'], cliOpts), 1);
+    assert.equal(await runCli(['status', '--scope', 'porject'], cliOpts), 1);
+    assert.equal(await runCli(['install', '--ref', 'main;id', '--dry-run'], cliOpts), 1);
+    // Upfront multi-host --ref preflight fails before mutating any host
+    assert.equal(await runCli(['install', '--host', 'all', '--ref', 'main', '--dry-run'], cliOpts), 1);
+    // --method native fails (returns 1) when host has no native commands
+    assert.equal(await runCli(['install', '--host', 'agents', '--method', 'native', '--dry-run'], cliOpts), 1);
+    // 'i' alias succeeds with auto-detection in dry-run
+    assert.equal(await runCli(['i', '--dry-run'], cliOpts), 0);
+  } finally {
+    fs.rmSync(tmpCliRoot, { recursive: true, force: true });
+    fs.rmSync(tmpCliHome, { recursive: true, force: true });
+  }
 
   // Direct calls throw RangeError on bad scope/method/ref
-  assert.throws(() => installHost(HOSTS.agents, { scope: 'porject', dryRun: true }), RangeError);
-  assert.throws(() => updateHost(HOSTS.agents, { method: 'file', dryRun: true }), RangeError);
-  assert.throws(() => uninstallHost(HOSTS.agents, { ref: 'a;b', dryRun: true }), RangeError);
+  assert.throws(() => installHost(HOSTS.agents, { scope: 'porject', dryRun: true, checkBinary: () => false }), RangeError);
+  assert.throws(() => updateHost(HOSTS.agents, { method: 'file', dryRun: true, checkBinary: () => false }), RangeError);
+  assert.throws(() => uninstallHost(HOSTS.agents, { ref: 'a;b', dryRun: true, checkBinary: () => false }), RangeError);
 });
 
 test('installHost, uninstallHost, and updateHost in non-home directory default to user scope', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-scope-default-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     const host = HOSTS.antigravity;
 
@@ -352,27 +411,35 @@ test('installHost, uninstallHost, and updateHost in non-home directory default t
     const installOk = installHost(host, {
       dryRun: true,
       rootDir: tmpDir,
+      homeDir: tmpHome,
+      checkBinary: () => false,
     });
     assert.equal(installOk, true);
 
     const updateOk = updateHost(host, {
       dryRun: true,
       rootDir: tmpDir,
+      homeDir: tmpHome,
+      checkBinary: () => false,
     });
     assert.equal(updateOk, true);
 
     const uninstallOk = uninstallHost(host, {
       dryRun: true,
       rootDir: tmpDir,
+      homeDir: tmpHome,
+      checkBinary: () => false,
     });
     assert.equal(uninstallOk, true);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
 test('installHost and uninstallHost for antigravity across project and local scopes', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-antigravity-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     const host = HOSTS.antigravity;
 
@@ -381,7 +448,9 @@ test('installHost and uninstallHost for antigravity across project and local sco
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
     const pluginDir = path.join(tmpDir, '.agents', 'plugins', 'praxis');
@@ -392,7 +461,7 @@ test('installHost and uninstallHost for antigravity across project and local sco
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'AGENTS.md')), true);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'skills', 'using-praxis', 'SKILL.md')), true);
 
-    const status = getHostStatus(host, tmpDir);
+    const status = getHostStatus(host, tmpDir, { homeDir: tmpHome, checkBinary: () => false });
     assert.equal(status.projectInstalled, true);
     assert.equal(status.localInstalled, true);
 
@@ -405,7 +474,9 @@ test('installHost and uninstallHost for antigravity across project and local sco
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
     assert.equal(fs.existsSync(path.join(pluginDir, 'rules')), false);
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'rules', 'praxis.md')), false);
@@ -416,10 +487,12 @@ test('installHost and uninstallHost for antigravity across project and local sco
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
-    const afterStatus = getHostStatus(host, tmpDir);
+    const afterStatus = getHostStatus(host, tmpDir, { homeDir: tmpHome, checkBinary: () => false });
     assert.equal(afterStatus.projectInstalled, false);
     assert.equal(afterStatus.localInstalled, false);
     assert.equal(fs.existsSync(pluginDir), false);
@@ -428,11 +501,13 @@ test('installHost and uninstallHost for antigravity across project and local sco
     assert.equal(fs.existsSync(path.join(tmpDir, '.agents', 'skills', 'using-praxis')), false);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
 test('installHost and uninstallHost for grok copies plugin skills and rules', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-grok-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-cli-home-'));
   try {
     const host = HOSTS.grok;
     const grokDir = path.join(tmpDir, '.grok');
@@ -443,7 +518,9 @@ test('installHost and uninstallHost for grok copies plugin skills and rules', ()
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
     assert.equal(fs.existsSync(path.join(grokDir, 'plugins', 'praxis', 'skills', 'using-praxis', 'SKILL.md')), true);
@@ -451,7 +528,7 @@ test('installHost and uninstallHost for grok copies plugin skills and rules', ()
     assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'praxis.md')), true);
     assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'custom.md')), true);
 
-    const status = getHostStatus(host, tmpDir);
+    const status = getHostStatus(host, tmpDir, { homeDir: tmpHome, checkBinary: () => false });
     assert.equal(status.projectInstalled, true);
     assert.equal(status.localInstalled, true);
 
@@ -459,7 +536,9 @@ test('installHost and uninstallHost for grok copies plugin skills and rules', ()
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
     assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'praxis.md')), true);
 
@@ -467,10 +546,12 @@ test('installHost and uninstallHost for grok copies plugin skills and rules', ()
       scope: 'project',
       dryRun: false,
       rootDir: tmpDir,
+      homeDir: tmpHome,
       method: 'copy',
+      checkBinary: () => false,
     });
 
-    const after = getHostStatus(host, tmpDir);
+    const after = getHostStatus(host, tmpDir, { homeDir: tmpHome, checkBinary: () => false });
     assert.equal(after.projectInstalled, false);
     assert.equal(after.localInstalled, false);
     assert.equal(fs.existsSync(path.join(grokDir, 'plugins', 'praxis')), false);
@@ -479,6 +560,7 @@ test('installHost and uninstallHost for grok copies plugin skills and rules', ()
     assert.equal(fs.existsSync(path.join(grokDir, 'rules', 'custom.md')), true);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
   }
 });
 
@@ -721,7 +803,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
 
     // 1. project scope rejects method=copy/link
     assert.equal(
-      installHost(HOSTS.opencode, { scope: 'project', method: 'copy', rootDir: tmpRoot, homeDir: tmpHome }),
+      installHost(HOSTS.opencode, { scope: 'project', method: 'copy', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       false,
     );
 
@@ -732,7 +814,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
       'utf8',
     );
     assert.equal(
-      installHost(HOSTS.opencode, { scope: 'project', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome }),
+      installHost(HOSTS.opencode, { scope: 'project', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     let projCfg = JSON.parse(fs.readFileSync(path.join(tmpRoot, 'opencode.json'), 'utf8'));
@@ -746,6 +828,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
         ref: 'single-module',
         rootDir: tmpRoot,
         homeDir: tmpHome,
+        checkBinary: () => false,
       }),
       true,
     );
@@ -754,14 +837,14 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
 
     // Re-install without --force and ref=null keeps pinned entry; update resets to unpinned default
     assert.equal(
-      installHost(HOSTS.opencode, { scope: 'project', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome }),
+      installHost(HOSTS.opencode, { scope: 'project', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     projCfg = JSON.parse(fs.readFileSync(path.join(tmpRoot, 'opencode.json'), 'utf8'));
     assert.deepEqual(projCfg.plugin, ['other-plugin', 'praxis@git+https://github.com/ouonet/praxis.git#single-module']);
 
     assert.equal(
-      updateHost(HOSTS.opencode, { scope: 'project', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome }),
+      updateHost(HOSTS.opencode, { scope: 'project', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     projCfg = JSON.parse(fs.readFileSync(path.join(tmpRoot, 'opencode.json'), 'utf8'));
@@ -769,14 +852,14 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
 
     // Uninstall project dryRun leaves opencode.json intact; real uninstall removes only praxis entry
     assert.equal(
-      uninstallHost(HOSTS.opencode, { scope: 'project', dryRun: true, rootDir: tmpRoot, homeDir: tmpHome }),
+      uninstallHost(HOSTS.opencode, { scope: 'project', dryRun: true, rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     projCfg = JSON.parse(fs.readFileSync(path.join(tmpRoot, 'opencode.json'), 'utf8'));
     assert.equal(projCfg.plugin.length, 2);
 
     assert.equal(
-      uninstallHost(HOSTS.opencode, { scope: 'project', dryRun: false, rootDir: tmpRoot, homeDir: tmpHome }),
+      uninstallHost(HOSTS.opencode, { scope: 'project', dryRun: false, rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     projCfg = JSON.parse(fs.readFileSync(path.join(tmpRoot, 'opencode.json'), 'utf8'));
@@ -785,7 +868,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
 
     // 3. user scope switching between auto and copy cleans stale sibling artifacts
     assert.equal(
-      installHost(HOSTS.opencode, { scope: 'user', method: 'copy', rootDir: tmpRoot, homeDir: tmpHome }),
+      installHost(HOSTS.opencode, { scope: 'user', method: 'copy', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     const userOpencodeDir = path.join(tmpHome, '.config', 'opencode');
@@ -794,7 +877,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
 
     // Switch to auto -> writes opencode.json and removes local plugins/praxis.js + skills
     assert.equal(
-      installHost(HOSTS.opencode, { scope: 'user', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome }),
+      installHost(HOSTS.opencode, { scope: 'user', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     assert.equal(fs.existsSync(path.join(userOpencodeDir, 'opencode.json')), true);
@@ -803,7 +886,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
 
     // Switch back to copy -> copies files and removes praxis entry from opencode.json
     assert.equal(
-      installHost(HOSTS.opencode, { scope: 'user', method: 'copy', rootDir: tmpRoot, homeDir: tmpHome }),
+      installHost(HOSTS.opencode, { scope: 'user', method: 'copy', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       true,
     );
     assert.equal(fs.existsSync(path.join(userOpencodeDir, 'plugins', 'praxis.js')), true);
@@ -813,7 +896,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
     // 4. Invalid JSON or invalid plugin field in opencode.json aborts BEFORE deleting files
     fs.writeFileSync(path.join(userOpencodeDir, 'opencode.json'), '{ invalid json', 'utf8');
     assert.equal(
-      uninstallHost(HOSTS.opencode, { scope: 'user', dryRun: false, rootDir: tmpRoot, homeDir: tmpHome }),
+      uninstallHost(HOSTS.opencode, { scope: 'user', dryRun: false, rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       false,
     );
     assert.equal(
@@ -825,7 +908,7 @@ test('opencode single-source lifecycle, --ref replacement, method switching, and
 
     fs.writeFileSync(path.join(userOpencodeDir, 'opencode.json'), JSON.stringify({ plugin: 'not-an-array' }), 'utf8');
     assert.equal(
-      installHost(HOSTS.opencode, { scope: 'user', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome }),
+      installHost(HOSTS.opencode, { scope: 'user', method: 'auto', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }),
       false,
     );
   } finally {
@@ -962,10 +1045,11 @@ test('pure parsers (hasPraxisCodexToml, hasPraxisOpencodeConfigText, hasPraxisPi
     fs.mkdirSync(userRuleDir, { recursive: true });
     fs.writeFileSync(path.join(userRuleDir, 'AGENTS.md'), '# Custom Team Instructions\n', 'utf8');
 
-    let agyStatus = getHostStatus(HOSTS.antigravity, tmpRoot, { homeDir: tmpHome });
+    const statusOpts = { homeDir: tmpHome, checkBinary: () => false };
+    let agyStatus = getHostStatus(HOSTS.antigravity, tmpRoot, statusOpts);
     assert.equal(agyStatus.userInstalled, false, 'User-owned AGENTS.md must not trigger userInstalled for antigravity');
 
-    let agentsStatus = getHostStatus(HOSTS.agents, tmpRoot, { homeDir: tmpHome });
+    let agentsStatus = getHostStatus(HOSTS.agents, tmpRoot, statusOpts);
     assert.equal(agentsStatus.userInstalled, false, 'User-owned AGENTS.md must not trigger userInstalled for agents');
 
     // Add Praxis marker -> now true
@@ -974,39 +1058,39 @@ test('pure parsers (hasPraxisCodexToml, hasPraxisOpencodeConfigText, hasPraxisPi
       '<!-- praxis:managed-rule -->\n# Praxis Triage Rules\n',
       'utf8',
     );
-    agyStatus = getHostStatus(HOSTS.antigravity, tmpRoot, { homeDir: tmpHome });
+    agyStatus = getHostStatus(HOSTS.antigravity, tmpRoot, statusOpts);
     assert.equal(agyStatus.userInstalled, true, 'Managed AGENTS.md must trigger userInstalled for antigravity');
 
     // B. OMP: Bare .omp/plugins directory must NOT trigger projectInstalled or localInstalled
     const bareOmpDir = path.join(tmpRoot, '.omp', 'plugins');
     fs.mkdirSync(bareOmpDir, { recursive: true });
-    let ompStatus = getHostStatus(HOSTS.omp, tmpRoot, { homeDir: tmpHome });
+    let ompStatus = getHostStatus(HOSTS.omp, tmpRoot, statusOpts);
     assert.equal(ompStatus.projectInstalled, false, 'Bare .omp/plugins must not trigger projectInstalled');
     assert.equal(ompStatus.localInstalled, false, 'Bare .omp/plugins must not trigger localInstalled');
 
     // Add node_modules/@ouonet/praxis -> now true
     fs.mkdirSync(path.join(bareOmpDir, 'node_modules', '@ouonet', 'praxis'), { recursive: true });
-    ompStatus = getHostStatus(HOSTS.omp, tmpRoot, { homeDir: tmpHome });
+    ompStatus = getHostStatus(HOSTS.omp, tmpRoot, statusOpts);
     assert.equal(ompStatus.projectInstalled, true);
     assert.equal(ompStatus.localInstalled, true);
 
     // C. Pi: Bare .pi/skills directory must NOT trigger projectInstalled or localInstalled
     const barePiDir = path.join(tmpRoot, '.pi', 'skills');
     fs.mkdirSync(barePiDir, { recursive: true });
-    let piStatus = getHostStatus(HOSTS.pi, tmpRoot, { homeDir: tmpHome });
+    let piStatus = getHostStatus(HOSTS.pi, tmpRoot, statusOpts);
     assert.equal(piStatus.projectInstalled, false, 'Bare .pi/skills must not trigger projectInstalled');
     assert.equal(piStatus.localInstalled, false, 'Bare .pi/skills must not trigger localInstalled');
 
     // Add using-praxis skill -> now true
     fs.mkdirSync(path.join(barePiDir, 'using-praxis'), { recursive: true });
-    piStatus = getHostStatus(HOSTS.pi, tmpRoot, { homeDir: tmpHome });
+    piStatus = getHostStatus(HOSTS.pi, tmpRoot, statusOpts);
     assert.equal(piStatus.projectInstalled, true);
     assert.equal(piStatus.localInstalled, true);
 
     // D. OpenCode: Bare ~/.config/opencode must NOT trigger userInstalled
     const bareOpencodeDir = path.join(tmpHome, '.config', 'opencode');
     fs.mkdirSync(bareOpencodeDir, { recursive: true });
-    let ocStatus = getHostStatus(HOSTS.opencode, tmpRoot, { homeDir: tmpHome });
+    let ocStatus = getHostStatus(HOSTS.opencode, tmpRoot, statusOpts);
     assert.equal(ocStatus.userInstalled, false, 'Bare ~/.config/opencode must not trigger userInstalled');
 
     // Add opencode.json with praxis entry -> now true
@@ -1015,7 +1099,7 @@ test('pure parsers (hasPraxisCodexToml, hasPraxisOpencodeConfigText, hasPraxisPi
       JSON.stringify({ plugin: ['praxis@git+https://github.com/ouonet/praxis.git'] }),
       'utf8',
     );
-    ocStatus = getHostStatus(HOSTS.opencode, tmpRoot, { homeDir: tmpHome });
+    ocStatus = getHostStatus(HOSTS.opencode, tmpRoot, statusOpts);
     assert.equal(ocStatus.userInstalled, true);
 
     // E. Codex: config.toml with enabled = false must NOT trigger userInstalled
@@ -1026,7 +1110,7 @@ test('pure parsers (hasPraxisCodexToml, hasPraxisOpencodeConfigText, hasPraxisPi
       '[plugins."praxis@praxis-marketplace"]\nenabled = false # disabled\n',
       'utf8',
     );
-    let codexStatus = getHostStatus(HOSTS.codex, tmpRoot, { homeDir: tmpHome });
+    let codexStatus = getHostStatus(HOSTS.codex, tmpRoot, statusOpts);
     assert.equal(codexStatus.userInstalled, false, 'Disabled Codex plugin must not trigger userInstalled');
 
     // Switch to enabled = true -> now true
@@ -1035,9 +1119,217 @@ test('pure parsers (hasPraxisCodexToml, hasPraxisOpencodeConfigText, hasPraxisPi
       '[plugins."praxis@praxis-marketplace"]\nenabled = true\n',
       'utf8',
     );
-    codexStatus = getHostStatus(HOSTS.codex, tmpRoot, { homeDir: tmpHome });
+    codexStatus = getHostStatus(HOSTS.codex, tmpRoot, statusOpts);
     assert.equal(codexStatus.userInstalled, true);
   } finally {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+  }
+});
+
+test('HOST_ADAPTERS registry, resolveBinaryAvailable, node_modules filtering, and M6 adapter safety fixes', async () => {
+  // 1. HOST_ADAPTERS & getHostAdapter
+  assert.equal(Object.isFrozen(HOST_ADAPTERS), true);
+  assert.deepEqual(Object.keys(HOST_ADAPTERS).sort(), Object.keys(HOSTS).sort());
+  for (const id of Object.keys(HOSTS)) {
+    const adapter = getHostAdapter(id);
+    assert.equal(adapter.id, id);
+    assert.equal(typeof adapter.installFiles, 'function');
+    assert.equal(typeof adapter.uninstallFiles, 'function');
+    assert.equal(typeof adapter.getStatus, 'function');
+  }
+  assert.equal(getHostAdapter(HOSTS.codex).alwaysRunFileUninstall, true);
+  assert.equal(getHostAdapter('AGY').id, 'antigravity');
+  assert.equal(getHostAdapter('generic').id, 'agents');
+  assert.throws(() => getHostAdapter('unknown-host'), Error);
+  assert.throws(() => getHostAdapter(null), Error);
+  assert.throws(() => getHostAdapter(undefined), Error);
+
+  // 2. PLUGIN_ITEMS_TO_COPY & derivePraxisSkillNames fallback
+  assert.equal(Object.isFrozen(PLUGIN_ITEMS_TO_COPY), true);
+  assert.equal(PLUGIN_ITEMS_TO_COPY.includes('.opencode'), false);
+  assert.equal(PLUGIN_ITEMS_TO_COPY.includes('.opencode/plugins'), true);
+  assert.equal(PLUGIN_ITEMS_TO_COPY.includes('.opencode/INSTALL.md'), true);
+  assert.deepEqual(derivePraxisSkillNames('/nonexistent/skills/dir'), DEFAULT_PRAXIS_SKILL_NAMES);
+
+  // 3. resolveBinaryAvailable precedence
+  assert.equal(
+    resolveBinaryAvailable(HOSTS.agents, { binaryAvailable: true, checkBinary: () => true }),
+    false,
+    'cliBinary === null always returns false',
+  );
+  assert.equal(
+    resolveBinaryAvailable(HOSTS.claude, { binaryAvailable: true, checkBinary: () => false }),
+    true,
+  );
+  assert.equal(
+    resolveBinaryAvailable(HOSTS.claude, { binaryAvailable: false, checkBinary: () => true }),
+    false,
+  );
+  let probedArg = null;
+  assert.equal(
+    resolveBinaryAvailable(HOSTS.qoder, {
+      checkBinary: (b) => {
+        probedArg = b;
+        return true;
+      },
+    }),
+    true,
+  );
+  assert.deepEqual(probedArg, HOSTS.qoder.cliBinary);
+  assert.equal(resolveBinaryAvailable(HOSTS.claude, { method: 'copy' }), false);
+  assert.equal(resolveBinaryAvailable(HOSTS.claude, { method: 'link' }), false);
+
+  const tmpSrc = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-m6-src-'));
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-m6-root-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-m6-home-'));
+  try {
+    // 4. copyPluginFiles filters .opencode dev artifacts & nested node_modules under both copy and link
+    fs.mkdirSync(path.join(tmpSrc, '.opencode', 'plugins'), { recursive: true });
+    fs.mkdirSync(path.join(tmpSrc, '.opencode', 'node_modules', 'fake-pkg'), { recursive: true });
+    fs.writeFileSync(path.join(tmpSrc, '.opencode', 'plugins', 'praxis.js'), 'export default {};', 'utf8');
+    fs.writeFileSync(path.join(tmpSrc, '.opencode', 'INSTALL.md'), '# install', 'utf8');
+    fs.writeFileSync(path.join(tmpSrc, '.opencode', 'package.json'), '{}', 'utf8');
+    fs.writeFileSync(path.join(tmpSrc, '.opencode', 'bun.lock'), 'lock', 'utf8');
+    fs.writeFileSync(path.join(tmpSrc, '.opencode', 'node_modules', 'fake-pkg', 'index.js'), '', 'utf8');
+    fs.mkdirSync(path.join(tmpSrc, 'skills', 'using-praxis', 'node_modules', 'evil'), { recursive: true });
+    fs.writeFileSync(path.join(tmpSrc, 'skills', 'using-praxis', 'SKILL.md'), '# skill', 'utf8');
+
+    const destCopy = path.join(tmpRoot, 'out-copy');
+    copyPluginFiles(tmpSrc, destCopy, { method: 'copy', force: true });
+    assert.equal(fs.existsSync(path.join(destCopy, '.opencode', 'plugins', 'praxis.js')), true);
+    assert.equal(fs.existsSync(path.join(destCopy, '.opencode', 'INSTALL.md')), true);
+    assert.equal(fs.existsSync(path.join(destCopy, '.opencode', 'node_modules')), false);
+    assert.equal(fs.existsSync(path.join(destCopy, '.opencode', 'package.json')), false);
+    assert.equal(fs.existsSync(path.join(destCopy, '.opencode', 'bun.lock')), false);
+    assert.equal(fs.existsSync(path.join(destCopy, 'skills', 'using-praxis', 'node_modules')), false);
+
+    // Same .opencode isolation under method='link'
+    const destLink = path.join(tmpRoot, 'out-link');
+    copyPluginFiles(tmpSrc, destLink, { method: 'link', force: true });
+    assert.equal(fs.existsSync(path.join(destLink, '.opencode', 'plugins', 'praxis.js')), true);
+    assert.equal(fs.existsSync(path.join(destLink, '.opencode', 'INSTALL.md')), true);
+    assert.equal(fs.existsSync(path.join(destLink, '.opencode', 'node_modules')), false);
+    assert.equal(fs.existsSync(path.join(destLink, '.opencode', 'package.json')), false);
+    assert.equal(fs.existsSync(path.join(destLink, '.opencode', 'bun.lock')), false);
+
+    // 5. pi & omp project/local install skills directly under .pi/skills and .omp/skills, and dry-run preserves empty dirs
+    assert.equal(
+      installHost(HOSTS.pi, {
+        scope: 'project',
+        method: 'copy',
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        praxisSrc: tmpSrc,
+        checkBinary: () => false,
+      }),
+      true,
+    );
+    assert.equal(fs.existsSync(path.join(tmpRoot, '.pi', 'skills', 'using-praxis', 'SKILL.md')), true);
+    assert.equal(fs.existsSync(path.join(tmpRoot, '.pi', 'skills', 'plugin.json')), false);
+    assert.equal(getHostStatus(HOSTS.pi, tmpRoot, { homeDir: tmpHome, checkBinary: () => false }).projectInstalled, true);
+
+    assert.equal(
+      uninstallHost(HOSTS.pi, {
+        scope: 'project',
+        method: 'copy',
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        checkBinary: () => false,
+      }),
+      true,
+    );
+    assert.equal(fs.existsSync(path.join(tmpRoot, '.pi')), false);
+
+    // dryRun keeps existing empty .omp dir intact
+    const ompDir = path.join(tmpRoot, '.omp');
+    fs.mkdirSync(ompDir, { recursive: true });
+    assert.equal(
+      uninstallHost(HOSTS.omp, {
+        scope: 'local',
+        dryRun: true,
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        checkBinary: () => false,
+      }),
+      true,
+    );
+    assert.equal(fs.existsSync(ompDir), true);
+
+    // 6. opencode local uninstall never touches or validates rootDir/opencode.json
+    fs.writeFileSync(path.join(tmpRoot, 'opencode.json'), '{ invalid project json', 'utf8');
+    fs.mkdirSync(path.join(tmpRoot, '.opencode', 'plugins'), { recursive: true });
+    fs.writeFileSync(path.join(tmpRoot, '.opencode', 'plugins', 'praxis.js'), 'export default {};', 'utf8');
+    assert.equal(
+      uninstallHost(HOSTS.opencode, {
+        scope: 'local',
+        dryRun: false,
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        checkBinary: () => false,
+      }),
+      true,
+    );
+    assert.equal(fs.existsSync(path.join(tmpRoot, '.opencode', 'plugins', 'praxis.js')), false);
+    assert.equal(fs.readFileSync(path.join(tmpRoot, 'opencode.json'), 'utf8'), '{ invalid project json');
+
+    // 7. claude/copilot user uninstall uses isolated homeDir
+    const userCopilotPlugin = path.join(tmpHome, '.copilot-cli', 'plugins', 'praxis');
+    fs.mkdirSync(userCopilotPlugin, { recursive: true });
+    fs.writeFileSync(path.join(userCopilotPlugin, 'plugin.json'), '{}', 'utf8');
+    assert.equal(
+      uninstallHost(HOSTS.copilot, {
+        scope: 'user',
+        method: 'copy',
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        checkBinary: () => false,
+      }),
+      true,
+    );
+    assert.equal(fs.existsSync(userCopilotPlugin), false);
+
+    // 8. codex --method native failure does NOT fall through to alwaysRunFileUninstall cleanup
+    const codexUserPlugin = path.join(tmpHome, '.codex', 'plugins', 'praxis');
+    fs.mkdirSync(codexUserPlugin, { recursive: true });
+    assert.equal(
+      uninstallHost(HOSTS.codex, {
+        scope: 'user',
+        method: 'native',
+        binaryAvailable: false,
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+      }),
+      false,
+    );
+    assert.equal(fs.existsSync(codexUserPlugin), true);
+
+    // 9. Caught filesystem I/O error inside installFiles returns false cleanly
+    const fileBlocker = path.join(tmpRoot, 'blocked-parent');
+    fs.writeFileSync(fileBlocker, 'not-a-directory', 'utf8');
+    assert.equal(
+      installHost(HOSTS.copilot, {
+        scope: 'project',
+        method: 'copy',
+        rootDir: fileBlocker,
+        homeDir: tmpHome,
+        praxisSrc: tmpSrc,
+        checkBinary: () => false,
+      }),
+      false,
+    );
+
+    // 10. runCli propagates caught adapter I/O failure as exit code 1 (invalid opencode.json)
+    assert.equal(
+      await runCli(['install', '--host', 'opencode', '--scope', 'project'], {
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        checkBinary: () => false,
+      }),
+      1,
+    );
+  } finally {
+    fs.rmSync(tmpSrc, { recursive: true, force: true });
     fs.rmSync(tmpRoot, { recursive: true, force: true });
     fs.rmSync(tmpHome, { recursive: true, force: true });
   }

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **Engineering, Packaging & Modular Adapter Architecture (M6)**:
+  - **Modular Host Adapters (`src/cli/adapters/`)**: Decomposed monolithic `src/cli/installer.js` into an acyclic layout (`hosts.js` -> `shared.js` -> `adapters/<host>.js` -> `adapters/index.js` -> `installer.js` -> `index.js`) with a frozen `HOST_ADAPTERS` registry and `getHostAdapter` lookup while preserving 100% of existing public exports.
+  - **Packaging & Repository Hygiene**: Added `"engines": { "node": ">=20.11.0" }` and explicit `"files"` allowlist in `package.json` (cutting npm tarball from 146 files to 44 runtime files and excluding `test/`, `docs/`, `site/`, `.github/`, `.codegraph/`, `.agents/`, and nested `node_modules/`); refined root `.gitignore` `.opencode/*` rules so tracked `.opencode/plugins/praxis.js` and `.opencode/INSTALL.md` are preserved while local dev artifacts remain ignored.
+  - **Cross-Platform CI & Windows Bash Compatibility**: Added `.github/workflows/ci.yml` testing `ubuntu-latest`, `macos-latest`, and `windows-latest` across Node 20 and 22 (`npm run check && npm test`); updated `.github/workflows/publish.yml` to run the full invariant + test suites; replaced `**` test glob with explicit file list; updated `test/session-start.test.js` to support both Git Bash (`/<drive>/...`) and WSL (`/mnt/<drive>/...`).
+  - **Adapter Safety & Isolation Fixes**: Fixed `uninstallHost` to pass `homeDir` to `resolveTargetPath` for generic hosts; isolated `opencode` `local`-scope uninstall from reading or mutating `opencode.json`; updated `pi` & `omp` `project`/`local` installs to target `.pi/skills` / `.omp/skills` directly and guarded `cleanEmptyDirectory` with `!dryRun`; replaced `fs.existsSync` with `pathExistsLstat` in removal helpers to clean dangling symlinks; added `node_modules` copy filtering and staging in `copyOrLink`; caught adapter I/O errors cleanly in orchestration.
+  - **SSOT Metadata & Test Suite Speed**: Derived sorted `PRAXIS_SKILL_NAMES` dynamically via `derivePraxisSkillNames()`; aligned `description`, `version`, `license`, and `author` metadata across all 9 versioned manifests + `.agents/plugins/marketplace.json`; expanded `test/invariants.test.js` (`npm pack --dry-run --json`, skill frontmatter, CI, `.gitignore`, `HOST_ADAPTERS`); added `checkBinary`/`binaryAvailable` injection & `homeDir` isolation across `test/cli.test.js` (reducing full `npm test` runtime from ~72s to ~7.6s).
+
 ## 4.3.0 - 2026-11-21
 
 - **P0 Safety & Runtime Fixes (M5)**:

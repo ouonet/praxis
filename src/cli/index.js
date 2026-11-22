@@ -10,7 +10,7 @@ import {
   normalizeMethod,
   validateRef,
   supportsRef,
-  checkBinaryAvailable,
+  resolveBinaryAvailable,
 } from './installer.js';
 
 function getVersion() {
@@ -167,7 +167,7 @@ export function padEndVisual(str, targetWidth, padChar = ' ') {
   return str + padChar.repeat(targetWidth - currentWidth);
 }
 
-export async function runCli(args = process.argv.slice(2), { rootDir = process.cwd(), homeDir } = {}) {
+export async function runCli(args = process.argv.slice(2), { rootDir = process.cwd(), homeDir, checkBinary } = {}) {
   const { options, errors } = parseArgs(args);
 
   if (errors.length > 0) {
@@ -216,7 +216,7 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
     console.log('-'.repeat(cols.reduce((sum, [, w]) => sum + w, 0)));
 
     for (const host of Object.values(HOSTS)) {
-      const status = getHostStatus(host, rootDir, { homeDir });
+      const status = getHostStatus(host, rootDir, { homeDir, checkBinary });
       const isHome = status.isHome;
       const cliStr = status.binaryAvailable ? '✅ Yes' : '❌ No';
       const localStr = isHome ? '⚪ N/A (Home)' : (status.localInstalled ? '✅ Installed' : '⚪ Not installed');
@@ -244,7 +244,7 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
     if (isInstall) {
       targetHosts = Object.values(HOSTS).filter((h) => {
         if (h.id === 'agents') return true;
-        return checkBinaryAvailable(h.cliBinary);
+        return resolveBinaryAvailable(h, { method: normMethod, checkBinary });
       });
       if (targetHosts.length === 0) {
         targetHosts = [HOSTS.agents];
@@ -266,7 +266,7 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
   // Upfront --ref compatibility preflight across all target hosts before mutating any host
   if (normRef !== null) {
     for (const host of targetHosts) {
-      const binaryAvailable = checkBinaryAvailable(host.cliBinary);
+      const binaryAvailable = resolveBinaryAvailable(host, { method: normMethod, checkBinary });
       if (!supportsRef(host, action, normScope, normMethod, { binaryAvailable })) {
         console.error(
           `❌ --ref is not supported for host "${host.id}" (action: ${action}, scope: ${normScope}, method: ${normMethod}).`,
@@ -284,6 +284,7 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
     force: options.force,
     rootDir,
     homeDir,
+    checkBinary,
   };
 
   let allOk = true;

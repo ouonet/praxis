@@ -10,12 +10,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const hook = path.join(root, 'hooks', 'session-start');
 
-function toPosix(p) {
+function detectIsWslBash() {
+  if (os.platform() !== 'win32') return false;
+  const res = spawnSync('bash', ['-c', 'uname -s -r'], { encoding: 'utf8' });
+  return /^Linux/i.test((res.stdout || '').trim());
+}
+
+const IS_WSL_BASH = detectIsWslBash();
+
+function toPosix(p, { isWsl } = {}) {
   if (!p) return p;
-  if (os.platform() === 'win32') {
+  const useWsl = typeof isWsl === 'boolean' ? isWsl : IS_WSL_BASH;
+  if (os.platform() === 'win32' || typeof isWsl === 'boolean') {
     const match = p.match(/^([a-zA-Z]):[\\/](.*)/);
     if (match) {
-      return `/mnt/${match[1].toLowerCase()}/${match[2].replace(/\\/g, '/')}`;
+      const drive = match[1].toLowerCase();
+      const rest = match[2].replace(/\\/g, '/');
+      return useWsl ? `/mnt/${drive}/${rest}` : `/${drive}/${rest}`;
     }
     return p.replace(/\\/g, '/');
   }
@@ -25,7 +36,7 @@ function toPosix(p) {
 function run({ env = {}, stdin = '', clear = [] } = {}) {
   const base = { ...process.env, ...env };
   for (const k of clear) delete base[k];
-  if (os.platform() === 'win32') {
+  if (os.platform() === 'win32' && IS_WSL_BASH) {
     base.WSLENV = 'CLAUDE_PLUGIN_ROOT/p:PLUGIN_ROOT/p:COPILOT_CLI';
   }
   return spawnSync('bash', ['./hooks/session-start'], {
@@ -261,4 +272,9 @@ test('bin/praxis.js exits with non-zero status code 1 on invalid CLI args', () =
   });
   assert.equal(res.status, 1);
   assert.match(res.stderr, /Unknown option: --bogus/);
+});
+
+test('toPosix formats Windows paths for both Git Bash and WSL runtimes', () => {
+  assert.equal(toPosix('C:\\Users\\neo\\praxis', { isWsl: false }), '/c/Users/neo/praxis');
+  assert.equal(toPosix('C:\\Users\\neo\\praxis', { isWsl: true }), '/mnt/c/Users/neo/praxis');
 });

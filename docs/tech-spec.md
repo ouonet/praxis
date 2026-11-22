@@ -4,9 +4,9 @@ user:         Developers and teams running AI coding agents (Claude Code, pi, Co
 
 use-case:     Install as a harness plugin/package; session-start injects triage; agent loads only the skills required by scope; produce staging specs/plans, implement with TDD/review gates, archive into living docs, optionally release.
 
-architecture: Skill-pack + thin harness adapters. Core behavior lives in Markdown skills under `skills/`; executable entrypoints are session-start hooks, Node.js CLI (`bin/praxis.js`), and small JS plugins that inject `using-praxis` and register skill paths. No central runtime server.
+architecture: Skill-pack + thin harness adapters. Core behavior lives in Markdown skills under `skills/`; executable entrypoints are session-start hooks, modular Node.js CLI (`bin/praxis.js`, `src/cli/{hosts,shared,installer,index}.js`, `src/cli/adapters/*.js`), and small JS plugins that inject `using-praxis` and register skill paths. No central runtime server.
 
-stack:        Markdown skills; Bash session-start hooks; Node.js CLI & ESM plugins (`bin/praxis.js`, `src/cli/`, `extensions/praxis.js`, `.opencode/plugins/praxis.js`); JSON plugin manifests per harness; optional VitePress docs site under `site/`; MIT license; package version from root `package.json`.
+stack:        Markdown skills; Bash session-start hooks; Node.js `>=20.11.0` CLI & ESM plugins (`bin/praxis.js`, `src/cli/`, `extensions/praxis.js`, `.opencode/plugins/praxis.js`); GitHub Actions CI across `ubuntu-latest`, `macos-latest`, `windows-latest`; JSON plugin manifests per harness; optional VitePress docs site under `site/`; MIT license; explicit `package.json` `files` allowlist excluding dev paths and nested `node_modules`.
 
 entry:        Session bootstrap and installation entrypoints:
   - CLI: `bin/praxis.js` (`npx @ouonet/praxis <command>`) for multi-host installation, inspection, and updates
@@ -21,14 +21,16 @@ entry:        Session bootstrap and installation entrypoints:
   - Manual: read `skills/using-praxis/SKILL.md` first
 
 contract:     Public install surfaces and stability set:
-  - CLI commands: `install` (`i`), `status` (`list`, `ls`), `update` (`upgrade`), `uninstall` (`rm`), `version` (`v`), `help` with flags `--host` (`-H`), `--scope` (`-s`), `--ref` (`-r`), `--method` (`-m`), `--force` (`-f`), `--dry-run`, `--help` (`-h`), `--version` (`-v`); invalid arguments or execution failures exit with status 1
-  - CLI builders: structured `CommandStep[]` (`{ bin, args, allowFailure }`), formatted with `formatCommandStep`; upfront multi-host `--ref` preflight validation
-  - File atomicity & safety: `writeFileAtomic` (tmp write + rename), `copyOrLink` (atomic backup-swap on overwrite), `pathExistsLstat` (detects dangling symlinks)
-  - Plugin file copy: `copyPluginFiles` includes `assets/` and supports `exclude: [...]`
-  - Codex lifecycle: `--dry-run` performs zero filesystem mutations; scope isolation (`user` vs `project`/`local`); `stripPraxisCodexToml` table scanner
-  - OpenCode lifecycle: `project` scope writes `opencode.json` without file copies; `local` scope manages `.opencode/` without touching `opencode.json`; `isPraxisPluginEntry` matching; `readValidatedOpencodeJson` aborts cleanly on invalid JSON before mutations
+  - Package & CI contract: `package.json` declares `engines.node >=20.11.0`, explicit `scripts.test` file list (no `**` glob), and `files` allowlist covering runtime assets (`bin/`, `src/`, `skills/`, `rules/`, `hooks/`, `extensions/`, `assets/`, `.opencode/plugins/`, `.opencode/INSTALL.md`, plugin manifests, `model-tiers.example.yaml`) with `!**/node_modules` exclusions; `.github/workflows/{ci,publish}.yml` gate on `npm run check && npm test`
+  - Modular CLI architecture: acyclic module graph `hosts.js` → `shared.js` → `adapters/<host>.js` → `adapters/index.js` (`HOST_ADAPTERS`, `getHostAdapter`) → `installer.js` → `index.js`; `HOST_ADAPTERS` frozen plain object matching `HOSTS`; adapters implement `{ id, alwaysRunFileUninstall?, installFiles, uninstallFiles, getStatus }`; uncaught adapter FS errors return `false`
+  - CLI commands & probes: `install` (`i`), `status` (`list`, `ls`), `update` (`upgrade`), `uninstall` (`rm`), `version` (`v`), `help` with flags `--host` (`-H`), `--scope` (`-s`), `--ref` (`-r`), `--method` (`-m`), `--force` (`-f`), `--dry-run`, `--help` (`-h`), `--version` (`-v`); `resolveBinaryAvailable` short-circuits `cliBinary === null`, skips probes on `copy`/`link`, and honors `binaryAvailable`/`checkBinary`; `runCli` accepts `{ rootDir, homeDir, checkBinary }`
+  - CLI builders: structured `CommandStep[]` (`{ bin, args, allowFailure }`), formatted with `formatCommandStep`; upfront multi-host `--ref` preflight validation; `--method native` failure never falls back to file operations
+  - File atomicity & safety: `writeFileAtomic` (tmp write + rename), `copyOrLink` (temp staging on new writes, atomic backup-swap on overwrite, `node_modules` copy filter), `pathExistsLstat` (used across all removal helpers and adapter uninstalls to clean dangling symlinks), `--dry-run` guards on directory cleanup
+  - Plugin file copy: `copyPluginFiles` iterates `PLUGIN_ITEMS_TO_COPY` (`assets`, `skills`, ..., `.opencode/plugins`, `.opencode/INSTALL.md`, excluding untracked dev files) and supports prefix matching in `exclude`
+  - Host lifecycle semantics: `codex` respects `--dry-run`, isolates `user` vs `project`/`local`, runs `stripPraxisCodexToml`, and enables `alwaysRunFileUninstall` under `auto`; `opencode` `project` manages `opencode.json`, `local` manages `.opencode/` without touching `opencode.json` (on install or uninstall), and `readValidatedOpencodeJson` aborts on invalid JSON; `pi`/`omp` `project`/`local` install skills directly via `copyPraxisSkillsToDir`; generic `user` uninstalls respect `homeDir` in `resolveTargetPath`
   - Rule ownership & deduplication: `rules/AGENTS.md` and `rules/praxis.md` start with `<!-- praxis:managed-rule -->`; `isPraxisManagedRuleFile` checks marker + legacy fingerprint; `copyManagedRuleFile` preserves user-owned rule files even under `--force`; Antigravity installs only `rules/AGENTS.md`, Grok installs only `rules/praxis.md`; Agents skips `rules/praxis.md` when Praxis-managed `rules/AGENTS.md` exists; sibling-safe `.agents/` uninstallation
-  - Accurate host status: pure text parsers `hasPraxisCodexToml`, `hasPraxisOpencodeConfigText`, `hasPraxisPiSettingsText`; `getHostStatus` parameterized by `homeDir`; zero directory-existence false positives
+  - Dynamic SSOT skill list: `PRAXIS_SKILL_NAMES` derived and frozen via `derivePraxisSkillNames()` anchored to package root `skills/` (`DEFAULT_PRAXIS_SKILL_NAMES` fallback if unreadable); all non-`references` skills declare `name` and `description` frontmatter
+  - Accurate host status: pure text parsers `hasPraxisCodexToml`, `hasPraxisOpencodeConfigText`, `hasPraxisPiSettingsText`; `getHostStatus` parameterized by `{ homeDir, binaryAvailable, checkBinary }`; zero directory-existence false positives
   - JS Adapters: `.opencode/plugins/praxis.js` dual-layout (`../skills` then `../../skills`), CRLF frontmatter stripping, no null-cache poisoning, session injection deduplication via `<!-- praxis:using-praxis:v1 -->`
   - Session hook: `hooks/session-start` `json_escape` falls back to `node` and pure-Bash on missing/failing python; Windows drive path resolution (`/<drive>/...`, `/mnt/<drive>/...`, and script-relative fallback)
   - Supported hosts: `claude`, `codex`, `opencode`, `copilot`, `antigravity` (`agy`), `pi`, `omp`, `qoder`, `grok`, `agents`, `all`
@@ -41,7 +43,7 @@ contract:     Public install surfaces and stability set:
   - Living docs: `README.md`, `docs/tech-spec.md`, `docs/specs/*.md`, optional `docs/ROADMAP.md`, `docs/decisions/`
   - Model tier ids: `fast` | `balanced` | `strongest` via optional `.praxis/model-tiers.yaml` (template `model-tiers.example.yaml`)
   - Multi-module declaration block fields: `topology`, `change-set`, `coordinator`, `repos`
-  - Harness manifests: `package.json` (npm + pi; `license` MIT, `homepage`, `repository`, `bugs`), `gemini-extension.json`, `.claude-plugin/*`, `.grok-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `.copilot-plugin/plugin.json`, `.qoder-plugin/plugin.json`, `.opencode/plugins/praxis.js`, `extensions/praxis.js`
+  - Harness manifests: `package.json` (npm + pi; `license` MIT, `homepage`, `repository`, `bugs`, `engines`, `files`), `gemini-extension.json`, `.claude-plugin/*`, `.grok-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `.copilot-plugin/plugin.json`, `.qoder-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.opencode/plugins/praxis.js`, `extensions/praxis.js`
   - Session-start hook must emit valid JSON context for the detected harness
 
 flow:
@@ -80,7 +82,7 @@ constraint:
 convention:
   - Skills: one directory per skill; `SKILL.md` with YAML frontmatter `name` + `description`. Public set excludes retired `discover` (folded into `design`).
   - References live under `skills/references/`, linked from workflow skills — not duplicated.
-  - Version source of truth: root `package.json` `version`; all plugin manifests and marketplace plugin entry must match.
+  - Version source of truth: root `package.json` (`version`, `description`, `license`, `author`); all 9 versioned manifests must match plus `.agents/plugins/marketplace.json` index integrity.
   - Hook scripts are extensionless (`session-start`) plus polyglot `run-hook.cmd`; JSON string escape must cover control characters (python3 `json.dumps` slice when available).
   - JS plugins: ESM, strip skill frontmatter, inject bootstrap once per session when harness allows.
   - Skill text is harness-neutral: skill loader or `skills/<name>/SKILL.md`; task tracker / subagent APIs named by role not single-vendor tool id.

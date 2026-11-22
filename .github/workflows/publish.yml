@@ -25,8 +25,11 @@ jobs:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Run invariant checks
+        run: npm run check
+
       - name: Run automated tests
-        run: node --test test/cli.test.js test/invariants.test.js test/adapters.test.js
+        run: npm test
 
       - name: Publish to npmjs
         run: npm publish --access public

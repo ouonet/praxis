@@ -3,7 +3,10 @@
 .claude
 AGENT.md
 CLAUDE.md
-.opencode
+.opencode/*
+!.opencode/plugins/
+!.opencode/plugins/**
+!.opencode/INSTALL.md
 .omp
 node_modules
 package-lock.json
