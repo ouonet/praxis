@@ -22,7 +22,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Run automated tests
         run: node --test test/cli.test.js test/invariants.test.js test/adapters.test.js
