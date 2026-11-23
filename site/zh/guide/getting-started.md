@@ -44,8 +44,11 @@ npx @ouonet/praxis install --host grok
 - `project`：项目范围，配置会落入版本控制（如 `opencode.json`、`.agents/skills/`、`.claude/settings.json`），与团队共享。
 - `local`：当前工作区本地范围，仅在当前目录生效但尽量不污染团队提交的共享配置文件。
 
-#### 常用命令
+#### 常用与诊断命令
 ```bash
+# 只读健康诊断（配置语法、悬空软链、技能完整性、规则冲突）
+npx @ouonet/praxis doctor    # 别名: validate, check
+
 # 更新 Praxis
 npx @ouonet/praxis update --host all
 
@@ -66,9 +69,12 @@ claude plugins install praxis
 ```
 
 #### Codex
-在 `.codex/config.toml` 中配置：
+在 `.codex/config.toml` 中配置（或运行 `codex plugin marketplace add ouonet/praxis` 与 `codex plugin add praxis@praxis-marketplace`）：
 ```toml
-[plugins."praxis@git+https://github.com/ouonet/praxis.git"]
+[marketplaces.praxis-marketplace]
+url = "https://github.com/ouonet/praxis"
+
+[plugins."praxis@praxis-marketplace"]
 enabled = true
 ```
 
@@ -153,12 +159,19 @@ add OAuth login with GitHub
 
 当派发并行子智能体（`subagents`）或规范评审员（`design` 关卡）时，Praxis 会分配任务能力分级（`fast`、`balanced`、`strongest`）。
 
-可在项目根目录或用户主目录下创建 `.praxis/model-tiers.yaml` 将分级映射到具体模型：
+解析顺序：项目 `.praxis/model-tiers.yaml` → 用户 `~/.praxis/model-tiers.yaml` → 宿主默认模型。可参考仓库模板 `model-tiers.example.yaml`，按 `tiers.<tier>.{provider, model}` 结构创建配置：
 
 ```yaml
-fast: claude-3-5-haiku
-balanced: claude-3-7-sonnet
-strongest: claude-3-7-sonnet
+tiers:
+  fast:
+    provider: anthropic
+    model: claude-haiku-4-5-20251001
+  balanced:
+    provider: anthropic
+    model: claude-sonnet-4-6
+  strongest:
+    provider: anthropic
+    model: claude-opus-4-6
 ```
 
 若未配置文件，所有子智能体默认使用宿主环境的默认模型。

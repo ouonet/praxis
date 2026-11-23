@@ -280,9 +280,20 @@ test('HOST_ADAPTERS registry and installer.js public exports match SSOT contract
     'derivePraxisSkillNames',
     'DEFAULT_PRAXIS_SKILL_NAMES',
     'resolveBinaryAvailable',
+    'diagnoseHost',
+    'diagnoseHosts',
+    'validateTomlBasic',
+    'isDanglingSymlink',
   ]) {
     assert.ok(expectedExport in installer, `installer.js must export ${expectedExport}`);
   }
+});
+
+test('src/cli/doctor.js exists and maintains acyclic imports without importing installer.js or index.js', () => {
+  assert.equal(exists('src/cli/doctor.js'), true, 'src/cli/doctor.js must exist');
+  const src = read('src/cli/doctor.js');
+  assert.equal(/['"]\.\/installer\.js['"]/.test(src), false, 'doctor.js must not import ./installer.js');
+  assert.equal(/['"]\.\/index\.js['"]/.test(src), false, 'doctor.js must not import ./index.js');
 });
 
 test('npm pack dry-run covers PLUGIN_ITEMS_TO_COPY and excludes dev-only paths and nested node_modules', () => {
@@ -307,6 +318,7 @@ test('npm pack dry-run covers PLUGIN_ITEMS_TO_COPY and excludes dev-only paths a
   for (const requiredFile of [
     'bin/praxis.js',
     'src/cli/shared.js',
+    'src/cli/doctor.js',
     'src/cli/adapters/index.js',
     '.opencode/plugins/praxis.js',
     '.opencode/INSTALL.md',
@@ -332,5 +344,198 @@ test('npm pack dry-run covers PLUGIN_ITEMS_TO_COPY and excludes dev-only paths a
     assert.equal(/^\.agents\//.test(p), false, `npm tarball must exclude ${p}`);
     assert.equal(p === 'CHANGELOG.md', false, `npm tarball must exclude ${p}`);
     assert.equal(/(?:^|\/)node_modules(?:\/|$)/.test(p), false, `npm tarball must exclude node_modules: ${p}`);
+  }
+});
+
+function parseTriageTable(content) {
+  const rows = [];
+  for (const rawLine of content.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line.startsWith('|')) continue;
+    const cells = line.slice(1, -1).split('|').map((c) => c.trim());
+    if (cells.length !== 3) continue;
+    if (cells[0] === 'scope' || cells[0] === '---') continue;
+    rows.push({ scope: cells[0], signal: cells[1], load: cells[2] });
+  }
+  return rows;
+}
+
+test('9-scope triage table and ship/release disambiguation stay synchronized across rules and using-praxis', () => {
+  const expectedScopes = [
+    ['vague', '`design`'],
+    ['trivial', 'none'],
+    ['small', '`tdd` (intent unclear? clarify first)'],
+    ['standard', '`design`, `plan`, `tdd`, `review`'],
+    ['complex', '`design`, `plan`, `worktree`, `subagents`, `review`, `ship`'],
+    ['debug', '`debug`'],
+    ['onboard', '`onboard`'],
+    ['ship', '`ship`, `review`, `archive`'],
+    ['release', '`release`'],
+  ];
+
+  const tables = ['rules/AGENTS.md', 'rules/praxis.md', 'skills/using-praxis/SKILL.md'].map((relPath) => {
+    const text = read(relPath);
+    const rows = parseTriageTable(text);
+    assert.equal(rows.length, expectedScopes.length, `${relPath} must have ${expectedScopes.length} triage rows`);
+    for (let i = 0; i < expectedScopes.length; i++) {
+      assert.equal(rows[i].scope, expectedScopes[i][0], `${relPath} row ${i} scope`);
+      assert.equal(rows[i].scope.includes('`'), false, `${relPath} scope cell must not be backticked`);
+      assert.equal(rows[i].signal.includes('`'), false, `${relPath} signal cell must not be backticked`);
+      assert.equal(rows[i].load, expectedScopes[i][1], `${relPath} row ${i} load`);
+    }
+    assert.match(
+      text,
+      /`ship` and `release` apply only when the user explicitly requests finishing\/archiving a completed plan \(`ship`\) or versioning\/tagging\/publishing \(`release`\), and take precedence over work-size scopes/i,
+      `${relPath} must document explicit ship/release precedence & disambiguation`,
+    );
+    return rows;
+  });
+
+  assert.deepEqual(tables[0], tables[1]);
+  assert.deepEqual(tables[0], tables[2]);
+});
+
+test('README.md and docs/tech-spec.md align with M7 CLI doctor, 9-scope triage, and modular layout', () => {
+  const readme = read('README.md');
+  assert.match(readme, /praxis doctor/);
+  assert.match(readme, /validate/);
+  assert.match(readme, /check/);
+  assert.match(readme, /\|\s*all tasks done.*\|\s*ship/i);
+  for (const entry of ['src/cli/', 'doctor.js', 'shared.js', 'adapters/', 'rules/', 'AGENTS.md', 'praxis.md']) {
+    assert.ok(readme.includes(entry), `README.md must mention ${entry}`);
+  }
+
+  const techSpec = read('docs/tech-spec.md');
+  const scopeMatch = techSpec.match(/Scope set:\s*(.+)/);
+  assert.ok(scopeMatch, 'docs/tech-spec.md must declare Scope set');
+  for (const s of ['vague', 'trivial', 'small', 'standard', 'complex', 'debug', 'onboard', 'ship', 'release']) {
+    assert.ok(scopeMatch[1].includes(s), `docs/tech-spec.md Scope set must include ${s}`);
+  }
+  assert.match(techSpec, /doctor.*validate.*check|doctor`.*`validate`.*`check`/i);
+  assert.match(techSpec, /src\/cli\/doctor\.js|hosts,shared,doctor,installer|doctor\.js/);
+});
+
+test('model-tiers.yaml schema and resolution order are unified across core files without obsolete model IDs', () => {
+  const bannedPattern = /claude-3-5|claude-3-7|claude-sonnet-5|claude-opus-5/i;
+  const targets = [
+    'model-tiers.example.yaml',
+    'skills/subagents/SKILL.md',
+    'skills/references/reviewers.md',
+    'README.md',
+    'docs/tech-spec.md',
+    'rules/AGENTS.md',
+    'rules/praxis.md',
+  ];
+  for (const rel of targets) {
+    assert.equal(bannedPattern.test(read(rel)), false, `${rel} must not contain obsolete/fictional model IDs`);
+  }
+
+  const exampleYaml = read('model-tiers.example.yaml');
+  for (const tok of [
+    'tiers:',
+    'fast:',
+    'balanced:',
+    'strongest:',
+    'provider: anthropic',
+    'claude-haiku-4-5-20251001',
+    'claude-sonnet-4-6',
+    'claude-opus-4-6',
+    'project',
+    '~/.praxis/model-tiers.yaml',
+    'harness default',
+  ]) {
+    assert.ok(exampleYaml.includes(tok), `model-tiers.example.yaml must include ${tok}`);
+  }
+
+  const subagents = read('skills/subagents/SKILL.md');
+  assert.match(subagents, /tiers\.<tier>\.(?:\{provider,\s*model\}|model)|tiers:\s*\n\s*fast:/);
+  assert.match(subagents, /project `?\.praxis\/model-tiers\.yaml`?\s*→\s*user `?~\/\.praxis\/model-tiers\.yaml`?\s*→\s*harness default/i);
+
+  const reviewers = read('skills/references/reviewers.md');
+  assert.match(reviewers, /tiers\.<tier>\.model/);
+  assert.match(reviewers, /project `?\.praxis\/model-tiers\.yaml`?\s*→\s*user `?~\/\.praxis\/model-tiers\.yaml`?\s*→\s*harness default/i);
+
+  const readme = read('README.md');
+  assert.match(readme, /tiers:\s*\r?\n\s*fast:/);
+  assert.match(readme, /claude-haiku-4-5-20251001/);
+  assert.match(readme, /claude-sonnet-4-6/);
+  assert.match(readme, /claude-opus-4-6/);
+  assert.match(readme, /project `?\.praxis\/model-tiers\.yaml`?\s*→\s*user `?~\/\.praxis\/model-tiers\.yaml`?\s*→\s*harness default/i);
+
+  const techSpec = read('docs/tech-spec.md');
+  assert.match(techSpec, /tiers\.<tier>\.\{provider,\s*model\}/);
+  assert.match(techSpec, /project root\s*→\s*user home\s*→\s*harness default/i);
+});
+
+function walkMarkdownFiles(dir, base = dir) {
+  const relPaths = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      relPaths.push(...walkMarkdownFiles(full, base));
+    } else if (entry.name.endsWith('.md')) {
+      relPaths.push(path.relative(base, full).replace(/\\/g, '/'));
+    }
+  }
+  return relPaths.sort();
+}
+
+test('4-locale documentation site has exact tree parity, no discover/stubs/banned terms, and synced v4 pages', () => {
+  const locales = ['en', 'zh', 'ja', 'ko'];
+  const configTs = read('site/.vitepress/config.ts');
+  assert.equal(/discover/.test(configTs), false, 'site/.vitepress/config.ts must not reference retired discover');
+
+  const baselineTree = walkMarkdownFiles(path.join(root, 'site', 'en'));
+  assert.equal(baselineTree.includes('skills/discover.md'), false, 'site/en/skills/discover.md must be deleted');
+
+  const bannedPhrases = [
+    /Documentation coming soon/i,
+    /TodoWrite/,
+    /`cross-rule`/,
+    /`cross-module`/,
+    /←\s*stub/,
+    /claude-3-5/i,
+    /claude-3-7/i,
+    /claude-sonnet-5/i,
+    /claude-opus-5/i,
+    /←\s*plan in detail now/,
+    /←\s*现在详细计划/,
+    /←\s*今詳細に計画/,
+    /←\s*지금 상세 계획/,
+  ];
+
+  for (const locale of locales) {
+    assert.equal(exists(`site/${locale}/skills/discover.md`), false, `site/${locale}/skills/discover.md must not exist`);
+    const tree = walkMarkdownFiles(path.join(root, 'site', locale));
+    assert.deepEqual(tree, baselineTree, `site/${locale} file tree must match site/en`);
+
+    for (const rel of tree) {
+      const text = read(`site/${locale}/${rel}`);
+      for (const re of bannedPhrases) {
+        assert.equal(re.test(text), false, `site/${locale}/${rel} matched banned phrase ${re}`);
+      }
+    }
+
+    const indexMd = read(`site/${locale}/index.md`);
+    assert.match(indexMd, /Copilot/i, `site/${locale}/index.md must mention Copilot`);
+    assert.match(indexMd, /Grok/i, `site/${locale}/index.md must mention Grok`);
+
+    const gettingStarted = read(`site/${locale}/guide/getting-started.md`);
+    for (const reqTok of ['grok', 'copilot', 'doctor', 'validate', 'check', 'praxis@praxis-marketplace', 'tiers:', 'provider:', 'model:']) {
+      assert.ok(gettingStarted.includes(reqTok), `site/${locale}/guide/getting-started.md must include ${reqTok}`);
+    }
+
+    const howItWorks = read(`site/${locale}/guide/how-it-works.md`);
+    for (const reqTok of ['consistency', 'boundary', 'ship', 'release']) {
+      assert.ok(howItWorks.includes(reqTok), `site/${locale}/guide/how-it-works.md must include ${reqTok}`);
+    }
+
+    const reviewersMd = read(`site/${locale}/skills/reviewers.md`);
+    assert.ok(reviewersMd.includes('consistency'), `site/${locale}/skills/reviewers.md must include consistency`);
+    assert.ok(reviewersMd.includes('boundary'), `site/${locale}/skills/reviewers.md must include boundary`);
+
+    const designMd = read(`site/${locale}/skills/design.md`);
+    assert.ok(designMd.includes('./reviewers'), `site/${locale}/skills/design.md must link ./reviewers`);
+    assert.match(designMd, /multi-module|多模块|マルチモジュール|멀티 모듈/i);
   }
 });

@@ -24,10 +24,14 @@ praxis: scope=<x>, topology=multi-module, loading=<skills>  # 多模块
 | complex | 新系统、≥5 个任务或并行修改 | `design`, `plan`, `worktree`, `subagents`, `review`, `ship` |
 | debug | 功能受损、回归问题、失败测试 | `debug` |
 | onboard | 现有项目，无 tech-spec.md | `onboard` |
+| ship | 所有计划任务已完成，准备审查、归档并收尾 | `ship`, `review`, `archive` |
+| release | 请求更新版本、打 tag 或发布 | `release` |
+
+`ship` 和 `release` 仅在用户显式请求收尾/归档或版本发布时触发，且在对应显式请求下优先于工作量范围（`trivial`/`small`）。
 
 ## 核心生命周期关卡
 
-1. **规范评审关卡 (`design`)**：草拟规范后，Praxis 检查触发条件并并行派发匹配的评审员 Subagent（`spec-compliance`、`state-machine`、`cross-rule`、`cross-module`、`safety`、`implementability`）。Coordinator 在交接给计划前进行批判性合成。
+1. **规范评审关卡 (`design`)**：草拟规范后，Praxis 检查触发条件并并行派发匹配的评审员 Subagent（`spec-compliance`、`state-machine`、`consistency`、`boundary`、`safety`、`implementability`）。Coordinator 在交接给计划前进行批判性合成。
 2. **三维质量关卡 (`tdd` / `review`)**：实现循环从机械化检查、约定遵循、设计内聚与耦合、文档覆盖率四个维度进行评估。
 3. **模型能力分级派发 (`subagents`)**：Fan-out 任务指定 ROLE 契约（`implementer`、`spec-reviewer`、`quality-reviewer`）和能力分级（`fast`、`balanced`、`strongest`）。
 4. **现存文档同步 (`ship` / `archive`)**：暂存规范合并入现存文档（`docs/tech-spec.md` 或 `docs/specs/*.md`），更新 CHANGELOG 并清理暂存区文件。

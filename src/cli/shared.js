@@ -262,7 +262,11 @@ export function readValidatedOpencodeJson(filePath) {
   try {
     raw = fs.readFileSync(filePath, 'utf8');
   } catch (err) {
-    throw new Error(`Failed to read opencode.json at ${filePath}: ${err.message}`);
+    const wrapped = new Error(`Failed to read opencode.json at ${filePath}: ${err.message}`, { cause: err });
+    if (err && err.code) {
+      wrapped.code = err.code;
+    }
+    throw wrapped;
   }
   let parsed;
   try {
@@ -368,6 +372,49 @@ function isPraxisCodexTableSegments(segments) {
   );
 }
 
+function parseTomlTableHeader(trimmedLine) {
+  const isArrayHeader = trimmedLine.startsWith('[[');
+  const openLen = isArrayHeader ? 2 : 1;
+  let inQuote = null;
+  let closeStart = -1;
+
+  for (let i = openLen; i < trimmedLine.length; i++) {
+    const ch = trimmedLine[i];
+    if (inQuote) {
+      if (ch === '\\' && inQuote === '"' && i + 1 < trimmedLine.length) {
+        i += 1;
+      } else if (ch === inQuote) {
+        inQuote = null;
+      }
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      inQuote = ch;
+    } else if (ch === ']') {
+      if (isArrayHeader) {
+        if (trimmedLine[i + 1] === ']') {
+          closeStart = i;
+          break;
+        }
+        return null;
+      }
+      closeStart = i;
+      break;
+    }
+  }
+
+  if (inQuote || closeStart === -1) return null;
+  const closeLen = isArrayHeader ? 2 : 1;
+  const trailing = trimmedLine.slice(closeStart + closeLen).trim();
+  if (trailing !== '' && !trailing.startsWith('#')) {
+    return null;
+  }
+  const inner = trimmedLine.slice(openLen, closeStart);
+  const segments = parseTomlHeaderSegments(inner);
+  if (!segments || segments.length === 0) return null;
+  return segments;
+}
+
 export function scanTomlLines(content) {
   const eol = content.includes('\r\n') ? '\r\n' : '\n';
   const lines = content.split(/\r?\n/);
@@ -376,6 +423,7 @@ export function scanTomlLines(content) {
   let inMultiBasic = false;
   let inMultiLiteral = false;
   let bracketDepth = 0;
+  let hasMalformedHeader = false;
 
   for (const line of lines) {
     const atTopLevel = !inMultiBasic && !inMultiLiteral && bracketDepth === 0;
@@ -383,14 +431,12 @@ export function scanTomlLines(content) {
     if (atTopLevel) {
       const trimmed = line.trim();
       if (trimmed.startsWith('[') && !trimmed.startsWith('#')) {
-        const m = trimmed.match(/^\[\[?(.+?)\]\]?(?:\s*(?:#.*)?)?$/);
-        if (m) {
-          headerSegments = parseTomlHeaderSegments(m[1]);
+        headerSegments = parseTomlTableHeader(trimmed);
+        if (!headerSegments) {
+          hasMalformedHeader = true;
         }
       }
     }
-
-    annotated.push({ line, headerSegments, atTopLevel });
 
     let i = 0;
     let inSingle = false;
@@ -456,9 +502,17 @@ export function scanTomlLines(content) {
       }
       i += 1;
     }
+
+    const hasUnclosedString = inDouble || inSingle;
+    annotated.push({ line, headerSegments, atTopLevel, hasUnclosedString });
   }
 
-  return { eol, annotated };
+  return {
+    eol,
+    annotated,
+    eofState: { inMultiBasic, inMultiLiteral, bracketDepth },
+    hasMalformedHeader,
+  };
 }
 
 export function hasPraxisCodexToml(content) {

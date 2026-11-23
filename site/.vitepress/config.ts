@@ -50,7 +50,6 @@ export default defineConfig({
                 { text: 'archive', link: '/skills/archive' },
                 { text: 'release', link: '/skills/release' },
                 { text: 'onboard', link: '/skills/onboard' },
-                { text: 'discover', link: '/skills/discover' },
               ],
             },
             {
@@ -103,7 +102,6 @@ export default defineConfig({
                 { text: 'archive', link: '/ja/skills/archive' },
                 { text: 'release', link: '/ja/skills/release' },
                 { text: 'onboard', link: '/ja/skills/onboard' },
-                { text: 'discover', link: '/ja/skills/discover' },
               ],
             },
             {
@@ -156,7 +154,6 @@ export default defineConfig({
                 { text: 'archive', link: '/ko/skills/archive' },
                 { text: 'release', link: '/ko/skills/release' },
                 { text: 'onboard', link: '/ko/skills/onboard' },
-                { text: 'discover', link: '/ko/skills/discover' },
               ],
             },
             {
@@ -209,7 +206,6 @@ export default defineConfig({
                 { text: 'archive', link: '/zh/skills/archive' },
                 { text: 'release', link: '/zh/skills/release' },
                 { text: 'onboard', link: '/zh/skills/onboard' },
-                { text: 'discover', link: '/zh/skills/discover' },
               ],
             },
             {

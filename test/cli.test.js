@@ -28,7 +28,12 @@ import {
   getHostAdapter,
   derivePraxisSkillNames,
   DEFAULT_PRAXIS_SKILL_NAMES,
+  PRAXIS_SKILL_NAMES,
   resolveBinaryAvailable,
+  diagnoseHost,
+  diagnoseHosts,
+  validateTomlBasic,
+  isDanglingSymlink,
 } from '../src/cli/installer.js';
 
 test('resolveHost resolves host names and aliases', () => {
@@ -1330,6 +1335,390 @@ test('HOST_ADAPTERS registry, resolveBinaryAvailable, node_modules filtering, an
     );
   } finally {
     fs.rmSync(tmpSrc, { recursive: true, force: true });
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+  }
+});
+
+function snapshotTree(dir) {
+  if (!fs.existsSync(dir)) return [];
+  const out = [];
+  const walk = (cur) => {
+    const entries = fs.readdirSync(cur).sort();
+    for (const name of entries) {
+      const full = path.join(cur, name);
+      const rel = path.relative(dir, full);
+      const lstat = fs.lstatSync(full);
+      if (lstat.isSymbolicLink()) {
+        out.push(`L:${rel}->${fs.readlinkSync(full)}`);
+      } else if (lstat.isDirectory()) {
+        out.push(`D:${rel}`);
+        walk(full);
+      } else {
+        out.push(`F:${rel}:${lstat.size}`);
+      }
+    }
+  };
+  walk(dir);
+  return out;
+}
+
+test('praxis doctor helper predicates: isDanglingSymlink and validateTomlBasic', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-helpers-'));
+  try {
+    // 1. isDanglingSymlink
+    assert.equal(isDanglingSymlink(path.join(tmpDir, 'does-not-exist')), false);
+    const regularFile = path.join(tmpDir, 'regular.txt');
+    fs.writeFileSync(regularFile, 'ok', 'utf8');
+    assert.equal(isDanglingSymlink(regularFile), false);
+
+    const realDir = path.join(tmpDir, 'real-dir');
+    fs.mkdirSync(realDir, { recursive: true });
+    const linkType = os.platform() === 'win32' ? 'junction' : 'dir';
+    const validLink = path.join(tmpDir, 'valid-link');
+    fs.symlinkSync(realDir, validLink, linkType);
+    assert.equal(isDanglingSymlink(validLink), false);
+
+    const missingTarget = path.join(tmpDir, 'missing-target');
+    const brokenDirLink = path.join(tmpDir, 'broken-dir-link');
+    fs.symlinkSync(missingTarget, brokenDirLink, linkType);
+    assert.equal(isDanglingSymlink(brokenDirLink), true);
+
+    // 2. validateTomlBasic
+    assert.deepEqual(validateTomlBasic(''), { valid: true, error: null });
+    assert.deepEqual(
+      validateTomlBasic([
+        "# don't break on apostrophe",
+        '[core]',
+        'tags = ["a", "[b]", "c"]',
+        'note = """',
+        'multi line "" and \\""" stay inside until close',
+        '"""',
+        "lit = '''don't escape'''",
+        '[plugins."praxis@praxis-marketplace"] # inline comment',
+        'enabled = true',
+        '[[other.items]]',
+        'name = "ok"',
+      ].join('\n')),
+      { valid: true, error: null },
+    );
+
+    for (const badInput of [null, undefined, 42, {}]) {
+      const res = validateTomlBasic(badInput);
+      assert.equal(res.valid, false);
+      assert.equal(typeof res.error, 'string');
+    }
+
+    for (const badToml of [
+      '[unclosed.header\nx = 1',
+      '[[mismatched]\nx = 1',
+      '[mismatched]]\nx = 1',
+      '[]\nx = 1',
+      '[core]\narr = [\n  "unclosed array"',
+      '[core]\ns = """\nunclosed multiline basic',
+      "[core]\ns = '''\nunclosed multiline literal",
+      '[core]\ns = "unclosed single line',
+    ]) {
+      const res = validateTomlBasic(badToml);
+      assert.equal(res.valid, false, `Expected invalid TOML for:\n${badToml}`);
+      assert.ok(res.error && res.error.length > 0);
+    }
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('praxis doctor direct API, CLI aliases, help output, flags, and read-only safety', async () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-cli-root-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-cli-home-'));
+  try {
+    // 1. Direct API defaults & error modes
+    assert.throws(() => diagnoseHost('nonexistent-host', { rootDir: tmpRoot, homeDir: tmpHome }), Error);
+    assert.throws(() => diagnoseHost(HOSTS.claude, { rootDir: tmpRoot, homeDir: tmpHome, scope: 'porject' }), RangeError);
+    assert.throws(() => diagnoseHosts(['nonexistent-host'], { rootDir: tmpRoot, homeDir: tmpHome }), Error);
+
+    const allSummary = diagnoseHosts(undefined, { rootDir: tmpRoot, homeDir: tmpHome });
+    assert.equal(allSummary.ok, true);
+    assert.equal(allSummary.failCount, 0);
+    assert.equal(allSummary.warnCount, 0);
+    assert.equal(allSummary.hosts.length, Object.keys(HOSTS).length);
+
+    const subsetSummary = diagnoseHosts(['agy', HOSTS.grok], { rootDir: tmpRoot, homeDir: tmpHome });
+    assert.deepEqual(subsetSummary.hosts.map((h) => h.id), ['antigravity', 'grok']);
+
+    // 2. Capture CLI help output for doctor, validate, check
+    const logs = [];
+    const origLog = console.log;
+    console.log = (...args) => logs.push(args.join(' '));
+    try {
+      assert.equal(await runCli(['help'], { rootDir: tmpRoot, homeDir: tmpHome }), 0);
+    } finally {
+      console.log = origLog;
+    }
+    const helpOut = logs.join('\n');
+    assert.match(helpOut, /doctor/);
+    assert.match(helpOut, /validate/);
+    assert.match(helpOut, /check/);
+
+    // 3. Aliases and flag validation on empty clean workspace/home
+    const beforeRoot = snapshotTree(tmpRoot);
+    const beforeHome = snapshotTree(tmpHome);
+    for (const cmd of ['doctor', 'validate', 'check']) {
+      assert.equal(await runCli([cmd], { rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false }), 0);
+    }
+    assert.equal(await runCli(['doctor', '--host', 'bogus'], { rootDir: tmpRoot, homeDir: tmpHome }), 1);
+    assert.equal(await runCli(['doctor', '--ref', 'main'], { rootDir: tmpRoot, homeDir: tmpHome }), 1);
+    assert.equal(await runCli(['doctor', '--scope', 'porject'], { rootDir: tmpRoot, homeDir: tmpHome }), 1);
+    assert.equal(await runCli(['doctor', '--method', 'bogus'], { rootDir: tmpRoot, homeDir: tmpHome }), 1);
+    assert.equal(await runCli(['doctor', '--dry-run', '--force', '--method', 'copy'], { rootDir: tmpRoot, homeDir: tmpHome }), 0);
+    assert.deepEqual(snapshotTree(tmpRoot), beforeRoot, 'doctor must perform zero mutations in rootDir');
+    assert.deepEqual(snapshotTree(tmpHome), beforeHome, 'doctor must perform zero mutations in homeDir');
+
+    // 4. Home directory explicit --scope project emits scope-skipped-home warn and exits 0
+    const homeSkipReport = diagnoseHost('claude', { rootDir: tmpHome, homeDir: tmpHome, scope: 'project' });
+    assert.equal(homeSkipReport.status, 'warn');
+    assert.equal(homeSkipReport.checks[0].code, 'scope-skipped-home');
+    assert.equal(homeSkipReport.checks[0].severity, 'warn');
+    assert.equal(homeSkipReport.checks[0].path, null);
+    assert.equal(await runCli(['doctor', '--host', 'claude', '--scope', 'project'], { rootDir: tmpHome, homeDir: tmpHome }), 0);
+  } finally {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+  }
+});
+
+test('praxis doctor diagnoses healthy installs, all 7 invalid configs, unreadable paths, incomplete skills, and dangling symlinks', async () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-checks-root-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-checks-home-'));
+  const protectedFiles = [];
+  try {
+    // 1. Healthy installs across hosts
+    for (const host of [HOSTS.grok, HOSTS.antigravity, HOSTS.copilot, HOSTS.pi, HOSTS.omp, HOSTS.qoder, HOSTS.codex, HOSTS.claude]) {
+      assert.equal(
+        installHost(host, {
+          scope: 'project',
+          method: 'copy',
+          rootDir: tmpRoot,
+          homeDir: tmpHome,
+          checkBinary: () => false,
+        }),
+        true,
+      );
+    }
+    assert.equal(
+      installHost(HOSTS.opencode, {
+        scope: 'project',
+        method: 'auto',
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        checkBinary: () => false,
+      }),
+      true,
+    );
+    assert.equal(
+      installHost(HOSTS.opencode, {
+        scope: 'local',
+        method: 'copy',
+        rootDir: tmpRoot,
+        homeDir: tmpHome,
+        checkBinary: () => false,
+      }),
+      true,
+    );
+
+    const healthyAll = diagnoseHosts(undefined, { rootDir: tmpRoot, homeDir: tmpHome });
+    assert.equal(healthyAll.ok, true);
+    assert.equal(healthyAll.failCount, 0);
+    assert.equal(healthyAll.warnCount, 0);
+    const grokHealthy = healthyAll.hosts.find((h) => h.id === 'grok');
+    assert.equal(grokHealthy.installed, true);
+    assert.equal(grokHealthy.status, 'ok');
+    assert.deepEqual(grokHealthy.checks.map((c) => [c.code, c.scope, c.path]), [['healthy', 'host', null]]);
+    assert.equal(await runCli(['doctor'], { rootDir: tmpRoot, homeDir: tmpHome }), 0);
+
+    // 2. Malformed configs across all 7 config-bearing hosts
+    // opencode (project invalid JSON)
+    fs.writeFileSync(path.join(tmpRoot, 'opencode.json'), '{ bad json', 'utf8');
+    let rep = diagnoseHost('opencode', { rootDir: tmpRoot, homeDir: tmpHome });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config' && c.scope === 'project' && c.severity === 'fail'));
+    // Fix opencode project, test user non-array plugin
+    fs.writeFileSync(path.join(tmpRoot, 'opencode.json'), JSON.stringify({ plugin: ['praxis@git+https://github.com/ouonet/praxis.git'] }), 'utf8');
+    fs.mkdirSync(path.join(tmpHome, '.config', 'opencode'), { recursive: true });
+    fs.writeFileSync(path.join(tmpHome, '.config', 'opencode', 'opencode.json'), JSON.stringify({ plugin: 'nope' }), 'utf8');
+    rep = diagnoseHost('opencode', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'user' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config' && c.scope === 'user'));
+
+    // pi (.pi/settings.json non-array packages)
+    fs.writeFileSync(path.join(tmpRoot, '.pi', 'settings.json'), JSON.stringify({ packages: 'bad' }), 'utf8');
+    rep = diagnoseHost('pi', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'project' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config'));
+
+    // claude (.claude/settings.json + ~/.claude/plugins/installed_plugins.json)
+    fs.writeFileSync(path.join(tmpRoot, '.claude', 'settings.json'), JSON.stringify({ enabledPlugins: ['bad'] }), 'utf8');
+    rep = diagnoseHost('claude', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'project' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config'));
+    fs.mkdirSync(path.join(tmpHome, '.claude', 'plugins'), { recursive: true });
+    fs.writeFileSync(path.join(tmpHome, '.claude', 'plugins', 'installed_plugins.json'), '{bad', 'utf8');
+    rep = diagnoseHost('claude', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'user' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config' && c.scope === 'user'));
+
+    // codex (.codex/config.toml invalid TOML)
+    fs.writeFileSync(path.join(tmpRoot, '.codex', 'config.toml'), '[plugins."praxis@praxis-marketplace"\nenabled = true\n', 'utf8');
+    rep = diagnoseHost('codex', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'project' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config'));
+
+    // omp (.omp/plugins/package.json invalid JSON)
+    fs.mkdirSync(path.join(tmpRoot, '.omp', 'plugins'), { recursive: true });
+    fs.writeFileSync(path.join(tmpRoot, '.omp', 'plugins', 'package.json'), '[]', 'utf8');
+    rep = diagnoseHost('omp', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'project' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config'));
+
+    // grok (~/.grok/installed-plugins/registry.json invalid JSON)
+    fs.mkdirSync(path.join(tmpHome, '.grok', 'installed-plugins'), { recursive: true });
+    fs.writeFileSync(path.join(tmpHome, '.grok', 'installed-plugins', 'registry.json'), '{broken', 'utf8');
+    rep = diagnoseHost('grok', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'user' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config' && c.scope === 'user'));
+
+    // qoder (.qoder-plugin/plugin.json invalid JSON)
+    fs.writeFileSync(path.join(tmpRoot, '.qoder-plugin', 'plugin.json'), '{broken', 'utf8');
+    rep = diagnoseHost('qoder', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'project' });
+    assert.ok(rep.checks.some((c) => c.code === 'invalid-config'));
+
+    assert.equal(await runCli(['doctor'], { rootDir: tmpRoot, homeDir: tmpHome }), 1);
+
+    // 3. Incomplete skills & deduplication check
+    fs.rmSync(path.join(tmpRoot, '.grok', 'skills', 'plan'), { recursive: true, force: true });
+    rep = diagnoseHost('grok', { rootDir: tmpRoot, homeDir: tmpHome });
+    const grokIncomplete = rep.checks.filter((c) => c.code === 'incomplete-skills');
+    assert.equal(grokIncomplete.length, 1, 'Workspace check must be deduplicated when scope omitted');
+    assert.equal(grokIncomplete[0].scope, 'project');
+    assert.match(grokIncomplete[0].message, /plan/);
+
+    const grokLocalOnly = diagnoseHost('grok', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'local' });
+    assert.ok(grokLocalOnly.checks.some((c) => c.code === 'incomplete-skills' && c.scope === 'local'));
+
+    // Dedicated plugin dir missing skill -> incomplete-skills
+    fs.rmSync(path.join(tmpRoot, '.copilot', 'plugins', 'praxis', 'skills', 'ship'), { recursive: true, force: true });
+    rep = diagnoseHost('copilot', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'project' });
+    assert.ok(rep.checks.some((c) => c.code === 'incomplete-skills' && /ship/.test(c.message)));
+
+    // 4. Dangling symlink detection (including broken rule symlink suppressing missing-praxis-rule)
+    const isolatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-dangle-'));
+    try {
+      installHost(HOSTS.grok, { scope: 'project', method: 'copy', rootDir: isolatedRoot, homeDir: tmpHome, checkBinary: () => false });
+      const grokRule = path.join(isolatedRoot, '.grok', 'rules', 'praxis.md');
+      fs.rmSync(grokRule, { force: true });
+      const linkType = os.platform() === 'win32' ? 'junction' : 'dir';
+      fs.symlinkSync(path.join(isolatedRoot, 'nonexistent-target'), grokRule, linkType);
+
+      const dangleRep = diagnoseHost('grok', { rootDir: isolatedRoot, homeDir: tmpHome, scope: 'project' });
+      assert.equal(dangleRep.status, 'fail');
+      assert.ok(dangleRep.checks.some((c) => c.code === 'dangling-symlink' && c.path === grokRule));
+      assert.equal(
+        dangleRep.checks.some((c) => c.code === 'missing-praxis-rule'),
+        false,
+        'Broken rule symlink must not also trigger missing-praxis-rule',
+      );
+      assert.equal(await runCli(['doctor', '--host', 'grok', '--scope', 'project'], { rootDir: isolatedRoot, homeDir: tmpHome }), 1);
+
+      // Verify PRAXIS_SKILL_NAMES includes multiple skills and negative case for unrelated skills/references
+      assert.ok(PRAXIS_SKILL_NAMES.includes('references'));
+      const unrelatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-unrelated-'));
+      try {
+        fs.mkdirSync(path.join(unrelatedRoot, 'skills', 'references'), { recursive: true });
+        fs.writeFileSync(path.join(unrelatedRoot, 'skills', 'references', 'custom.md'), '# unrelated', 'utf8');
+        const qoderUnrelated = diagnoseHost('qoder', { rootDir: unrelatedRoot, homeDir: tmpHome });
+        assert.equal(qoderUnrelated.status, 'ok');
+        assert.equal(qoderUnrelated.checks.some((c) => c.code === 'incomplete-skills'), false);
+      } finally {
+        fs.rmSync(unrelatedRoot, { recursive: true, force: true });
+      }
+    } finally {
+      fs.rmSync(isolatedRoot, { recursive: true, force: true });
+    }
+
+    // 5. Unreadable paths: portable EISDIR across OSes + POSIX EACCES where supported
+    const dirErrRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-eisdir-'));
+    try {
+      fs.mkdirSync(path.join(dirErrRoot, 'opencode.json'), { recursive: true });
+      const eisdirRep = diagnoseHost('opencode', { rootDir: dirErrRoot, homeDir: tmpHome, scope: 'project' });
+      assert.equal(eisdirRep.status, 'fail');
+      assert.ok(eisdirRep.checks.some((c) => c.code === 'unreadable-path' && c.path === path.join(dirErrRoot, 'opencode.json')));
+
+      if (process.platform !== 'win32') {
+        fs.mkdirSync(path.join(dirErrRoot, '.pi'), { recursive: true });
+        const piCfg = path.join(dirErrRoot, '.pi', 'settings.json');
+        fs.writeFileSync(piCfg, '{}', 'utf8');
+        fs.chmodSync(piCfg, 0o000);
+        protectedFiles.push(piCfg);
+        const eaccesRep = diagnoseHost('pi', { rootDir: dirErrRoot, homeDir: tmpHome, scope: 'project' });
+        assert.ok(eaccesRep.checks.some((c) => c.code === 'unreadable-path' && c.path === piCfg));
+      }
+    } finally {
+      for (const f of protectedFiles) {
+        try { fs.chmodSync(f, 0o644); } catch {}
+      }
+      fs.rmSync(dirErrRoot, { recursive: true, force: true });
+    }
+  } finally {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+  }
+});
+
+test('praxis doctor checks rule isolation (agents vs antigravity), duplicates, conflicts, missing rules, and OpenCode dual-source warnings', async () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-rules-root-'));
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-rules-home-'));
+  try {
+    // 1. Cross-host isolation: agents-only install preserves user AGENTS.md without triggering antigravity warning
+    fs.mkdirSync(path.join(tmpRoot, '.agents', 'rules'), { recursive: true });
+    fs.writeFileSync(path.join(tmpRoot, '.agents', 'rules', 'AGENTS.md'), '# User Custom Team Rules\n', 'utf8');
+    installHost(HOSTS.agents, { scope: 'project', method: 'copy', rootDir: tmpRoot, homeDir: tmpHome, checkBinary: () => false });
+
+    let summary = diagnoseHosts(undefined, { rootDir: tmpRoot, homeDir: tmpHome });
+    assert.equal(summary.ok, true);
+    assert.equal(summary.warnCount, 0, 'agents install with preserved user AGENTS.md and managed praxis.md must emit zero warnings');
+    assert.equal(diagnoseHost('antigravity', { rootDir: tmpRoot, homeDir: tmpHome }).checks.some((c) => c.code === 'unmanaged-rule-conflict'), false);
+
+    // 2. Duplicate Praxis rules -> warn, exit 0
+    fs.copyFileSync(path.resolve(import.meta.dirname, '..', 'rules', 'AGENTS.md'), path.join(tmpRoot, '.agents', 'rules', 'AGENTS.md'));
+    summary = diagnoseHosts(['agents'], { rootDir: tmpRoot, homeDir: tmpHome });
+    assert.ok(summary.hosts[0].checks.some((c) => c.code === 'duplicate-praxis-rules' && c.severity === 'warn'));
+    assert.equal(await runCli(['doctor', '--host', 'agents'], { rootDir: tmpRoot, homeDir: tmpHome }), 0);
+
+    // 3. Antigravity unmanaged rule conflict vs missing rule
+    const agyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'praxis-doctor-agy-'));
+    try {
+      fs.mkdirSync(path.join(agyRoot, '.agents', 'rules'), { recursive: true });
+      fs.writeFileSync(path.join(agyRoot, '.agents', 'rules', 'AGENTS.md'), '# User Custom AGENTS\n', 'utf8');
+      installHost(HOSTS.antigravity, { scope: 'project', method: 'copy', rootDir: agyRoot, homeDir: tmpHome, checkBinary: () => false });
+
+      let agyRep = diagnoseHost('antigravity', { rootDir: agyRoot, homeDir: tmpHome, scope: 'project' });
+      assert.equal(agyRep.status, 'warn');
+      assert.ok(agyRep.checks.some((c) => c.code === 'unmanaged-rule-conflict' && c.severity === 'warn'));
+
+      // Remove rule completely -> missing-praxis-rule warn
+      fs.rmSync(path.join(agyRoot, '.agents', 'rules', 'AGENTS.md'));
+      agyRep = diagnoseHost('antigravity', { rootDir: agyRoot, homeDir: tmpHome, scope: 'project' });
+      assert.ok(agyRep.checks.some((c) => c.code === 'missing-praxis-rule' && c.severity === 'warn'));
+    } finally {
+      fs.rmSync(agyRoot, { recursive: true, force: true });
+    }
+
+    // 4. OpenCode user dual-source warning (exit 0)
+    const ocUserDir = path.join(tmpHome, '.config', 'opencode');
+    fs.mkdirSync(path.join(ocUserDir, 'plugins'), { recursive: true });
+    fs.writeFileSync(
+      path.join(ocUserDir, 'opencode.json'),
+      JSON.stringify({ plugin: ['praxis@git+https://github.com/ouonet/praxis.git'] }),
+      'utf8',
+    );
+    fs.writeFileSync(path.join(ocUserDir, 'plugins', 'praxis.js'), 'export default {};', 'utf8');
+    const ocRep = diagnoseHost('opencode', { rootDir: tmpRoot, homeDir: tmpHome, scope: 'user' });
+    assert.equal(ocRep.status, 'warn');
+    assert.ok(ocRep.checks.some((c) => c.code === 'opencode-dual-source' && c.severity === 'warn'));
+    assert.equal(await runCli(['doctor', '--host', 'opencode', '--scope', 'user'], { rootDir: tmpRoot, homeDir: tmpHome }), 0);
+  } finally {
     fs.rmSync(tmpRoot, { recursive: true, force: true });
     fs.rmSync(tmpHome, { recursive: true, force: true });
   }

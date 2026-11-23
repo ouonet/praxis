@@ -23,9 +23,9 @@ features:
   - title: 高质量保证 (High Quality)
     details: 触发式规范评审关卡 (Spec Review Gate) 与三维质量校验 (3D Quality Standard)，保障高标准交付。
   - title: 高效且极省 Token (Token-Lean)
-    details: 诊断驱动仅按需加载技能。单个技能约 ~150 至 ~1,180 token，标准迭代流程仅需 ~3,600 token。
+    details: 诊断驱动仅按需加载技能。单个技能约 ~210 至 ~1,320 token，标准迭代流程（含启动注入）仅需 ~4,220 token。
   - title: 目标驱动与跨工具 (Intent-driven)
-    details: 用声明式契约传递意图。原生支持 Claude Code、Codex、OpenCode、Antigravity、pi CLI、Oh My Pi (omp)、Qoder CLI CN 等。
+    details: 用声明式契约传递意图。原生支持 Claude Code、Codex、OpenCode、GitHub Copilot CLI、Antigravity、pi CLI、Oh My Pi (omp)、Qoder CLI CN、Grok CLI 与 Generic Agents (.agents)。
 ---
 
 ## 效果展示

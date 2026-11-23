@@ -24,10 +24,14 @@ praxis: scope=<x>, topology=multi-module, loading=<skills>  # multi-module
 | complex | new system, ≥5 tasks, parallel edits | `design`, `plan`, `worktree`, `subagents`, `review`, `ship` |
 | debug | broken, regression, failing test | `debug` |
 | onboard | existing project, no tech-spec | `onboard` |
+| ship | all plan tasks done, ready to review, archive, and finish | `ship`, `review`, `archive` |
+| release | version bump, tag, or publish requested | `release` |
+
+`ship` and `release` apply only when explicitly requested to finish/archive a completed plan or release a version, taking precedence over work-size scopes (`trivial`/`small`).
 
 ## Core Lifecycle Gates
 
-1. **Spec Review Gate (`design`)**: After drafting a spec, Praxis inspects trigger conditions and dispatches parallel reviewers (`spec-compliance`, `state-machine`, `cross-rule`, `cross-module`, `safety`, `implementability`). The coordinator synthesizes findings critically before plan handoff.
+1. **Spec Review Gate (`design`)**: After drafting a spec, Praxis inspects trigger conditions and dispatches parallel reviewers (`spec-compliance`, `state-machine`, `consistency`, `boundary`, `safety`, `implementability`). The coordinator synthesizes findings critically before plan handoff.
 2. **3D Quality Gate (`tdd` / `review`)**: Implementation cycles are evaluated against mechanical checks, convention adherence, design cohesion/coupling, and documentation coverage.
 3. **Model Tier Dispatch (`subagents`)**: Fan-out tasks designate a ROLE charter (`implementer`, `spec-reviewer`, `quality-reviewer`) and a capability tier (`fast`, `balanced`, `strongest`).
 4. **Living Documentation Sync (`ship` / `archive`)**: Staging specs merge into living docs (`docs/tech-spec.md` or `docs/specs/*.md`), CHANGELOG is updated, and staging files are cleaned up.

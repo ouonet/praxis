@@ -24,10 +24,14 @@ praxis: scope=<x>, topology=multi-module, loading=<skills>  # マルチモジュ
 | complex | 新システム、≥5 タスク、並行編集 | `design`, `plan`, `worktree`, `subagents`, `review`, `ship` |
 | debug | バグ、デグレ、失敗テスト | `debug` |
 | onboard | 既存プロジェクト、tech-spec.md なし | `onboard` |
+| ship | 全計画タスク完了、レビュー・アーカイブ・仕上げの要求 | `ship`, `review`, `archive` |
+| release | バージョン更新・タグ付け・公開の要求 | `release` |
+
+`ship` と `release` は完了済み計画の締めくくり・アーカイブまたはリリースを明示的に依頼された場合にのみ適用され、その場合は作業規模スコープ（`trivial`/`small`）より優先されます。
 
 ## ライフサイクルの主要ゲート
 
-1. **仕様レビュアーゲート (`design`)**: 仕様ドラフト後、トリガー条件に基づいて並列レビュアー（`spec-compliance`, `state-machine`, `cross-rule`, `cross-module`, `safety`, `implementability`）を起動。Coordinator が計画引き渡し前に批判的統合を実施。
+1. **仕様レビュアーゲート (`design`)**: 仕様ドラフト後、トリガー条件に基づいて並列レビュアー（`spec-compliance`, `state-machine`, `consistency`, `boundary`, `safety`, `implementability`）を起動。Coordinator が計画引き渡し前に批判的統合を実施。
 2. **3次元品質ゲート (`tdd` / `review`)**: 実装サイクルをメカニカルチェック、規約遵守、設計の結合度/凝集度、ドキュメントカバレッジの4観点から検証。
 3. **モデル階層別起動 (`subagents`)**: ファンアウトタスクに ROLE 契約（`implementer`, `spec-reviewer`, `quality-reviewer`）と能力階層（`fast`, `balanced`, `strongest`）を指定。
 4. **リビングドキュメント同期 (`ship` / `archive`)**: ステージング仕様をリビングドキュメント（`docs/tech-spec.md` または `docs/specs/*.md`）に統合し、CHANGELOG を更新してクリーンアップ。

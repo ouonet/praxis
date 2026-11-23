@@ -23,6 +23,7 @@ npx @ouonet/praxis install --host antigravity
 npx @ouonet/praxis install --host pi
 npx @ouonet/praxis install --host omp
 npx @ouonet/praxis install --host qoder
+npx @ouonet/praxis install --host grok
 ```
 
 #### 지원 호스트 (Hosts)
@@ -34,16 +35,20 @@ npx @ouonet/praxis install --host qoder
 - `omp` (별칭 `oh-my-pi`): Oh My Pi
 - `qoder` (별칭 `qoderclicn`): Qoder CLI CN
 - `copilot`: GitHub Copilot CLI
+- `grok` (별칭 `grok-cli`, `xai-grok`): Grok CLI — `rules/praxis.md` 복사를 통해 using-praxis 자동 주입 (Grok은 SessionStart stdout을 무시함)
 - `agents` (별칭 `generic`): `.agents` 표준 사양을 따르는 범용 Agent
 - `all`: 지원되는 모든 호스트에 설치
 
 #### 설치 범위 (Scopes)
-- `user` / `global` (전역 기본값): 전역 사용자 홈 범위 (`~/.claude`, `~/.codex`, `~/.gemini/config`, `~/.omp`, `~/.qoder-cn` 등), 모든 작업 공간에서 사용 가능.
+- `user` / `global` (전역 기본값): 전역 사용자 홈 범위 (`~/.claude`, `~/.codex`, `~/.gemini/config`, `~/.omp`, `~/.qoder-cn`, `~/.grok` 등), 모든 작업 공간에서 사용 가능.
 - `project`: Git 등으로 추적되는 프로젝트 범위 (`opencode.json`, `.agents/skills/`, `.claude/settings.json` 등), 팀과 공유.
 - `local`: 현재 작업 디렉토리 전용 로컬 범위. 공유 설정 파일을 수정하지 않고 활성화.
 
-#### 관리 명령어
+#### 관리 및 진단 명령어
 ```bash
+# 읽기 전용 상태 진단 (설정 문법, 깨진 심볼릭 링크, 스킬 누락, 규칙 충돌)
+npx @ouonet/praxis doctor    # 별칭: validate, check
+
 # Praxis 업데이트
 npx @ouonet/praxis update --host all
 
@@ -64,9 +69,12 @@ claude plugins install praxis
 ```
 
 #### Codex
-`.codex/config.toml`에 설정:
+`.codex/config.toml`에 설정 (또는 `codex plugin marketplace add ouonet/praxis` 및 `codex plugin add praxis@praxis-marketplace` 실행):
 ```toml
-[plugins."praxis@git+https://github.com/ouonet/praxis.git"]
+[marketplaces.praxis-marketplace]
+url = "https://github.com/ouonet/praxis"
+
+[plugins."praxis@praxis-marketplace"]
 enabled = true
 ```
 
@@ -99,6 +107,14 @@ omp plugin add https://github.com/ouonet/praxis
 
 #### Qoder CLI CN
 프로젝트 루트의 `.qoder-plugin` 디렉토리에 `plugin.json`을 추가하거나, 전역 `~/.qoder-cn/plugins/`에 설정합니다.
+
+#### Grok CLI
+네이티브 플러그인 설치만으로는 using-praxis가 주입되지 않습니다 (Grok이 SessionStart stdout을 무시함). `rules/praxis.md`를 복사하는 Praxis CLI 사용을 권장합니다.
+
+```bash
+grok plugin marketplace add ouonet/praxis
+grok plugin install praxis --trust
+```
 
 ---
 
@@ -143,12 +159,19 @@ add OAuth login with GitHub
 
 병렬 서브에이전트(`subagents`)나 명세 리뷰어(`design` 게이트)를 디스패치할 때, Praxis는 작업 기능 티어(`fast`, `balanced`, `strongest`)를 할당합니다.
 
-프로젝트 루트 또는 홈 디렉토리에 `.praxis/model-tiers.yaml` 파일을 생성하여 티어를 특정 모델에 매핑할 수 있습니다:
+해결 순서: 프로젝트 `.praxis/model-tiers.yaml` → 사용자 `~/.praxis/model-tiers.yaml` → 하네스 기본 모델. 템플릿 `model-tiers.example.yaml`에 따라 `tiers.<tier>.{provider, model}` 구조로 작성합니다:
 
 ```yaml
-fast: claude-3-5-haiku
-balanced: claude-3-7-sonnet
-strongest: claude-3-7-sonnet
+tiers:
+  fast:
+    provider: anthropic
+    model: claude-haiku-4-5-20251001
+  balanced:
+    provider: anthropic
+    model: claude-sonnet-4-6
+  strongest:
+    provider: anthropic
+    model: claude-opus-4-6
 ```
 
 설정 파일이 없는 경우 모든 서브에이전트는 하네스의 기본 모델을 사용합니다.

@@ -44,8 +44,11 @@ npx @ouonet/praxis install --host grok
 - `project`: Project-level scope tracked in git (e.g. `opencode.json`, `.agents/skills/`, `.claude/settings.json`), shared with the team.
 - `local`: Workspace-local scope, active in the current directory without modifying shared repo manifests.
 
-#### Management Commands
+#### Management & Diagnostic Commands
 ```bash
+# Run read-only diagnostics (configs, dangling symlinks, skills, rule conflicts)
+npx @ouonet/praxis doctor    # aliases: validate, check
+
 # Update Praxis across hosts
 npx @ouonet/praxis update --host all
 
@@ -66,9 +69,12 @@ claude plugins install praxis
 ```
 
 #### Codex
-Configure in `.codex/config.toml`:
+Configure in `.codex/config.toml` (or install via `codex plugin marketplace add ouonet/praxis` and `codex plugin add praxis@praxis-marketplace`):
 ```toml
-[plugins."praxis@git+https://github.com/ouonet/praxis.git"]
+[marketplaces.praxis-marketplace]
+url = "https://github.com/ouonet/praxis"
+
+[plugins."praxis@praxis-marketplace"]
 enabled = true
 ```
 
@@ -153,12 +159,19 @@ Expected: `praxis: scope=standard, loading=design,plan,tdd,review` — the agent
 
 When dispatching parallel subagents (`subagents`) or spec reviewers (`design` gate), Praxis assigns task capability tiers (`fast`, `balanced`, `strongest`).
 
-Create `.praxis/model-tiers.yaml` in your project root or home directory to map tiers to concrete models:
+Resolution order: project `.praxis/model-tiers.yaml` → user `~/.praxis/model-tiers.yaml` → harness default model. Create `.praxis/model-tiers.yaml` (see template `model-tiers.example.yaml`) using keys under `tiers.<tier>.{provider, model}`:
 
 ```yaml
-fast: claude-3-5-haiku
-balanced: claude-3-7-sonnet
-strongest: claude-3-7-sonnet
+tiers:
+  fast:
+    provider: anthropic
+    model: claude-haiku-4-5-20251001
+  balanced:
+    provider: anthropic
+    model: claude-sonnet-4-6
+  strongest:
+    provider: anthropic
+    model: claude-opus-4-6
 ```
 
 If no configuration file exists, all subagents default to the harness default model.

@@ -23,9 +23,9 @@ features:
   - title: 고품질 보증 (High Quality)
     details: 트리거 기반 명세 리뷰어 게이트 (Spec Review Gate)와 3차원 품질 검증 (3D Quality Standard)으로 고표준 배포 보장.
   - title: 고효율 & 극도의 토큰 절약
-    details: 진단 기반으로 필요한 스킬만 로드. 스킬당 약 ~150~~1,180 토큰, 표준 기능 사이클은 약 ~3,600 토큰.
+    details: 진단 기반으로 필요한 스킬만 로드. 스킬당 약 ~210~1,320 토큰, 표준 기능 사이클은 부트스트랩 포함 약 ~4,220 토큰.
   - title: 의도 기반 & 크로스 하네스 지원
-    details: 절차서가 아닌 선언적 계약으로 의도를 전달. Claude Code, Codex, OpenCode, Antigravity, pi CLI, Oh My Pi (omp), Qoder CLI CN 등 지원.
+    details: 절차서가 아닌 선언적 계약으로 의도를 전달. Claude Code, Codex, OpenCode, GitHub Copilot CLI, Antigravity, pi CLI, Oh My Pi (omp), Qoder CLI CN, Grok CLI, Generic Agents (.agents) 지원.
 ---
 
 ## 실제 동작

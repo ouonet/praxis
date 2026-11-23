@@ -23,9 +23,9 @@ features:
   - title: High Quality Assurance
     details: Trigger-based Spec Review Gates and 3-dimensional quality standards (mechanical checks, convention adherence, design, doc-coverage).
   - title: High Efficiency & Token-Lean
-    details: Inline triage loads only required skills. Skills range from ~150 to ~1,180 tokens each (~3,600 tokens for a standard feature cycle).
+    details: Inline triage loads only required skills. Skills range from ~210 to ~1,320 tokens each (~4,220 tokens for a standard feature cycle including bootstrap).
   - title: Intent-Driven & Cross-Harness
-    details: Declarations of intent over verbose instructions. Native support for Claude Code, Codex, OpenCode, Antigravity, pi CLI, Oh My Pi (omp), Qoder CLI CN, and more.
+    details: Declarations of intent over verbose instructions. Native support for Claude Code, Codex, OpenCode, GitHub Copilot CLI, Antigravity, pi CLI, Oh My Pi (omp), Qoder CLI CN, Grok CLI, and Generic Agents (.agents).
 ---
 
 ## See It In Action

@@ -1,21 +1,23 @@
-# Ship（交付）
+# ship
 
-所有计划任务完成且绿灯时。
+`ship` 技能在计划任务全部完成且测试通过后，统筹最终评审、路线图与现存文档归档、变更日志更新及收尾方式确认。
 
-## Gate —— 任何一个失败就停：
+## 交付前检查关卡
 
-- 测试通过。
-- `docs/staging/plans/YYYY-MM-DD-<topic>.md` 中无 `- [ ]`。
-- Staging 规范反映实际代码行为。
-- 无未完成的 TodoWrite 任务。
+以下任一条件不满足时立即停止：
 
-## 流程
+- 所有自动化测试通过（无自动化测试的任务已完成声明的手工验收）。
+- 相关计划文件中不再存在未勾选的 `- [ ]` 任务。
+- 暂存规范与代码实际行为完全一致。
+- `README.md` 命令可运行，现存文档满足 Living Doc North Star（见[质量标准](./quality)）。
+- 宿主任务追踪器中不存在未完成的已登记任务。
+- 多模块任务中各模块验收与协调者集成验收均已通过（或按 `partial-commit` 状态报告恢复点）。
 
-1. `review` 整个 diff。
-2. `archive` —— 规范合并进 living doc，删除 staging 规范和计划。
-3. 如果用户可见，加到 CHANGELOG `Unreleased`。
-4. 问：**merge / PR / keep / discard.**
-5. 在 merge 或 PR 上：清理 worktree，删除本地分支。
-6. Roadmap 有未勾选里程碑？→ `plan` 下一个。
+## 交付流程
 
-无用户明确批准不 push 或 PR。
+1. 对完整 diff 运行 `review`。
+2. 更新 `docs/ROADMAP.md`（将完成里程碑标为 `[x]`，必要时调整后续 stub）。
+3. 执行 `archive`（多模块下先归档模块仓库，最后归档协调者）。
+4. 若有面向用户可见的变更，追加条目至 `CHANGELOG.md` 的 `Unreleased` 章节。
+5. 询问用户收尾方式（**commit / merge / PR / keep / discard**）——未经用户明确批准绝不执行 push 或创建 PR。
+6. 若完成合并/PR，清理 worktree 与本地分支；若路线图仍有未完成里程碑，衔接下一轮 `plan`。

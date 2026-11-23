@@ -1,21 +1,23 @@
-# Ship（출시）
+# ship
 
-모든 계획 작업이 완료되고 그린 상태가 됐을 때.
+`ship` 스킬은 모든 계획 작업이 완료되고 테스트가 통과했을 때 최종 리뷰, 로드맵·라이빙 문서 아카이브, 변경 이력 업데이트 및 마무리 방식 확인을 총괄합니다.
 
-## Gate — 하나라도 실패하면 멈춰라:
+## Ship 사전 게이트
 
-- 테스트가 통과한다.
-- `docs/staging/plans/YYYY-MM-DD-<topic>.md`에 `- [ ]`가 없다.
-- Staging 명세가 실제 코드 동작을 반영한다.
-- 미완료 TodoWrite 작업이 없다.
+하나라도 충족되지 않으면 즉시 중단합니다:
 
-## 절차
+- 모든 자동 테스트가 통과함 (수동 수용 작업은 명시된 검증 절차를 완료함).
+- 관련 계획 파일에 `- [ ]` 미완료 항목이 남아 있지 않음.
+- 스테이징 명세가 실제 구현 동작을 정확히 반영함.
+- `README.md` 명령어가 실행 가능하며 라이빙 문서가 Living Doc North Star([품질 표준](./quality))를 준수함.
+- 하네스 작업 추적기(task tracker)에 미완료 등록 작업이 없음.
+- 멀티 모듈 작업의 경우 모듈별 수용 검증과 Coordinator 통합 검증이 통과함 (또는 `partial-commit` 복구 상태 보고됨).
 
-1. 전체 diff를 `review`한다.
-2. `archive` — 명세를 living doc에 병합하고, staging 명세와 계획을 삭제한다.
-3. 사용자에게 보이면 CHANGELOG의 `Unreleased`에 추가한다.
-4. 확인: **merge / PR / keep / discard.**
-5. merge 또는 PR 시: worktree를 정리하고, 로컬 브랜치를 삭제한다.
-6. 로드맵에 미체크 마일스톤이 있는가? → 다음을 `plan`한다.
+## Ship 절차
 
-사용자의 명시적 승인 없이 push 또는 PR하지 않는다.
+1. 전체 diff에 대해 `review`를 실행합니다.
+2. `docs/ROADMAP.md`를 업데이트합니다 (완료 마일스톤을 `[x]`로 표시하고 필요 시 후속 스텁 조정).
+3. `archive`를 실행합니다 (멀티 모듈 시 모듈 리포지토리를 먼저, Coordinator를 마지막에 아카이브).
+4. 사용자에게 보이는 변경 사항이 있으면 `CHANGELOG.md`의 `Unreleased`에 추가합니다.
+5. 사용자에게 마무리 방식을 묻습니다 (**commit / merge / PR / keep / discard**) — 명시적 승인 없이 push 또는 PR을 생성하지 않습니다.
+6. 병합이나 PR 후 worktree와 로컬 브랜치를 정리하고, 로드맵에 남은 마일스톤이 있으면 다음 `plan`으로 이어갑니다.

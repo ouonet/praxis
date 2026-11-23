@@ -23,9 +23,9 @@ features:
   - title: 高品質保証 (High Quality)
     details: トリガー型仕様レビュアーゲート (Spec Review Gate) と3次元品質検証 (3D Quality Standard) で高品質なデリバリーを保証。
   - title: 高効率 & 極めて高いトークン節約
-    details: トリアージ駆動で必要なスキルのみをロード。1スキルあたり約 ~150〜~1,180 トークン、標準機能サイクルでも約 ~3,600 トークン。
+    details: トリアージ駆動で必要なスキルのみをロード。1スキルあたり約 ~210〜~1,320 トークン、標準機能サイクルでもブートストラップ込みで約 ~4,220 トークン。
   - title: 意図駆動 & クロスハーネス対応
-    details: 手順書ではなく宣言的契約で意図を伝達。Claude Code、Codex、OpenCode、Antigravity、pi CLI、Oh My Pi (omp)、Qoder CLI CN 等にネイティブ対応。
+    details: 手順書ではなく宣言的契約で意図を伝達。Claude Code、Codex、OpenCode、GitHub Copilot CLI、Antigravity、pi CLI、Oh My Pi (omp)、Qoder CLI CN、Grok CLI、汎用エージェント (.agents) に対応。
 ---
 
 ## 動作例

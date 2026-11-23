@@ -4,4 +4,4 @@
 - [x] M4: Workflow rule repair — TDD vs manual acceptance, ship/archive gates, multi-module maturity wording
 - [x] M5: P0 safety & runtime fixes — CLI argument/ref/dry-run safety, OpenCode & CRLF adapter fixes, ownership-marked rule dedup, accurate host status
 - [x] M6: P1 engineering & modularity — npm `files` allowlist, Node `engines`, cross-platform CI, real adapter & isolated CLI tests, modular host adapters, SSOT invariant checks
-- [ ] M7: P2 workflow & docs alignment — triage/skill refinements, `praxis doctor`/`validate`, 4-locale site sync & `model-tiers.yaml` schema unification
+- [x] M7: P2 workflow & docs alignment — triage/skill refinements, `praxis doctor`/`validate`, 4-locale site sync & `model-tiers.yaml` schema unification

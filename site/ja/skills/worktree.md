@@ -1,25 +1,14 @@
-# Worktree（ワークツリー）
+# worktree
 
-非trivialまたは並行作業に使う。分離されたgit worktreeを作成し、CI、テスト、他の作業を並行して実行してもメインディレクトリをブロックしない。
+`worktree` スキルは、メインチェックアウトをブロックせずに独立した Git worktree で非自明・並行作業を進めます。
 
-## 新しいworktree
+`topology=multi-module` では、各リポジトリを独立した Git / worktree 境界として扱い、共通親ディレクトリから一括 Git 変更を行いません。作成前に各登録リポジトリの状態とベースラインテストを確認し、ブランチ／ディレクトリ名に `change-set` ID を含めます。欠落リポジトリ、無関係な未コミット変更、または赤ベースラインがある場合は停止します。
 
-```bash
-git worktree add -b <branch-name>
-```
-
-手動でgit checkoutしない。Worktreeはクリーンなディレクトリとブランチを提供する。
-
-## 作業中
-
-Worktreeには独自のファイル、node_modules、環境変数がある。変更は互いに影響しない。
-
-## 完了
-
-Worktreeから出た後：
+## 使い方とツール範囲
 
 ```bash
-git worktree remove <worktree-path>
+git worktree add ../<repo>-<topic> -b <type>/<topic>
+cd ../<repo>-<topic> && <setup> && <run tests>
 ```
 
-または後で使用するために保持する。
+ベースラインがグリーンであることを確認してから実装に入ります。なお、セマンティック／コードグラフ系インデックスツールは通常メインリポジトリのみを索引し、独立 worktree 内ではファイル読み取り／grep のみ有効となる点に留意してサブエージェントを派遣してください。`ship` 時に worktree を清掃します。

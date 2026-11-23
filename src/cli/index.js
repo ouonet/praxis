@@ -6,6 +6,7 @@ import {
   uninstallHost,
   updateHost,
   getHostStatus,
+  diagnoseHosts,
   normalizeScope,
   normalizeMethod,
   validateRef,
@@ -110,6 +111,7 @@ COMMANDS:
   uninstall, rm    Uninstall Praxis from specified host(s)
   update, upgrade  Update Praxis installation for host(s)
   status, list, ls View installation status across all AI agent hosts
+  doctor, validate, check  Diagnose config syntax, broken symlinks, skills, and rule conflicts
   help             Show this help message
   version          Show Praxis CLI version
 
@@ -127,6 +129,7 @@ EXAMPLES:
   $ npx @ouonet/praxis install --host opencode --scope project
   $ npx @ouonet/praxis install --host codex --scope local
   $ npx @ouonet/praxis status
+  $ npx @ouonet/praxis doctor
   $ npx @ouonet/praxis update --host pi
   $ npx @ouonet/praxis uninstall --host opencode --scope project
 `);
@@ -200,6 +203,44 @@ export async function runCli(args = process.argv.slice(2), { rootDir = process.c
   }
 
   const cmd = options.command.toLowerCase();
+
+  if (['doctor', 'validate', 'check'].includes(cmd)) {
+    if (normRef !== null) {
+      console.error('❌ --ref is not supported for doctor.');
+      return 1;
+    }
+
+    let targetHosts;
+    if (!options.host || options.host.toLowerCase() === 'all') {
+      targetHosts = Object.values(HOSTS);
+    } else {
+      const resolved = resolveHost(options.host);
+      if (!resolved) {
+        console.error(`❌ Unknown host: "${options.host}". Available hosts: ${Object.keys(HOSTS).join(', ')}`);
+        return 1;
+      }
+      targetHosts = [resolved];
+    }
+
+    const explicitScope = options.scope !== null ? normScope : null;
+    const summary = diagnoseHosts(targetHosts, { rootDir, homeDir, scope: explicitScope });
+
+    console.log(`\n🩺 Praxis Doctor [v${getVersion()}]\n`);
+    for (const report of summary.hosts) {
+      if (report.checks.length === 0) continue;
+      console.log(`${report.displayName} (${report.id}):`);
+      for (const chk of report.checks) {
+        const tag = chk.severity === 'fail' ? '[FAIL]' : chk.severity === 'warn' ? '[WARN]' : '[OK]';
+        const scopeStr = chk.scope ? ` [${chk.scope}]` : '';
+        console.log(`  ${tag}${scopeStr} ${chk.code}: ${chk.message}`);
+        if (chk.hint) {
+          console.log(`       hint: ${chk.hint}`);
+        }
+      }
+    }
+    console.log(`\nSummary: ${summary.okCount} ok, ${summary.warnCount} warn, ${summary.failCount} fail.\n`);
+    return summary.ok ? 0 : 1;
+  }
 
   if (['status', 'list', 'ls'].includes(cmd)) {
     console.log(`\n🔍 Praxis Host Status Check [v${getVersion()}]\n`);

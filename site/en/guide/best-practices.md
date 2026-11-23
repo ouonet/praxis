@@ -26,9 +26,9 @@
 
 ## Large projects
 
-**Use roadmap when ≥3 milestones.** Don't try to plan them all upfront. `plan` only the current one, update stubs as you learn.
+**Use roadmap when ≥3 milestones.** Don't try to plan them all upfront in `docs/ROADMAP.md` (`- [ ] MN: <goal>`). `plan` only the current milestone (`milestone: MN` in staging spec), updating stubs as you learn.
 
-**Mark current milestone clearly.** `← plan in detail now` on M1 signals intent. Move the marker after ship, before planning M2.
+**Advance milestones cleanly at `ship`.** Mark the finished milestone `- [x]` in `docs/ROADMAP.md` and proceed to `plan` the next `- [ ]` milestone (returning to `design` only if its goal materially changed).
 
 **Expect to revise milestones after M1.** First milestone teaches you what the rest will cost. That's the point.
 

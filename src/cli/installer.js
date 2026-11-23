@@ -2,6 +2,12 @@ import os from 'node:os';
 import { HOSTS, formatCommandStep } from './hosts.js';
 import { HOST_ADAPTERS, getHostAdapter } from './adapters/index.js';
 import {
+  isDanglingSymlink,
+  validateTomlBasic,
+  diagnoseHost,
+  diagnoseHosts,
+} from './doctor.js';
+import {
   PACKAGE_ROOT,
   PLUGIN_ITEMS_TO_COPY,
   DEFAULT_PRAXIS_SKILL_NAMES,
@@ -52,6 +58,10 @@ export {
   PRAXIS_RULE_FILES,
   HOST_ADAPTERS,
   getHostAdapter,
+  isDanglingSymlink,
+  validateTomlBasic,
+  diagnoseHost,
+  diagnoseHosts,
   checkBinaryAvailable,
   resolveBinaryAvailable,
   isHomeDirectory,

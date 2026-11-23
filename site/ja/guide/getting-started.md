@@ -23,6 +23,7 @@ npx @ouonet/praxis install --host antigravity
 npx @ouonet/praxis install --host pi
 npx @ouonet/praxis install --host omp
 npx @ouonet/praxis install --host qoder
+npx @ouonet/praxis install --host grok
 ```
 
 #### 対応ホスト (Hosts)
@@ -34,16 +35,20 @@ npx @ouonet/praxis install --host qoder
 - `omp`（別名 `oh-my-pi`）: Oh My Pi
 - `qoder`（別名 `qoderclicn`）: Qoder CLI CN
 - `copilot`: GitHub Copilot CLI
+- `grok`（別名 `grok-cli`、`xai-grok`）: Grok CLI — `rules/praxis.md` のコピーにより using-praxis を自動注入（Grok は SessionStart stdout を無視するため）
 - `agents`（別名 `generic`）: `.agents` 仕様に準拠した汎用 Agent
 - `all`: サポートされているすべてのホストにインストール
 
 #### スコープ (Scopes)
-- `user` / `global`（デフォルト）: ユーザーホームスコープ（`~/.claude`、`~/.codex`、`~/.gemini/config`、`~/.omp`、`~/.qoder-cn` など）。すべてのワークスペースで有効。
+- `user` / `global`（デフォルト）: ユーザーホームスコープ（`~/.claude`、`~/.codex`、`~/.gemini/config`、`~/.omp`、`~/.qoder-cn`、`~/.grok` など）。すべてのワークスペースで有効。
 - `project`: Git 等で管理されるプロジェクト共有スコープ（`opencode.json`、`.agents/skills/`、`.claude/settings.json` など）。
 - `local`: 現在のワークスペース限定のローカルスコープ。リポジトリ共有設定を汚さずに有効化。
 
-#### 管理コマンド
+#### 管理・診断コマンド
 ```bash
+# 読み取り専用ヘルスチェック（設定構文、壊れたシンボリックリンク、スキル欠損、ルール競合）
+npx @ouonet/praxis doctor    # 別名: validate, check
+
 # Praxis の更新
 npx @ouonet/praxis update --host all
 
@@ -64,9 +69,12 @@ claude plugins install praxis
 ```
 
 #### Codex
-`.codex/config.toml` に設定：
+`.codex/config.toml` に設定（または `codex plugin marketplace add ouonet/praxis` と `codex plugin add praxis@praxis-marketplace` を実行）：
 ```toml
-[plugins."praxis@git+https://github.com/ouonet/praxis.git"]
+[marketplaces.praxis-marketplace]
+url = "https://github.com/ouonet/praxis"
+
+[plugins."praxis@praxis-marketplace"]
 enabled = true
 ```
 
@@ -99,6 +107,14 @@ omp plugin add https://github.com/ouonet/praxis
 
 #### Qoder CLI CN
 プロジェクトルートの `.qoder-plugin` に `plugin.json` を配置するか、グローバルの `~/.qoder-cn/plugins/` に配置します。
+
+#### Grok CLI
+ネイティブプラグインインストールだけでは using-praxis が注入されません（Grok は SessionStart stdout を無視するため）。`rules/praxis.md` を配置する Praxis CLI の使用を推奨します。
+
+```bash
+grok plugin marketplace add ouonet/praxis
+grok plugin install praxis --trust
+```
 
 ---
 
@@ -143,12 +159,19 @@ add OAuth login with GitHub
 
 並列サブエージェント（`subagents`）や仕様レビュー担当（`design` ゲート）を派遣する際、Praxis はタスクの能力階層（`fast`、`balanced`、`strongest`）を割り当てます。
 
-プロジェクトルートまたはホームディレクトリに `.praxis/model-tiers.yaml` を作成することで、階層を特定のモデルにマッピングできます：
+解決順序: プロジェクト `.praxis/model-tiers.yaml` → ユーザー `~/.praxis/model-tiers.yaml` → ハーネスのデフォルトモデル。テンプレート `model-tiers.example.yaml` に従い `tiers.<tier>.{provider, model}` 形式で記述します：
 
 ```yaml
-fast: claude-3-5-haiku
-balanced: claude-3-7-sonnet
-strongest: claude-3-7-sonnet
+tiers:
+  fast:
+    provider: anthropic
+    model: claude-haiku-4-5-20251001
+  balanced:
+    provider: anthropic
+    model: claude-sonnet-4-6
+  strongest:
+    provider: anthropic
+    model: claude-opus-4-6
 ```
 
 設定ファイルがない場合、すべてのサブエージェントはホスト環境のデフォルトモデルを使用します。

@@ -24,10 +24,14 @@ praxis: scope=<x>, topology=multi-module, loading=<skills>  # 멀티 모듈
 | complex | 새 시스템, ≥5개 작업, 병렬 수정 | `design`, `plan`, `worktree`, `subagents`, `review`, `ship` |
 | debug | 기능 고장, 회귀 문제, 실패 테스트 | `debug` |
 | onboard | 기존 프로젝트, tech-spec.md 없음 | `onboard` |
+| ship | 모든 계획 작업 완료, 리뷰·아카이브·마무리 요청 | `ship`, `review`, `archive` |
+| release | 버전 업데이트, 태그 생성, 배포 요청 | `release` |
+
+`ship`과 `release`는 완료된 계획의 마무리/아카이브 또는 릴리스를 명시적으로 요청한 경우에만 적용되며, 해당 요청에서는 작업 규모 스코프(`trivial`/`small`)보다 우선합니다.
 
 ## 핵심 라이프사이클 게이트
 
-1. **명세 리뷰어 게이트 (`design`)**: 명세서 초안 작성 후 조건별 리뷰어(`spec-compliance`, `state-machine`, `cross-rule`, `cross-module`, `safety`, `implementability`)를 병렬로 전출. Coordinator가 계획 전달 전 비판적 통합 수행.
+1. **명세 리뷰어 게이트 (`design`)**: 명세서 초안 작성 후 조건별 리뷰어(`spec-compliance`, `state-machine`, `consistency`, `boundary`, `safety`, `implementability`)를 병렬로 전출. Coordinator가 계획 전달 전 비판적 통합 수행.
 2. **3차원 품질 게이트 (`tdd` / `review`)**: 구현 사이클을 기계적 검사, 관례 준수, 설계 응집도/결합도, 문서 커버리지 관점에서 평가.
 3. **모델 계층별 전출 (`subagents`)**: 팬아웃 작업에 ROLE 계약(`implementer`, `spec-reviewer`, `quality-reviewer`)과 능력 계층(`fast`, `balanced`, `strongest`) 지정.
 4. **라이빙 문서 동기화 (`ship` / `archive`)**: 스테이징 명세를 라이빙 문서(`docs/tech-spec.md` 또는 `docs/specs/*.md`)로 병합하고 CHANGELOG 업데이트 후 정리.
