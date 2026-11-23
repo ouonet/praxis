@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 4.4.0 - 2026-11-24
+
 - **Workflow, Diagnostics & 4-Locale Docs Alignment (M7)**:
   - **Read-Only `praxis doctor` CLI (`src/cli/doctor.js`)**: Added `praxis doctor` (aliases `validate`, `check`) with acyclic module placement (`shared.js` / `adapters/index.js` -> `doctor.js` -> `installer.js` + `index.js`). Checks config syntax across all 7 config-bearing hosts (JSON + zero-dependency structural TOML validator `validateTomlBasic`), dangling symlinks (`isDanglingSymlink`), unreadable paths (`EACCES`/`EPERM`/`EISDIR`), incomplete skills (excluding unrelated `skills/references/`), cross-host rule conflicts/duplicates/missing rules, and OpenCode user dual-source installs with exit codes `0` (clean/warn) and `1` (failures).
   - **9-Scope Triage Refinements**: Added explicit `ship` (`ship`, `review`, `archive`) and `release` (`release`) rows plus precedence/disambiguation rules identically across `rules/AGENTS.md`, `rules/praxis.md`, and `skills/using-praxis/SKILL.md`; aligned `README.md` (`Common Signals`, `doctor`/`validate`/`check`, modular `Layout`, measured token budgets) and `docs/tech-spec.md`.
